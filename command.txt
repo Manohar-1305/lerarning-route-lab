@@ -1,0 +1,65 @@
+docker build -t learning-labs:1.0 .
+docker run -d --name learning-labs -p 5000:5000 --env-file files/.env learning-labs:1.0
+
+docker run -d --name learning-labs -p 5000:5000 --env-file .env --env-file files/.env learning-labs:1.0
+
+Get-ChildItem -Path . -Filter *.py -Recurse | Select-String -Pattern '^\s*(import\s+|from\s+)'
+
+# 1. Create Docker network
+docker network create learning-network
+
+# 2. Create persistent volume
+docker volume create postgres-data
+
+# 3. Start PostgreSQL container
+docker run -d \
+  --name postgres \
+  --network learning-network \
+  -e POSTGRES_DB=learning_labs \
+  -e POSTGRES_USER=learning_user \
+  -e POSTGRES_PASSWORD='Redhat@2026' \
+  -p 5432:5432 \
+  -v postgres-data:/var/lib/postgresql/data \
+  postgres:17
+
+pip install psycopg2-binary
+
+
+docker network create learning-network
+
+docker volume create postgres-data
+
+docker run -d \
+  --name postgres \
+  --network learning-network \
+  -e POSTGRES_DB=learning_labs \
+  -e POSTGRES_USER=learning_user \
+  -e POSTGRES_PASSWORD='Redhat@2026' \
+  -p 5432:5432 \
+  -v postgres-data:/var/lib/postgresql/data \
+  postgres:17
+
+docker build -t learning-labs:1.0 . && docker rm -f learning-labs && docker run -d --name learning-labs --network learning-network -p 5000:5000 --env-file .env --env-file files/.env learning-labs:1.0
+
+docker exec learning-labs pip install simple-websocket
+
+docker exec -it learning-labs python -c "import sqlite3; c=sqlite3.connect('/app/users.db'); print(*c.execute('SELECT id, username, email, created_at FROM users').fetchall(), sep='\n')"
+
+# Check smtp connectivity
+docker exec -i learning-labs python - <<'PY'
+import socket
+
+for port in (587, 465):
+    try:
+        with socket.create_connection(("smtp.gmail.com", port), timeout=10):
+            print(f"Port {port}: CONNECTED")
+    except Exception as e:
+        print(f"Port {port}: FAILED - {e}")
+PY
+
+docker exec learning-labs python -c 'import os; p=os.getenv("MAIL_PASSWORD",""); print("Length:",len(p),"Contains spaces:", " " in p)'
+
+docker exec -it postgres psql -U learning_user -d learning_labs -c 'SELECT * FROM lab_recommendations ORDER BY created_at DESC;'
+
+docker exec -it postgres psql -U learning_user -d learning_labs
+SELECT * FROM lab_recommendations ORDER BY created_at DESC;
