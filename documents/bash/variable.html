@@ -1,0 +1,721 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bash Scripting - Variables</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    color: #263238;
+    line-height: 1.65;
+    margin: 0;
+    padding: 10px 18px;
+    background: #ffffff;
+}
+
+h1 {
+    color: #17365d;
+    font-size: 23px;
+    margin: 0 0 5px;
+}
+
+h2 {
+    color: #17365d;
+    font-size: 19px;
+    margin-top: 25px;
+    border-bottom: 2px solid #e5eaf0;
+    padding-bottom: 5px;
+}
+
+h3 {
+    color: #24527a;
+    font-size: 16px;
+    margin-top: 18px;
+}
+
+p {
+    margin: 8px 0;
+}
+
+pre {
+    background: #17212b;
+    color: #e8f1f8;
+    padding: 13px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+code {
+    font-family: Consolas, monospace;
+}
+
+.inline-code {
+    background: #edf2f7;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+.video-button {
+    background: #198754;
+    color: white;
+    border: none;
+    padding: 8px 13px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    margin: 5px 0 10px;
+}
+
+.video-container {
+    display: block;
+    width: 100%;
+    max-width: 850px;
+    aspect-ratio: 16 / 9;
+    margin-bottom: 18px;
+}
+
+.video-container iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 6px;
+}
+
+.note {
+    background: #f1f6fb;
+    border-left: 4px solid #2878b5;
+    padding: 10px 13px;
+    margin: 12px 0;
+}
+
+.warning {
+    background: #fff8e6;
+    border-left: 4px solid #e0a126;
+    padding: 10px 13px;
+    margin: 12px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+}
+
+th, td {
+    border: 1px solid #dce3ea;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background: #edf2f7;
+}
+
+li {
+    margin-bottom: 5px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Bash Scripting – Variables</h1>
+<p>Learn how to declare, assign, access, modify, and use variables in real-world Bash automation.</p>
+
+<button class="video-button" id="videoButton" onclick="toggleVideo()">
+    Hide Video
+</button>
+
+<div class="video-container" id="videoContainer">
+    <iframe
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Bash Scripting Tutorial"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. What Are Variables in Bash?</h2>
+
+<p>
+A variable is a named storage location used to hold a value that can be accessed
+and reused while a Bash script executes.
+</p>
+
+<p>
+In DevOps, scripts frequently interact with servers, applications, containers,
+Kubernetes clusters, and cloud infrastructure. Instead of repeatedly writing
+the same values throughout a script, we store them in variables.
+</p>
+
+<p>For example, consider a script that deploys an application:</p>
+
+<pre><code>#!/bin/bash
+
+APP_NAME="payment-service"
+ENVIRONMENT="production"
+SERVER_IP="192.168.1.100"
+
+echo "Deploying $APP_NAME"
+echo "Environment: $ENVIRONMENT"
+echo "Server: $SERVER_IP"</code></pre>
+
+<p>
+Here, <code>APP_NAME</code>, <code>ENVIRONMENT</code>, and
+<code>SERVER_IP</code> are variables. Their values can be reused anywhere
+in the script.
+</p>
+
+<h2>2. Declaring and Assigning Variables</h2>
+
+<p>
+In Bash, you do not need to specify a data type when creating a variable.
+You can assign a value directly using the assignment operator
+(<code>=</code>).
+</p>
+
+<h3>Syntax</h3>
+
+<pre><code>VARIABLE_NAME="value"</code></pre>
+
+<h3>Examples</h3>
+
+<pre><code>#!/bin/bash
+
+username="developer"
+age=30
+application="nginx"
+server_ip="10.0.0.10"
+
+echo "$username"
+echo "$age"
+echo "$application"
+echo "$server_ip"</code></pre>
+
+<h3>Important assignment rules</h3>
+
+<pre><code># Correct
+name="Manohar"
+port=8080
+
+# Incorrect
+name = "Manohar"
+port = 8080</code></pre>
+
+<p>
+There must not be spaces around the assignment operator. Bash interprets
+spaces differently, so <code>name = "Manohar"</code> is not a valid
+variable assignment.
+</p>
+
+<div class="note">
+<strong>DevOps application:</strong> Store application names, server addresses,
+Docker image tags, Kubernetes namespaces, and deployment directories in variables
+instead of hardcoding them throughout your scripts.
+</div>
+
+<h2>3. Accessing Variables</h2>
+
+<p>
+To retrieve a variable's value, prefix its name with the dollar sign
+(<code>$</code>).
+</p>
+
+<pre><code>#!/bin/bash
+
+APP_NAME="learning-labs"
+VERSION="2.5"
+PORT=5000
+
+echo "Application: $APP_NAME"
+echo "Version: $VERSION"
+echo "Port: $PORT"</code></pre>
+
+<h3>Using curly braces</h3>
+
+<p>
+You can use curly braces to clearly identify where a variable name ends.
+This is especially useful when attaching additional text to a variable.
+</p>
+
+<pre><code>#!/bin/bash
+
+APP="nginx"
+
+echo "${APP}_service"
+echo "${APP}_deployment"</code></pre>
+
+<p>Output:</p>
+
+<pre><code>nginx_service
+nginx_deployment</code></pre>
+
+<p>
+Without curly braces, Bash may interpret adjacent characters as part of
+the variable name.
+</p>
+
+<h2>4. Updating Variable Values</h2>
+
+<p>
+A variable's value can be changed during script execution. When you assign
+a new value, the previous value is replaced.
+</p>
+
+<pre><code>#!/bin/bash
+
+ENVIRONMENT="development"
+
+echo "Initial environment: $ENVIRONMENT"
+
+ENVIRONMENT="testing"
+
+echo "Updated environment: $ENVIRONMENT"
+
+ENVIRONMENT="production"
+
+echo "Final environment: $ENVIRONMENT"</code></pre>
+
+<p>Output:</p>
+
+<pre><code>Initial environment: development
+Updated environment: testing
+Final environment: production</code></pre>
+
+<h3>Appending values</h3>
+
+<p>
+You can append additional text to an existing variable using the
+<code>+=</code> operator.
+</p>
+
+<pre><code>#!/bin/bash
+
+LOG_MESSAGE="Application started"
+
+LOG_MESSAGE+=" successfully"
+
+echo "$LOG_MESSAGE"</code></pre>
+
+<p>Output:</p>
+
+<pre><code>Application started successfully</code></pre>
+
+<h2>5. Local Variables and Environment Variables</h2>
+
+<p>
+Bash variables can be local to a shell or function, or exported as environment
+variables so that child processes can access them.
+</p>
+
+<h3>Shell variable</h3>
+
+<pre><code>#!/bin/bash
+
+APP_ENV="production"
+
+echo "$APP_ENV"</code></pre>
+
+<p>
+This variable is available in the current shell and script, but it is not
+automatically passed to child processes.
+</p>
+
+<h3>Environment variable using export</h3>
+
+<pre><code>#!/bin/bash
+
+export APP_ENV="production"
+export APP_PORT=8080
+
+bash -c 'echo "Environment: $APP_ENV"'
+bash -c 'echo "Port: $APP_PORT"'</code></pre>
+
+<p>
+The <code>export</code> command makes the variables available to processes
+started by the current shell.
+</p>
+
+<h3>Difference</h3>
+
+<table>
+<tr>
+<th>Shell Variable</th>
+<th>Environment Variable</th>
+</tr>
+<tr>
+<td>Available in the current shell.</td>
+<td>Available in the current shell and its child processes.</td>
+</tr>
+<tr>
+<td>Created using normal assignment.</td>
+<td>Created or promoted using <code>export</code>.</td>
+</tr>
+<tr>
+<td>Not automatically inherited by child processes.</td>
+<td>Inherited by child processes.</td>
+</tr>
+</table>
+
+<h2>6. Command Substitution in Variables</h2>
+
+<p>
+Sometimes you need to store the output of a Linux command in a variable.
+Bash provides command substitution using <code>$(command)</code>.
+</p>
+
+<h3>Example: Store hostname</h3>
+
+<pre><code>#!/bin/bash
+
+SERVER_NAME=$(hostname)
+
+echo "Server name: $SERVER_NAME"</code></pre>
+
+<h3>Example: Store current date</h3>
+
+<pre><code>#!/bin/bash
+
+CURRENT_DATE=$(date +%Y-%m-%d)
+
+echo "Current date: $CURRENT_DATE"</code></pre>
+
+<h3>Example: Store disk usage</h3>
+
+<pre><code>#!/bin/bash
+
+DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}')
+
+echo "Root disk usage: $DISK_USAGE"</code></pre>
+
+<p>
+This is particularly useful in DevOps automation because scripts can dynamically
+collect system information instead of relying on manually entered values.
+</p>
+
+<h2>7. Special Bash Variables</h2>
+
+<p>
+Bash provides predefined variables that contain information about the script,
+its arguments, and its execution environment.
+</p>
+
+<table>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>$0</code></td>
+<td>Name or path used to execute the script.</td>
+</tr>
+<tr>
+<td><code>$1</code></td>
+<td>First command-line argument.</td>
+</tr>
+<tr>
+<td><code>$2</code></td>
+<td>Second command-line argument.</td>
+</tr>
+<tr>
+<td><code>$#</code></td>
+<td>Number of positional arguments.</td>
+</tr>
+<tr>
+<td><code>$@</code></td>
+<td>All positional arguments.</td>
+</tr>
+<tr>
+<td><code>$?</code></td>
+<td>Exit status of the previous command.</td>
+</tr>
+<tr>
+<td><code>$$</code></td>
+<td>Process ID of the current Bash shell.</td>
+</tr>
+<tr>
+<td><code>$USER</code></td>
+<td>Current user's environment variable.</td>
+</tr>
+<tr>
+<td><code>$HOME</code></td>
+<td>Current user's home directory.</td>
+</tr>
+<tr>
+<td><code>$PWD</code></td>
+<td>Current working directory.</td>
+</tr>
+</table>
+
+<h3>Example</h3>
+
+<pre><code>#!/bin/bash
+
+echo "Script name: $0"
+echo "First argument: $1"
+echo "Second argument: $2"
+echo "Total arguments: $#"
+echo "Current user: $USER"
+echo "Home directory: $HOME"
+echo "Working directory: $PWD"
+echo "Shell PID: $$"</code></pre>
+
+<p>Execute:</p>
+
+<pre><code>bash variables.sh developer production</code></pre>
+
+<h2>8. Variable Quoting and Expansion</h2>
+
+<p>
+Quoting determines how Bash interprets variable values. It is important when
+values contain spaces or special characters.
+</p>
+
+<h3>Double quotes</h3>
+
+<p>
+Double quotes allow variable expansion while preserving spaces within the value.
+</p>
+
+<pre><code>#!/bin/bash
+
+APP_NAME="Learning Labs"
+
+echo "Deploying $APP_NAME"</code></pre>
+
+<p>Output:</p>
+
+<pre><code>Deploying Learning Labs</code></pre>
+
+<h3>Single quotes</h3>
+
+<p>
+Single quotes preserve the literal text. Variables inside single quotes
+are not expanded.
+</p>
+
+<pre><code>#!/bin/bash
+
+APP_NAME="Learning Labs"
+
+echo 'Deploying $APP_NAME'
+echo "Deploying $APP_NAME"</code></pre>
+
+<p>Output:</p>
+
+<pre><code>Deploying $APP_NAME
+Deploying Learning Labs</code></pre>
+
+<div class="warning">
+<strong>Important:</strong> Always quote variable expansions in commands
+when the value might contain spaces or wildcard characters. For example,
+use <code>rm -rf "$DIRECTORY"</code> rather than an unquoted variable.
+</div>
+
+<h2>9. Real-Time DevOps Example: Application Deployment Configuration</h2>
+
+<p>
+Consider a real deployment scenario. You have a Flask application called
+Learning Labs that needs to be deployed to a Linux server.
+</p>
+
+<p>
+Instead of hardcoding application details throughout your deployment script,
+you define them as variables. If the application version, environment, or
+deployment directory changes, you only need to update the corresponding value.
+</p>
+
+<h3>deployment.sh</h3>
+
+<pre><code>#!/bin/bash
+
+# Application configuration
+APP_NAME="learning-labs"
+APP_VERSION="2.5.0"
+ENVIRONMENT="production"
+
+# Server configuration
+SERVER_NAME=$(hostname)
+SERVER_IP="192.168.1.100"
+SSH_USER="ubuntu"
+
+# Deployment configuration
+DEPLOY_DIR="/opt/applications/$APP_NAME"
+BACKUP_DIR="/opt/backups/$APP_NAME"
+
+# Container configuration
+DOCKER_IMAGE="$APP_NAME:$APP_VERSION"
+CONTAINER_NAME="${APP_NAME}-container"
+CONTAINER_PORT=5000
+
+# Runtime information
+DEPLOYMENT_DATE=$(date +%Y-%m-%d)
+DEPLOYMENT_USER=$(whoami)
+
+# Display deployment configuration
+echo "================================"
+echo "APPLICATION DEPLOYMENT DETAILS"
+echo "================================"
+
+echo "Application: $APP_NAME"
+echo "Version: $APP_VERSION"
+echo "Environment: $ENVIRONMENT"
+
+echo "Server: $SERVER_NAME"
+echo "Server IP: $SERVER_IP"
+echo "SSH User: $SSH_USER"
+
+echo "Deployment Directory: $DEPLOY_DIR"
+echo "Backup Directory: $BACKUP_DIR"
+
+echo "Docker Image: $DOCKER_IMAGE"
+echo "Container Name: $CONTAINER_NAME"
+echo "Container Port: $CONTAINER_PORT"
+
+echo "Deployment Date: $DEPLOYMENT_DATE"
+echo "Deployment User: $DEPLOYMENT_USER"
+
+echo "================================"</code></pre>
+
+<h3>Execute the script</h3>
+
+<pre><code>nano deployment.sh
+
+chmod +x deployment.sh
+
+./deployment.sh</code></pre>
+
+<h3>How variables are used in this example</h3>
+
+<table>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+<tr>
+<td><code>APP_NAME</code></td>
+<td>Stores the application name.</td>
+</tr>
+<tr>
+<td><code>APP_VERSION</code></td>
+<td>Stores the release version.</td>
+</tr>
+<tr>
+<td><code>ENVIRONMENT</code></td>
+<td>Identifies the target environment.</td>
+</tr>
+<tr>
+<td><code>SERVER_NAME</code></td>
+<td>Dynamically obtains the server hostname.</td>
+</tr>
+<tr>
+<td><code>DEPLOY_DIR</code></td>
+<td>Stores the application deployment path.</td>
+</tr>
+<tr>
+<td><code>DOCKER_IMAGE</code></td>
+<td>Combines the application name and version.</td>
+</tr>
+<tr>
+<td><code>CONTAINER_NAME</code></td>
+<td>Builds the container name from the application name.</td>
+</tr>
+<tr>
+<td><code>DEPLOYMENT_DATE</code></td>
+<td>Captures the current date.</td>
+</tr>
+</table>
+
+<p>
+Notice that <code>DOCKER_IMAGE</code> and <code>CONTAINER_NAME</code> use
+previously declared variables. This is an example of variable expansion and
+reuse in a practical automation script.
+</p>
+
+<div class="note">
+<strong>Real-world benefit:</strong> You can reuse the same deployment script
+for development, testing, and production by changing the configuration values.
+The example displays deployment configuration; it does not perform an actual
+SSH connection or Docker deployment.
+</div>
+
+<h2>10. Practical Exercise: Build a Server Configuration Script</h2>
+
+<p>
+Create a Bash script that uses variables to store and display the configuration
+of a server.
+</p>
+
+<h3>Requirements</h3>
+
+<ul>
+<li>Define an application name.</li>
+<li>Define an application version.</li>
+<li>Define an environment name.</li>
+<li>Store the server hostname dynamically using <code>hostname</code>.</li>
+<li>Store the current Linux user using <code>whoami</code>.</li>
+<li>Store the current date using <code>date</code>.</li>
+<li>Create a deployment directory variable using the application name.</li>
+<li>Create a Docker image variable using the application name and version.</li>
+<li>Print all configuration values.</li>
+</ul>
+
+<h3>Expected output format</h3>
+
+<pre><code>SERVER CONFIGURATION
+--------------------
+Application: payment-service
+Version: 1.0.0
+Environment: staging
+Hostname: ubuntu-server
+User: ubuntu
+Date: 2026-11-22
+Deployment Directory: /opt/apps/payment-service
+Docker Image: payment-service:1.0.0</code></pre>
+
+<p>
+Use the concepts covered in this lesson to write the script independently.
+</p>
+
+<h2>Key Takeaways</h2>
+
+<ul>
+<li>Variables store reusable values in Bash scripts.</li>
+<li>Use <code>NAME="value"</code> to assign a value.</li>
+<li>Use <code>$NAME</code> or <code>${NAME}</code> to access a variable.</li>
+<li>Use <code>export</code> to pass variables to child processes.</li>
+<li>Use <code>$(command)</code> to capture command output.</li>
+<li>Special variables provide script arguments and execution information.</li>
+<li>Use double quotes to preserve spaces while expanding variables.</li>
+<li>Use variables to make DevOps automation configurable and reusable.</li>
+</ul>
+
+</body>
+
+<script>
+function toggleVideo() {
+    const container = document.getElementById("videoContainer");
+    const button = document.getElementById("videoButton");
+
+    if (container.style.display === "block") {
+        container.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    } else {
+        container.style.display = "block";
+        button.textContent = "Hide Video";
+    }
+}
+</script>
+
+</html>
+

@@ -1,0 +1,752 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jenkins - First Job: Fetch Linux Host Details</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 25px;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.7;
+            color: #263445;
+            background: #ffffff;
+        }
+
+        .document {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1, h2, h3 {
+            color: #172b4d;
+        }
+
+        h1 {
+            border-bottom: 3px solid #d33833;
+            padding-bottom: 12px;
+        }
+
+        h2 {
+            margin-top: 35px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            margin-top: 24px;
+        }
+
+        p {
+            margin: 12px 0;
+        }
+
+        code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c0392b;
+        }
+
+        pre {
+            background: #101827;
+            color: #e5edf7;
+            padding: 18px;
+            border-radius: 7px;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .info {
+            background: #eef5ff;
+            border-left: 4px solid #2878d0;
+            padding: 14px 18px;
+            margin: 20px 0;
+        }
+
+        .warning {
+            background: #fff5e5;
+            border-left: 4px solid #e39b20;
+            padding: 14px 18px;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #eaf8ef;
+            border-left: 4px solid #269653;
+            padding: 14px 18px;
+            margin: 20px 0;
+        }
+
+        .step {
+            margin: 22px 0;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #d33833;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0;
+        }
+
+        th, td {
+            border: 1px solid #dfe3e8;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #f3f5f8;
+        }
+
+        .checklist li {
+            margin-bottom: 8px;
+        }
+
+        /* Video button and player */
+
+        .video-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 14px;
+            padding: 9px 16px;
+            border: 1px solid #d33833;
+            border-radius: 6px;
+            background: #d33833;
+            color: #fff;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .video-button:hover {
+            background: #b52d29;
+            border-color: #b52d29;
+            color: #fff;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            margin: 0 0 24px;
+            background: #000;
+        }
+
+        .video-container[hidden] {
+            display: none;
+        }
+
+        .video-container iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="document">
+
+    <h1>Jenkins: Create Your First Job – Fetch Linux Host Details</h1>
+
+    <button
+        type="button"
+        class="video-button"
+        id="videoButton"
+        aria-expanded="false"
+    >
+        ▶ Watch Video
+    </button>
+
+    <div class="video-container" id="videoContainer" hidden>
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Jenkins First Job Tutorial"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allow="
+                accelerometer;
+                autoplay;
+                clipboard-write;
+                encrypted-media;
+                gyroscope;
+                picture-in-picture;
+                web-share;
+            "
+            allowfullscreen
+        ></iframe>
+    </div>
+
+    <p>
+        In this practical exercise, you will create your first Jenkins
+        Freestyle job. The job will execute Linux commands on the Jenkins
+        server and collect system information such as hostname, operating
+        system, kernel version, CPU, memory, disk space, IP address, and
+        current user.
+    </p>
+
+    <div class="info">
+        <strong>Prerequisites:</strong>
+        <ul>
+            <li>Jenkins server must be running.</li>
+            <li>You must be logged in to Jenkins.</li>
+            <li>You must have permission to create Jenkins jobs.</li>
+            <li>The Jenkins server must be running on Linux.</li>
+            <li>The Jenkins build executor must be available.</li>
+        </ul>
+    </div>
+
+    <h2>1. Understanding the Practical</h2>
+
+    <p>
+        Jenkins jobs allow you to automate commands and scripts.
+        In this exercise, you will create a Freestyle project that
+        executes Linux commands and displays the server information
+        in the Jenkins build console.
+    </p>
+
+    <p>The job will collect the following information:</p>
+
+    <table>
+        <tr>
+            <th>Information</th>
+            <th>Linux Command</th>
+        </tr>
+        <tr>
+            <td>Hostname</td>
+            <td><code>hostname</code></td>
+        </tr>
+        <tr>
+            <td>Operating System</td>
+            <td><code>cat /etc/os-release</code></td>
+        </tr>
+        <tr>
+            <td>Kernel Version</td>
+            <td><code>uname -r</code></td>
+        </tr>
+        <tr>
+            <td>System Architecture</td>
+            <td><code>uname -m</code></td>
+        </tr>
+        <tr>
+            <td>CPU Information</td>
+            <td><code>nproc</code></td>
+        </tr>
+        <tr>
+            <td>Memory Information</td>
+            <td><code>free -h</code></td>
+        </tr>
+        <tr>
+            <td>Disk Usage</td>
+            <td><code>df -h</code></td>
+        </tr>
+        <tr>
+            <td>IP Address</td>
+            <td><code>hostname -I</code></td>
+        </tr>
+        <tr>
+            <td>Current User</td>
+            <td><code>whoami</code></td>
+        </tr>
+        <tr>
+            <td>System Uptime</td>
+            <td><code>uptime</code></td>
+        </tr>
+    </table>
+
+    <div class="warning">
+        <strong>Important:</strong>
+        This exercise executes commands on the Jenkins build executor.
+        If your job runs on the built-in Jenkins node, the information
+        displayed belongs to the Jenkins server/container. It does not
+        automatically collect information from another remote Linux machine.
+    </div>
+
+    <h2>2. Open the Jenkins Dashboard</h2>
+
+    <div class="step">
+        <span class="step-number">Step 1</span>
+        Open your Jenkins URL in a web browser.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 2</span>
+        Log in using your Jenkins credentials.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 3</span>
+        You should now see the Jenkins Dashboard.
+    </div>
+
+    <h2>3. Create a New Freestyle Job</h2>
+
+    <div class="step">
+        <span class="step-number">Step 1</span>
+        On the Jenkins dashboard, click <strong>New Item</strong>.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 2</span>
+        Enter the following job name:
+        <pre><code>linux-host-details</code></pre>
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 3</span>
+        Select <strong>Freestyle project</strong>.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 4</span>
+        Click <strong>OK</strong>.
+    </div>
+
+    <div class="info">
+        Jenkins will open the configuration page for your new job.
+    </div>
+
+    <h2>4. Configure the Job Description</h2>
+
+    <p>
+        Locate the <strong>Description</strong> field under the General section.
+        Enter the following description:
+    </p>
+
+    <pre><code>This Jenkins job collects Linux host information,
+including hostname, OS, kernel, CPU, memory,
+disk usage, IP address, and system uptime.</code></pre>
+
+    <p>
+        Leave the other General settings at their default values.
+    </p>
+
+    <h2>5. Configure the Build Step</h2>
+
+    <p>
+        Now configure the shell script that will collect the Linux
+        host information.
+    </p>
+
+    <div class="step">
+        <span class="step-number">Step 1</span>
+        Scroll down to the <strong>Build Steps</strong> section.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 2</span>
+        Click <strong>Add build step</strong>.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 3</span>
+        Select <strong>Execute shell</strong>.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 4</span>
+        A shell command text area will appear.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 5</span>
+        Copy and paste the complete script below into the text area.
+    </div>
+
+    <h3>Shell Script</h3>
+
+    <pre><code>#!/bin/bash
+
+echo "=========================================="
+echo "       LINUX HOST INFORMATION"
+echo "=========================================="
+
+echo ""
+echo "1. HOSTNAME"
+echo "------------------------------------------"
+hostname
+
+echo ""
+echo "2. OPERATING SYSTEM"
+echo "------------------------------------------"
+cat /etc/os-release
+
+echo ""
+echo "3. KERNEL VERSION"
+echo "------------------------------------------"
+uname -r
+
+echo ""
+echo "4. SYSTEM ARCHITECTURE"
+echo "------------------------------------------"
+uname -m
+
+echo ""
+echo "5. CPU INFORMATION"
+echo "------------------------------------------"
+echo "CPU Cores: $(nproc)"
+lscpu | grep -E 'Model name|CPU\(s\):' | head -n 2
+
+echo ""
+echo "6. MEMORY INFORMATION"
+echo "------------------------------------------"
+free -h
+
+echo ""
+echo "7. DISK USAGE"
+echo "------------------------------------------"
+df -h
+
+echo ""
+echo "8. IP ADDRESS"
+echo "------------------------------------------"
+hostname -I
+
+echo ""
+echo "9. CURRENT USER"
+echo "------------------------------------------"
+whoami
+
+echo ""
+echo "10. SYSTEM UPTIME"
+echo "------------------------------------------"
+uptime
+
+echo ""
+echo "11. JENKINS JOB INFORMATION"
+echo "------------------------------------------"
+echo "Job Name: $JOB_NAME"
+echo "Build Number: $BUILD_NUMBER"
+echo "Workspace: $WORKSPACE"
+
+echo ""
+echo "=========================================="
+echo "    HOST INFORMATION COLLECTION COMPLETE"
+echo "=========================================="</code></pre>
+
+    <div class="info">
+        <strong>Understanding the script:</strong>
+        <ul>
+            <li><code>echo</code> displays headings and messages in the console.</li>
+            <li><code>hostname</code> retrieves the machine hostname.</li>
+            <li><code>cat /etc/os-release</code> displays Linux distribution details.</li>
+            <li><code>uname -r</code> displays the kernel version.</li>
+            <li><code>nproc</code> displays the number of available processing units.</li>
+            <li><code>free -h</code> displays memory usage in human-readable format.</li>
+            <li><code>df -h</code> displays filesystem disk usage.</li>
+            <li><code>hostname -I</code> displays the machine's IP addresses.</li>
+            <li><code>whoami</code> identifies the user executing the build.</li>
+            <li><code>uptime</code> displays system uptime and load averages.</li>
+        </ul>
+    </div>
+
+    <h2>6. Save the Jenkins Job</h2>
+
+    <div class="step">
+        <span class="step-number">Step 1</span>
+        Scroll to the bottom of the configuration page.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 2</span>
+        Click <strong>Save</strong>.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 3</span>
+        Jenkins will redirect you to the
+        <code>linux-host-details</code> job dashboard.
+    </div>
+
+    <div class="success">
+        <strong>Job created successfully!</strong>
+        Your first Jenkins Freestyle project is now configured.
+    </div>
+
+    <h2>7. Execute the Jenkins Job</h2>
+
+    <div class="step">
+        <span class="step-number">Step 1</span>
+        From the job dashboard, locate the left-side menu.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 2</span>
+        Click <strong>Build Now</strong>.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 3</span>
+        Look at the Build History section.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 4</span>
+        Wait for the build to finish.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 5</span>
+        Click the generated build number, such as <code>#1</code>.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 6</span>
+        Click <strong>Console Output</strong>.
+    </div>
+
+    <h2>8. Verify the Console Output</h2>
+
+    <p>
+        The console should display the Linux host information collected
+        by the shell script.
+    </p>
+
+    <p>Example output:</p>
+
+    <pre><code>Started by user admin
+Running as SYSTEM
+Building in workspace /var/jenkins_home/workspace/linux-host-details
+
+==========================================
+       LINUX HOST INFORMATION
+==========================================
+
+1. HOSTNAME
+------------------------------------------
+jenkins-server
+
+2. OPERATING SYSTEM
+------------------------------------------
+PRETTY_NAME="Ubuntu 24.04 LTS"
+NAME="Ubuntu"
+
+3. KERNEL VERSION
+------------------------------------------
+6.8.0-generic
+
+4. SYSTEM ARCHITECTURE
+------------------------------------------
+x86_64
+
+5. CPU INFORMATION
+------------------------------------------
+CPU Cores: 4
+
+6. MEMORY INFORMATION
+------------------------------------------
+              total        used        free
+Mem:           7.7Gi       2.1Gi       4.5Gi
+
+7. DISK USAGE
+------------------------------------------
+Filesystem      Size  Used Avail Use%
+/dev/sda1        50G   12G   38G  24%
+
+8. IP ADDRESS
+------------------------------------------
+192.168.1.100
+
+9. CURRENT USER
+------------------------------------------
+jenkins
+
+10. SYSTEM UPTIME
+------------------------------------------
+18:30:10 up 5 days, 2 users, load average: 0.10
+
+11. JENKINS JOB INFORMATION
+------------------------------------------
+Job Name: linux-host-details
+Build Number: 1
+Workspace: /var/jenkins_home/workspace/linux-host-details
+
+==========================================
+    HOST INFORMATION COLLECTION COMPLETE
+==========================================
+
+Finished: SUCCESS</code></pre>
+
+    <div class="warning">
+        <strong>Note:</strong>
+        The output above is an example. Your actual hostname, operating
+        system, kernel, CPU, memory, disk, IP address, and uptime will
+        depend on your Jenkins build executor.
+    </div>
+
+    <h2>9. Understand the Build Result</h2>
+
+    <p>
+        At the end of the Console Output, Jenkins displays the build status.
+    </p>
+
+    <table>
+        <tr>
+            <th>Build Status</th>
+            <th>Meaning</th>
+        </tr>
+        <tr>
+            <td>SUCCESS</td>
+            <td>All shell commands completed successfully.</td>
+        </tr>
+        <tr>
+            <td>FAILURE</td>
+            <td>A command failed or the build encountered an error.</td>
+        </tr>
+        <tr>
+            <td>UNSTABLE</td>
+            <td>The build completed with configured checks or test failures.</td>
+        </tr>
+        <tr>
+            <td>ABORTED</td>
+            <td>The build was stopped before completion.</td>
+        </tr>
+    </table>
+
+    <h2>10. Execute the Job Again</h2>
+
+    <div class="step">
+        <span class="step-number">Step 1</span>
+        Return to the <code>linux-host-details</code> job dashboard.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 2</span>
+        Click <strong>Build Now</strong> again.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 3</span>
+        Open the newly generated build number, such as <code>#2</code>.
+    </div>
+
+    <div class="step">
+        <span class="step-number">Step 4</span>
+        Click <strong>Console Output</strong>.
+    </div>
+
+    <p>
+        Jenkins executes the same script again and creates a new build
+        record. Each execution receives a different build number.
+    </p>
+
+    <h2>11. Practical Exercises</h2>
+
+    <p>Now modify your Jenkins job and complete the following exercises:</p>
+
+    <ol class="checklist">
+        <li>Display the hostname using the <code>hostname</code> command.</li>
+        <li>Display the complete CPU information using <code>lscpu</code>.</li>
+        <li>Display memory usage using <code>free -h</code>.</li>
+        <li>Display disk usage using <code>df -h</code>.</li>
+        <li>Display the current date using <code>date</code>.</li>
+        <li>Display the logged-in users using <code>who</code>.</li>
+        <li>Execute the job three times and inspect the build history.</li>
+    </ol>
+
+    <h2>12. Troubleshooting</h2>
+
+    <h3>Build fails immediately</h3>
+
+    <p>
+        Open Console Output and identify the command that failed.
+        Check whether the required Linux command is available inside
+        the Jenkins build executor.
+    </p>
+
+    <h3>Permission denied</h3>
+
+    <p>
+        Check which user is executing the Jenkins build and verify
+        the required permissions.
+    </p>
+
+    <h3>Command not found</h3>
+
+    <p>
+        Some Linux commands may not be installed in the Jenkins container.
+        Verify the availability of the command before using it.
+    </p>
+
+    <h3>Build remains in the queue</h3>
+
+    <p>
+        Check whether Jenkins has an available executor and whether
+        the build is waiting for an agent.
+    </p>
+
+    <h2>13. What You Learned</h2>
+
+    <ul>
+        <li>Creating a Jenkins Freestyle project.</li>
+        <li>Configuring a shell build step.</li>
+        <li>Executing Linux commands through Jenkins.</li>
+        <li>Collecting Linux host information.</li>
+        <li>Understanding Jenkins environment variables.</li>
+        <li>Executing jobs multiple times.</li>
+        <li>Inspecting build history and console output.</li>
+    </ul>
+
+    <div class="info">
+        <strong>Next practical:</strong>
+        Create a Jenkins job that executes a shell script to monitor
+        Linux disk usage and reports when disk utilization exceeds
+        a specified threshold.
+    </div>
+
+</div>
+
+<script>
+    (() => {
+        const videoButton = document.getElementById("videoButton");
+        const videoContainer = document.getElementById("videoContainer");
+
+        if (!videoButton || !videoContainer) return;
+
+        videoButton.addEventListener("click", () => {
+            const isVisible = !videoContainer.hidden;
+
+            videoContainer.hidden = isVisible;
+            videoButton.setAttribute("aria-expanded", String(!isVisible));
+            videoButton.textContent = isVisible
+                ? "▶ Watch Video"
+                : "✕ Close Video";
+        });
+    })();
+</script>
+
+</body>
+</html>
+

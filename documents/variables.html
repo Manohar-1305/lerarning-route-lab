@@ -1,0 +1,943 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bash Scripting Tutorial</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #263238;
+    margin: 0;
+    padding: 12px 18px;
+    background: #fff;
+}
+
+h1 {
+    font-size: 23px;
+    margin: 0 0 5px;
+    color: #17365d;
+}
+
+h2 {
+    font-size: 19px;
+    margin-top: 28px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #e5eaf0;
+    color: #17365d;
+}
+
+h3 {
+    font-size: 15px;
+    margin-top: 18px;
+    color: #24527a;
+}
+
+p {
+    margin: 8px 0;
+}
+
+.topic {
+    margin-bottom: 25px;
+}
+
+pre {
+    background: #17212b;
+    color: #e8f1f8;
+    padding: 13px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+code {
+    font-family: Consolas, monospace;
+}
+
+.inline-code {
+    background: #edf2f7;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-family: Consolas, monospace;
+}
+
+.note {
+    background: #f1f6fb;
+    border-left: 4px solid #2878b5;
+    padding: 10px 13px;
+    margin: 12px 0;
+}
+
+.video-button {
+    display: inline-block;
+    background: #198754;
+    color: white;
+    border: none;
+    padding: 8px 13px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    margin: 5px 0 10px;
+}
+
+.video-container {
+    display: none;
+    width: 100%;
+    max-width: 850px;
+    aspect-ratio: 16 / 9;
+    margin-bottom: 18px;
+}
+
+.video-container iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 6px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+}
+
+th, td {
+    border: 1px solid #dce3ea;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background: #edf2f7;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    pre {
+        font-size: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<h1>Bash Scripting – Practical Tutorial</h1>
+<p>Learn Bash scripting through practical examples, commands, and exercises.</p>
+
+<button class="video-button" onclick="toggleVideo()">
+    ▶ Watch Video
+</button>
+
+<div class="video-container" id="videoContainer">
+    <iframe
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Bash Scripting Tutorial"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<div class="topic">
+<h2>1. Variables in Bash</h2>
+
+<p>
+Variables are used to store information that can be reused throughout a Bash script.
+You can store values such as usernames, directory paths, IP addresses, service names,
+file names, and configuration values.
+</p>
+
+<h3>Declaring a variable</h3>
+
+<pre><code>#!/bin/bash
+
+name="Manohar"
+environment="production"
+server_ip="192.168.1.10"
+
+echo "Name: $name"
+echo "Environment: $environment"
+echo "Server IP: $server_ip"</code></pre>
+
+<h3>Important variable rules</h3>
+<ul>
+<li>Do not use spaces around the assignment operator.</li>
+<li>Variable names are case-sensitive.</li>
+<li>Use <code>name="value"</code>, not <code>name = "value"</code>.</li>
+<li>Use <code>$variable</code> to access a variable's value.</li>
+<li>Use curly braces when needed: <code>${name}</code>.</li>
+</ul>
+
+<h3>Using variables inside strings</h3>
+<pre><code>#!/bin/bash
+
+service="nginx"
+
+echo "Checking $service service"
+echo "Service name: ${service}"</code></pre>
+
+<h3>Command substitution</h3>
+<p>
+Command substitution stores the output of a command in a variable.
+Use <code>$(command)</code> syntax.
+</p>
+
+<pre><code>#!/bin/bash
+
+current_date=$(date)
+hostname=$(hostname)
+current_user=$(whoami)
+
+echo "Date: $current_date"
+echo "Hostname: $hostname"
+echo "User: $current_user"</code></pre>
+
+<h3>Environment variables</h3>
+<p>
+Environment variables are available to processes started by the shell.
+Use <code>export</code> to make a variable available to child processes.
+</p>
+
+<pre><code>#!/bin/bash
+
+export APP_ENV="production"
+export APP_PORT=8080
+
+echo "$APP_ENV"
+echo "$APP_PORT"</code></pre>
+
+<div class="note">
+<strong>Important:</strong> Bash variables are not declared with fixed data types.
+Bash primarily treats variable values as strings, although arithmetic operations
+can interpret numeric values.
+</div>
+
+<h3>Practice exercise</h3>
+<p>Create a script that defines your name, server hostname, IP address, and application
+environment, then prints all four values.</p>
+</div>
+
+<div class="topic">
+<h2>2. User Input in Bash</h2>
+
+<p>
+The <code>read</code> command accepts input from the keyboard and stores it in a variable.
+It is useful for interactive scripts that require a username, directory, or other input.
+</p>
+
+<h3>Basic read command</h3>
+<pre><code>#!/bin/bash
+
+echo "Enter your name:"
+read name
+
+echo "Welcome, $name"</code></pre>
+
+<h3>Using read with a prompt</h3>
+<pre><code>#!/bin/bash
+
+read -p "Enter server name: " server
+
+echo "Selected server: $server"</code></pre>
+
+<h3>Reading sensitive input</h3>
+<p>
+Use <code>-s</code> to prevent typed input from being displayed. This is useful
+for password prompts.
+</p>
+
+<pre><code>#!/bin/bash
+
+read -s -p "Enter password: " password
+echo
+echo "Password received."</code></pre>
+
+<h3>Reading multiple values</h3>
+<pre><code>#!/bin/bash
+
+read -p "Enter first and last name: " first last
+
+echo "First name: $first"
+echo "Last name: $last"</code></pre>
+
+<h3>Practice exercise</h3>
+<p>Write a script that asks for a username and server IP address, then displays
+both values in a formatted message.</p>
+</div>
+
+<div class="topic">
+<h2>3. Quoting and Special Characters</h2>
+
+<p>
+Quoting controls how Bash interprets spaces, variable expansion, and special characters.
+Incorrect quoting can cause scripts to behave unexpectedly, especially when file paths
+contain spaces.
+</p>
+
+<h3>Double quotes</h3>
+<p>
+Double quotes preserve spaces while allowing variable and command substitution.
+</p>
+
+<pre><code>#!/bin/bash
+
+name="Manohar"
+echo "Welcome $name"
+echo "Today is $(date)"</code></pre>
+
+<h3>Single quotes</h3>
+<p>
+Single quotes preserve the literal text. Variables inside single quotes are not expanded.
+</p>
+
+<pre><code>#!/bin/bash
+
+name="Manohar"
+
+echo 'Welcome $name'
+echo "Welcome $name"</code></pre>
+
+<h3>Unquoted variables</h3>
+<p>
+Unquoted variables can undergo word splitting and pathname expansion. This can cause
+problems when values contain spaces or wildcard characters.
+</p>
+
+<pre><code>#!/bin/bash
+
+directory="/var/log/my application"
+
+# Safer
+ls "$directory"</code></pre>
+
+<div class="note">
+<strong>Best practice:</strong> Quote variable expansions by default, for example
+<code>"$variable"</code>, unless you specifically need word splitting or glob expansion.
+</div>
+
+<h3>Practice exercise</h3>
+<p>Create a directory variable containing a space and use it with <code>mkdir</code>
+and <code>ls</code> safely.</p>
+</div>
+
+<div class="topic">
+<h2>4. Arithmetic Operations and Operators</h2>
+
+<p>
+Bash supports arithmetic operations for calculations involving integers.
+The <code>$(( ))</code> syntax is commonly used for arithmetic expansion.
+</p>
+
+<h3>Arithmetic operations</h3>
+<pre><code>#!/bin/bash
+
+a=20
+b=5
+
+echo "Addition: $((a + b))"
+echo "Subtraction: $((a - b))"
+echo "Multiplication: $((a * b))"
+echo "Division: $((a / b))"
+echo "Remainder: $((a % b))"</code></pre>
+
+<h3>Increment and decrement</h3>
+<pre><code>#!/bin/bash
+
+count=10
+
+((count++))
+echo "After increment: $count"
+
+((count--))
+echo "After decrement: $count"</code></pre>
+
+<h3>Comparison operators</h3>
+<table>
+<tr><th>Operator</th><th>Meaning</th></tr>
+<tr><td><code>-eq</code></td><td>Equal to</td></tr>
+<tr><td><code>-ne</code></td><td>Not equal to</td></tr>
+<tr><td><code>-gt</code></td><td>Greater than</td></tr>
+<tr><td><code>-lt</code></td><td>Less than</td></tr>
+<tr><td><code>-ge</code></td><td>Greater than or equal to</td></tr>
+<tr><td><code>-le</code></td><td>Less than or equal to</td></tr>
+</table>
+
+<h3>Example using comparison operators</h3>
+<pre><code>#!/bin/bash
+
+cpu_usage=85
+
+if [ "$cpu_usage" -gt 80 ]; then
+    echo "High CPU usage detected"
+else
+    echo "CPU usage is normal"
+fi</code></pre>
+
+<h3>String comparison</h3>
+<pre><code>#!/bin/bash
+
+environment="production"
+
+if [ "$environment" = "production" ]; then
+    echo "Production environment"
+fi</code></pre>
+
+<h3>Practice exercise</h3>
+<p>Ask the user to enter two numbers and display their sum, difference,
+product, and quotient.</p>
+</div>
+
+<div class="topic">
+<h2>5. Conditional Statements</h2>
+
+<p>
+Conditional statements allow a script to make decisions based on conditions.
+They are commonly used in automation to check services, files, directories,
+and system resources.
+</p>
+
+<h3>if statement</h3>
+<pre><code>#!/bin/bash
+
+status="running"
+
+if [ "$status" = "running" ]; then
+    echo "Application is running"
+fi</code></pre>
+
+<h3>if-else statement</h3>
+<pre><code>#!/bin/bash
+
+service="nginx"
+
+if systemctl is-active --quiet "$service"; then
+    echo "$service is running"
+else
+    echo "$service is not running"
+fi</code></pre>
+
+<h3>if-elif-else statement</h3>
+<pre><code>#!/bin/bash
+
+disk_usage=92
+
+if [ "$disk_usage" -ge 90 ]; then
+    echo "Critical: Disk usage is above 90%"
+elif [ "$disk_usage" -ge 75 ]; then
+    echo "Warning: Disk usage is high"
+else
+    echo "Disk usage is normal"
+fi</code></pre>
+
+<h3>File and directory conditions</h3>
+<table>
+<tr><th>Condition</th><th>Purpose</th></tr>
+<tr><td><code>-f</code></td><td>Checks whether a regular file exists</td></tr>
+<tr><td><code>-d</code></td><td>Checks whether a directory exists</td></tr>
+<tr><td><code>-e</code></td><td>Checks whether a path exists</td></tr>
+<tr><td><code>-r</code></td><td>Checks whether a file is readable</td></tr>
+<tr><td><code>-w</code></td><td>Checks whether a file is writable</td></tr>
+<tr><td><code>-x</code></td><td>Checks whether a file is executable</td></tr>
+</table>
+
+<h3>Checking a directory</h3>
+<pre><code>#!/bin/bash
+
+directory="/var/log"
+
+if [ -d "$directory" ]; then
+    echo "Directory exists"
+else
+    echo "Directory does not exist"
+fi</code></pre>
+
+<h3>Practice exercise</h3>
+<p>Write a script that checks whether a given file exists. If it exists,
+display its location; otherwise, display an error message.</p>
+</div>
+
+<div class="topic">
+<h2>6. Loops in Bash</h2>
+
+<p>
+Loops execute a block of commands repeatedly. They are useful for processing
+multiple files, checking several servers, monitoring services, and performing
+repetitive administrative tasks.
+</p>
+
+<h3>for loop</h3>
+<pre><code>#!/bin/bash
+
+for server in web01 web02 db01
+do
+    echo "Checking server: $server"
+done</code></pre>
+
+<h3>for loop with a range</h3>
+<pre><code>#!/bin/bash
+
+for number in {1..5}
+do
+    echo "Number: $number"
+done</code></pre>
+
+<h3>while loop</h3>
+<pre><code>#!/bin/bash
+
+count=1
+
+while [ "$count" -le 5 ]
+do
+    echo "Count: $count"
+    ((count++))
+done</code></pre>
+
+<h3>until loop</h3>
+<p>
+An <code>until</code> loop continues executing until its condition becomes true.
+</p>
+
+<pre><code>#!/bin/bash
+
+count=1
+
+until [ "$count" -gt 5 ]
+do
+    echo "Count: $count"
+    ((count++))
+done</code></pre>
+
+<h3>break and continue</h3>
+<pre><code>#!/bin/bash
+
+for number in {1..10}
+do
+    if [ "$number" -eq 5 ]; then
+        continue
+    fi
+
+    if [ "$number" -eq 8 ]; then
+        break
+    fi
+
+    echo "$number"
+done</code></pre>
+
+<p>
+<code>continue</code> skips the current iteration, while <code>break</code>
+terminates the loop.
+</p>
+
+<h3>Practice exercise</h3>
+<p>Write a loop that checks the status of three services:
+nginx, ssh, and cron.</p>
+</div>
+
+<div class="topic">
+<h2>7. Functions in Bash</h2>
+
+<p>
+Functions are reusable blocks of code. They help organize scripts into smaller
+sections and avoid repeating the same commands.
+</p>
+
+<h3>Creating a function</h3>
+<pre><code>#!/bin/bash
+
+greet() {
+    echo "Welcome to Bash scripting"
+}
+
+greet</code></pre>
+
+<h3>Functions with arguments</h3>
+<p>
+Arguments passed to a function can be accessed using positional parameters.
+<code>$1</code> represents the first argument, <code>$2</code> the second,
+and <code>$#</code> the number of arguments.
+</p>
+
+<pre><code>#!/bin/bash
+
+create_user() {
+    username="$1"
+    echo "Creating user: $username"
+}
+
+create_user "developer"</code></pre>
+
+<h3>Returning values</h3>
+<p>
+Bash function return codes indicate success or failure. Use <code>echo</code>
+or another output mechanism when you need to return a calculated value.
+</p>
+
+<pre><code>#!/bin/bash
+
+add_numbers() {
+    result=$(($1 + $2))
+    echo "$result"
+}
+
+sum=$(add_numbers 10 20)
+
+echo "Sum: $sum"</code></pre>
+
+<h3>Checking function return status</h3>
+<pre><code>#!/bin/bash
+
+check_service() {
+    systemctl is-active --quiet nginx
+}
+
+if check_service; then
+    echo "Nginx is active"
+else
+    echo "Nginx is inactive"
+fi</code></pre>
+
+<h3>Practice exercise</h3>
+<p>Create a function that accepts a service name and checks whether the service
+is active.</p>
+</div>
+
+<div class="topic">
+<h2>8. Arrays in Bash</h2>
+
+<p>
+Arrays allow you to store multiple values under a single variable name.
+They are useful when working with lists of servers, users, packages, or files.
+</p>
+
+<h3>Creating an indexed array</h3>
+<pre><code>#!/bin/bash
+
+servers=("web01" "web02" "db01")
+
+echo "${servers[0]}"
+echo "${servers[1]}"
+echo "${servers[2]}"</code></pre>
+
+<h3>Accessing all array elements</h3>
+<pre><code>#!/bin/bash
+
+servers=("web01" "web02" "db01")
+
+echo "All servers: ${servers[@]}"
+echo "Number of servers: ${#servers[@]}"</code></pre>
+
+<h3>Iterating through an array</h3>
+<pre><code>#!/bin/bash
+
+services=("nginx" "ssh" "cron")
+
+for service in "${services[@]}"
+do
+    echo "Checking $service"
+done</code></pre>
+
+<h3>Adding and removing elements</h3>
+<pre><code>#!/bin/bash
+
+servers=("web01" "web02")
+
+# Add an element
+servers+=("db01")
+
+# Remove the element at index 1
+unset 'servers[1]'
+
+echo "${servers[@]}"</code></pre>
+
+<h3>Associative arrays</h3>
+<p>
+Associative arrays store values using named keys rather than numeric indexes.
+They require Bash 4 or newer.
+</p>
+
+<pre><code>#!/bin/bash
+
+declare -A server
+
+server[name]="web01"
+server[ip]="192.168.1.10"
+server[environment]="production"
+
+echo "Name: ${server[name]}"
+echo "IP: ${server[ip]}"
+echo "Environment: ${server[environment]}"</code></pre>
+
+<h3>Practice exercise</h3>
+<p>Create an array containing five server names and print each name using a loop.</p>
+</div>
+
+<div class="topic">
+<h2>9. File Handling and Redirection</h2>
+
+<p>
+Bash scripts frequently create, read, append, and process files.
+Redirection allows you to control where command output and errors are sent.
+</p>
+
+<h3>Writing to a file</h3>
+<pre><code>#!/bin/bash
+
+echo "Application started" > application.log</code></pre>
+
+<p>
+The <code>&gt;</code> operator creates a file or overwrites its existing contents.
+</p>
+
+<h3>Appending to a file</h3>
+<pre><code>#!/bin/bash
+
+echo "Application running" >> application.log</code></pre>
+
+<p>
+The <code>&gt;&gt;</code> operator appends output without deleting existing contents.
+</p>
+
+<h3>Reading a file</h3>
+<pre><code>#!/bin/bash
+
+while IFS= read -r line
+do
+    echo "Line: $line"
+done < servers.txt</code></pre>
+
+<h3>Checking whether a file exists</h3>
+<pre><code>#!/bin/bash
+
+file="/etc/hosts"
+
+if [ -f "$file" ]; then
+    echo "File exists"
+    cat "$file"
+else
+    echo "File not found"
+fi</code></pre>
+
+<h3>Output and error redirection</h3>
+<pre><code>#!/bin/bash
+
+# Redirect standard output
+ls /var/log > output.log
+
+# Redirect standard error
+ls /invalid-path 2> error.log
+
+# Redirect both output and errors
+ls /var/log /invalid-path > result.log 2>&1</code></pre>
+
+<h3>Pipes</h3>
+<p>
+The pipe operator <code>|</code> sends the output of one command as input
+to another command.
+</p>
+
+<pre><code>#!/bin/bash
+
+ps aux | grep nginx
+df -h | grep -v tmpfs
+cat /etc/passwd | wc -l</code></pre>
+
+<h3>Practice exercise</h3>
+<p>Create a script that records the current date, hostname, and disk usage
+in a log file. Append the output each time the script runs.</p>
+</div>
+
+<div class="topic">
+<h2>10. Exit Status, Arguments and Debugging</h2>
+
+<p>
+Exit statuses indicate whether a command or script completed successfully.
+They are important in automation pipelines because other tools can use the
+exit status to determine whether a task succeeded or failed.
+</p>
+
+<h3>Understanding exit status</h3>
+<p>
+The special variable <code>$?</code> contains the exit status of the most
+recently executed command. Conventionally, zero indicates success and a
+non-zero value indicates failure.
+</p>
+
+<pre><code>#!/bin/bash
+
+mkdir /tmp/bash-demo
+
+if [ "$?" -eq 0 ]; then
+    echo "Directory created successfully"
+else
+    echo "Directory creation failed"
+fi</code></pre>
+
+<h3>Using exit</h3>
+<pre><code>#!/bin/bash
+
+if [ ! -d "/var/log" ]; then
+    echo "Required directory is missing"
+    exit 1
+fi
+
+echo "Validation successful"
+exit 0</code></pre>
+
+<h3>Command-line arguments</h3>
+<p>
+Arguments can be passed to a script when executing it.
+</p>
+
+<table>
+<tr><th>Variable</th><th>Meaning</th></tr>
+<tr><td><code>$0</code></td><td>Script name</td></tr>
+<tr><td><code>$1</code></td><td>First argument</td></tr>
+<tr><td><code>$2</code></td><td>Second argument</td></tr>
+<tr><td><code>$#</code></td><td>Number of arguments</td></tr>
+<tr><td><code>$@</code></td><td>All arguments as separate words when quoted</td></tr>
+<tr><td><code>$?</code></td><td>Previous command's exit status</td></tr>
+<tr><td><code>$$</code></td><td>Current shell process ID</td></tr>
+</table>
+
+<h3>Example script using arguments</h3>
+<pre><code>#!/bin/bash
+
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 &lt;username&gt; &lt;environment&gt;"
+    exit 1
+fi
+
+username="$1"
+environment="$2"
+
+echo "Username: $username"
+echo "Environment: $environment"</code></pre>
+
+<p>Run the script:</p>
+<pre><code>chmod +x deploy.sh
+./deploy.sh developer production</code></pre>
+
+<h3>Debugging Bash scripts</h3>
+<p>
+Bash provides options to help identify errors during script execution.
+</p>
+
+<pre><code># Display commands as they execute
+bash -x script.sh
+
+# Check syntax without executing the script
+bash -n script.sh
+
+# Enable debugging inside a script
+set -x
+
+# Disable debugging
+set +x</code></pre>
+
+<h3>Using strict mode</h3>
+<pre><code>#!/bin/bash
+
+set -euo pipefail
+
+echo "Starting script"
+
+name="Manohar"
+echo "Hello $name"</code></pre>
+
+<p>
+<strong>What these options do:</strong>
+</p>
+<ul>
+<li><code>-e</code>: Exit when an unhandled command fails, subject to Bash's conditional and compound-command rules.</li>
+<li><code>-u</code>: Treat unset variables as errors in most expansions.</li>
+<li><code>-o pipefail</code>: Make a pipeline fail if a command in it fails, rather than only using the last command's status.</li>
+</ul>
+
+<div class="note">
+<strong>Important:</strong> Strict mode does not replace proper error handling.
+Test scripts carefully, especially when they modify files, users, services,
+or production infrastructure.
+</div>
+
+<h3>Practice exercise</h3>
+<p>Create a deployment script that accepts an application name and environment
+as command-line arguments, validates that both are provided, and exits with
+an appropriate status code.</p>
+</div>
+
+<h2>Final Practice: Server Health Check Script</h2>
+
+<p>
+Combine variables, conditions, command substitution, and exit statuses to create
+a simple server health check script.
+</p>
+
+<pre><code>#!/bin/bash
+
+set -u
+
+SERVER=$(hostname)
+DATE=$(date)
+DISK_USAGE=$(df / | awk 'NR==2 {gsub("%","",$5); print $5}')
+
+echo "Server Health Report"
+echo "-------------------"
+echo "Hostname: $SERVER"
+echo "Date: $DATE"
+echo "Root Disk Usage: ${DISK_USAGE}%"
+
+if [ "$DISK_USAGE" -ge 80 ]; then
+    echo "WARNING: Disk usage is high"
+    exit 1
+else
+    echo "STATUS: Server disk usage is normal"
+    exit 0
+fi</code></pre>
+
+<h2>How to Execute a Bash Script</h2>
+
+<pre><code># Create a script
+nano script.sh
+
+# Add the Bash shebang
+#!/bin/bash
+
+# Make it executable
+chmod +x script.sh
+
+# Execute the script
+./script.sh
+
+# Alternatively, execute through Bash
+bash script.sh</code></pre>
+
+</body>
+
+<script>
+function toggleVideo() {
+    const container = document.getElementById("videoContainer");
+    const button = document.querySelector(".video-button");
+
+    if (container.style.display === "block") {
+        container.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    } else {
+        container.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    }
+}
+</script>
+
+</html>
+

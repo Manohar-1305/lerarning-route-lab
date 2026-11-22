@@ -1,0 +1,1717 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux User Management</title>
+
+<style>
+:root {
+    color-scheme: dark;
+    --bg: #0b1020;
+    --surface: #121b2e;
+    --surface2: #18243a;
+    --border: #293750;
+    --text: #e5eaf3;
+    --muted: #a5b1c5;
+    --green: #42d392;
+    --blue: #70a5ff;
+    --yellow: #ffd166;
+    --red: #ff7777;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+
+header {
+    padding: 35px 20px;
+    background: linear-gradient(135deg, #14213d, #172b48);
+    border-bottom: 1px solid var(--border);
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 25px 20px;
+}
+
+h1 {
+    margin: 0 0 10px;
+    font-size: 30px;
+}
+
+h2 {
+    color: var(--green);
+    margin-top: 40px;
+}
+
+h3 {
+    color: var(--blue);
+    margin-top: 25px;
+}
+
+h4 {
+    color: var(--yellow);
+}
+
+p {
+    color: var(--muted);
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+pre {
+    background: #080d18;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a8e6bd;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+code {
+    font-family: Consolas, monospace;
+    color: #a8e6bd;
+}
+
+.note, .warning, .success {
+    padding: 13px 16px;
+    background: var(--surface2);
+    border-radius: 6px;
+    margin: 16px 0;
+}
+
+.note {
+    border-left: 4px solid var(--yellow);
+}
+
+.warning {
+    border-left: 4px solid var(--red);
+}
+
+.success {
+    border-left: 4px solid var(--green);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+}
+
+th, td {
+    border: 1px solid var(--border);
+    padding: 11px;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background: var(--surface2);
+    color: var(--green);
+}
+
+td {
+    color: var(--muted);
+}
+
+ul, ol {
+    color: var(--muted);
+}
+
+li {
+    margin: 6px 0;
+}
+
+.video-section {
+    margin: 25px 0;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.video-toggle {
+    background: #16865b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.video-toggle:hover {
+    background: #1ca56f;
+}
+
+.video-container {
+    display: none;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin-top: 18px;
+}
+
+.video-container iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 8px;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+}
+
+@media(max-width: 600px) {
+    h1 {
+        font-size: 24px;
+    }
+
+    .container {
+        padding: 18px 12px;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <h1>Linux User Management</h1>
+        <p>Complete Ubuntu User Administration Guide with Practical Commands</p>
+    </div>
+</header>
+
+<main class="container">
+
+<!-- VIDEO SECTION -->
+<section class="video-section">
+    <h2 style="margin-top:0">Video Tutorial</h2>
+    <p>Watch the video tutorial to understand Linux user management.</p>
+
+    <button
+        type="button"
+        class="video-toggle"
+        id="videoToggle"
+        aria-expanded="false"
+        aria-controls="videoContainer">
+        ▶ Watch Video
+    </button>
+
+    <div class="video-container" id="videoContainer">
+        <iframe
+            id="tutorialVideo"
+            src="about:blank"
+            data-src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Linux User Management Tutorial"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen>
+        </iframe>
+    </div>
+</section>
+
+<!-- INTRODUCTION -->
+<section>
+<h2>1. Introduction to Linux User Management</h2>
+
+<p>
+Linux is a multi-user operating system. Multiple users can access the
+same Linux system using separate accounts. Each user has an identity,
+a username, a unique user ID, group memberships and account settings.
+</p>
+
+<p>
+Linux user management is the process of creating, modifying,
+configuring and deleting user accounts. It also involves managing
+passwords, groups, login shells and administrative privileges.
+</p>
+
+<h3>Why is user management important?</h3>
+
+<ul>
+    <li><strong>Security:</strong> Control who can access the system.</li>
+    <li><strong>Access control:</strong> Provide appropriate access to users.</li>
+    <li><strong>Accountability:</strong> Identify users through their individual accounts.</li>
+    <li><strong>Administration:</strong> Manage multiple users centrally.</li>
+    <li><strong>Isolation:</strong> Maintain separate user environments.</li>
+</ul>
+
+<h3>Example scenario</h3>
+
+<p>
+Consider a company with three employees:
+</p>
+
+<ul>
+    <li>David - Developer</li>
+    <li>John - System Administrator</li>
+    <li>Sarah - Database Administrator</li>
+</ul>
+
+<p>
+The Linux administrator creates individual accounts for these
+employees. Each employee uses their own username and password to
+access the system. The administrator can assign different groups
+and privileges depending on their responsibilities.
+</p>
+</section>
+
+<!-- USER TYPES -->
+<section>
+<h2>2. Types of Linux Users</h2>
+
+<h3>2.1 Root User</h3>
+
+<p>
+The root user is the superuser account in Linux. It has UID 0 and
+has administrative privileges across the system.
+</p>
+
+<p>Root can perform operations such as:</p>
+
+<ul>
+    <li>Creating and deleting user accounts.</li>
+    <li>Installing and removing software.</li>
+    <li>Managing system services.</li>
+    <li>Changing system configurations.</li>
+    <li>Managing other users and groups.</li>
+</ul>
+
+<pre><code># Check current username
+whoami
+
+# Check root account details
+id root
+
+# Display root account information
+getent passwd root</code></pre>
+
+<h3>2.2 Regular User</h3>
+
+<p>
+A regular user is an account created for normal system usage.
+Regular users have their own UID, home directory and login shell.
+They generally have limited administrative privileges.
+</p>
+
+<pre><code># Create a regular user
+adduser david
+
+# Switch to David
+su - david
+
+# Verify current user
+whoami</code></pre>
+
+<h3>2.3 System User</h3>
+
+<p>
+System users are generally created for operating system services
+and applications. They allow a service to run under a dedicated
+account instead of running everything as root.
+</p>
+
+<pre><code># Create a system user
+useradd --system \
+  --no-create-home \
+  --shell /usr/sbin/nologin \
+  appservice
+
+# Verify account
+id appservice
+
+# Display account information
+getent passwd appservice</code></pre>
+
+<h3>2.4 Understanding UID Ranges</h3>
+
+<p>
+Every Linux user has a User ID (UID). Linux uses this numeric
+identifier internally to distinguish users.
+</p>
+
+<table>
+<tr>
+    <th>UID</th>
+    <th>Typical purpose</th>
+</tr>
+<tr>
+    <td>0</td>
+    <td>Root account</td>
+</tr>
+<tr>
+    <td>1-999</td>
+    <td>Common system account range on Ubuntu</td>
+</tr>
+<tr>
+    <td>1000 and above</td>
+    <td>Common regular user range on Ubuntu</td>
+</tr>
+</table>
+
+<p>
+These ranges are configurable. You can check the actual values
+configured on your system.
+</p>
+
+<pre><code>grep -E '^(UID_MIN|UID_MAX|SYS_UID_MIN|SYS_UID_MAX)' /etc/login.defs</code></pre>
+</section>
+
+<!-- CONFIGURATION FILES -->
+<section>
+<h2>3. Linux User Management Configuration Files</h2>
+
+<p>
+Linux maintains account and group information in specific
+configuration files. Understanding these files is important
+for system administration and troubleshooting.
+</p>
+
+<h3>3.1 /etc/passwd</h3>
+
+<p>
+The <code>/etc/passwd</code> file contains user account information.
+It includes the username, UID, primary GID, descriptive information,
+home directory and login shell.
+</p>
+
+<pre><code># Display all user accounts
+cat /etc/passwd</code></pre>
+
+<p>Example entry:</p>
+
+<pre><code>david:x:1000:1000:David:/home/david:/bin/bash</code></pre>
+
+<table>
+<tr><th>Field</th><th>Value</th><th>Description</th></tr>
+<tr><td>1</td><td>david</td><td>Username</td></tr>
+<tr><td>2</td><td>x</td><td>Password information is stored separately</td></tr>
+<tr><td>3</td><td>1000</td><td>User ID (UID)</td></tr>
+<tr><td>4</td><td>1000</td><td>Primary Group ID (GID)</td></tr>
+<tr><td>5</td><td>David</td><td>Comment or descriptive information</td></tr>
+<tr><td>6</td><td>/home/david</td><td>Home directory</td></tr>
+<tr><td>7</td><td>/bin/bash</td><td>Login shell</td></tr>
+</table>
+
+<h3>3.2 /etc/shadow</h3>
+
+<p>
+The <code>/etc/shadow</code> file stores password hashes and
+password-aging information. Access is restricted because it
+contains sensitive authentication data.
+</p>
+
+<pre><code># Check file permissions
+ls -l /etc/shadow
+
+# Read as an authorized administrator
+sudo cat /etc/shadow</code></pre>
+
+<p>Example structure:</p>
+
+<pre><code>david:$y$j9T$examplehash:20000:0:99999:7:::</code></pre>
+
+<table>
+<tr><th>Field</th><th>Description</th></tr>
+<tr><td>Username</td><td>Account name</td></tr>
+<tr><td>Password hash</td><td>Hashed password or account marker</td></tr>
+<tr><td>Last change</td><td>Day the password was last changed</td></tr>
+<tr><td>Minimum</td><td>Minimum number of days before another password change</td></tr>
+<tr><td>Maximum</td><td>Maximum password age in days</td></tr>
+<tr><td>Warning</td><td>Days before expiry to warn the user</td></tr>
+<tr><td>Inactive</td><td>Days after password expiry before disabling the account</td></tr>
+<tr><td>Expire</td><td>Account expiration date</td></tr>
+</table>
+
+<h3>3.3 /etc/group</h3>
+
+<p>
+The <code>/etc/group</code> file stores local group information.
+It contains the group name, GID and supplementary group members.
+</p>
+
+<pre><code># Display all groups
+cat /etc/group</code></pre>
+
+<p>Example:</p>
+
+<pre><code>developers:x:1002:david,john</code></pre>
+
+<table>
+<tr><th>Field</th><th>Description</th></tr>
+<tr><td>developers</td><td>Group name</td></tr>
+<tr><td>x</td><td>Group password field placeholder</td></tr>
+<tr><td>1002</td><td>Group ID (GID)</td></tr>
+<tr><td>david,john</td><td>Supplementary group members</td></tr>
+</table>
+
+<h3>3.4 /etc/gshadow</h3>
+
+<p>
+The <code>/etc/gshadow</code> file stores protected group information,
+including group administrators and group password data.
+</p>
+
+<pre><code>sudo cat /etc/gshadow</code></pre>
+
+<h3>3.5 /etc/skel</h3>
+
+<p>
+The <code>/etc/skel</code> directory contains default files that
+are copied into a new user's home directory when the account is
+created with home-directory initialization.
+</p>
+
+<pre><code># View skeleton directory contents
+ls -la /etc/skel</code></pre>
+
+<p>
+For example, files such as <code>.profile</code> and
+<code>.bashrc</code> may be copied into the new user's home directory.
+</p>
+</section>
+
+<!-- PREPARATION -->
+<section>
+<h2>4. Preparing the Ubuntu System</h2>
+
+<p>
+Some minimal Ubuntu installations do not include all common
+administration commands. Install the required utilities before
+performing the exercises.
+</p>
+
+<h3>Step 1: Update package repositories</h3>
+
+<pre><code>apt-get update</code></pre>
+
+<p>
+This downloads the latest package index information from the
+configured software repositories. It does not upgrade all
+installed packages.
+</p>
+
+<h3>Step 2: Install basic Linux utilities</h3>
+
+<pre><code>apt-get install -y coreutils util-linux passwd login sudo procps iproute2 iputils-ping curl wget vim nano less</code></pre>
+
+<h3>Step 3: Install user management utilities</h3>
+
+<pre><code>apt-get install -y adduser sudo</code></pre>
+
+<table>
+<tr><th>Package</th><th>Purpose</th></tr>
+<tr><td>coreutils</td><td>Common commands such as ls, cat, cp and mv</td></tr>
+<tr><td>util-linux</td><td>System utilities including su</td></tr>
+<tr><td>passwd</td><td>Password and account utilities</td></tr>
+<tr><td>login</td><td>Login-related utilities</td></tr>
+<tr><td>sudo</td><td>Controlled administrative command execution</td></tr>
+<tr><td>procps</td><td>Process and system monitoring commands</td></tr>
+<tr><td>iproute2</td><td>Network configuration commands such as ip</td></tr>
+<tr><td>iputils-ping</td><td>Provides the ping utility</td></tr>
+<tr><td>curl</td><td>Transfers data using URLs</td></tr>
+<tr><td>wget</td><td>Downloads files</td></tr>
+<tr><td>vim, nano</td><td>Text editors</td></tr>
+<tr><td>less</td><td>Terminal file viewer</td></tr>
+<tr><td>adduser</td><td>Ubuntu user and group administration utility</td></tr>
+</table>
+</section>
+
+<!-- ADDUSER USERADD -->
+<section>
+<h2>5. Understanding adduser and useradd</h2>
+
+<p>
+Ubuntu provides two commonly used commands for creating users:
+<code>adduser</code> and <code>useradd</code>. Both create accounts,
+but their interfaces and default behavior are different.
+</p>
+
+<h3>5.1 adduser</h3>
+
+<p>
+<code>adduser</code> is a higher-level Ubuntu utility. It normally
+creates a home directory, copies default files from
+<code>/etc/skel</code> and asks for a password and user information.
+</p>
+
+<h4>Create David interactively</h4>
+
+<pre><code>adduser david</code></pre>
+
+<p>The command normally asks for:</p>
+
+<ul>
+    <li>New password.</li>
+    <li>Password confirmation.</li>
+    <li>Full name.</li>
+    <li>Room number.</li>
+    <li>Work phone.</li>
+    <li>Home phone.</li>
+    <li>Other descriptive information.</li>
+</ul>
+
+<h4>Create David without information prompts</h4>
+
+<pre><code>adduser --disabled-password --gecos "" david</code></pre>
+
+<p>
+This creates the account and its home directory without asking
+for the password or descriptive information.
+</p>
+
+<h4>Set David's password separately</h4>
+
+<pre><code>passwd david</code></pre>
+
+<h4>Set a password non-interactively</h4>
+
+<pre><code>echo 'david:YourStrongPassword' | chpasswd</code></pre>
+
+<div class="note">
+Replace the example password with a strong password. Avoid placing
+real passwords directly in shell commands because they may be
+retained in command history or exposed through process information.
+</div>
+
+<h3>5.2 useradd</h3>
+
+<p>
+<code>useradd</code> is a lower-level account creation utility.
+It is commonly used in scripts and automated configuration.
+</p>
+
+<h4>Create David</h4>
+
+<pre><code>useradd david</code></pre>
+
+<p>
+Without the <code>-m</code> option, the home directory is generally
+not created.
+</p>
+
+<h4>Create David with a home directory</h4>
+
+<pre><code>useradd -m david</code></pre>
+
+<h4>Create David with a Bash login shell</h4>
+
+<pre><code>useradd -m -s /bin/bash david</code></pre>
+
+<h4>Set the password</h4>
+
+<pre><code>passwd david</code></pre>
+
+<h3>5.3 Difference between adduser and useradd</h3>
+
+<table>
+<tr><th>Feature</th><th>adduser</th><th>useradd</th></tr>
+<tr><td>Type</td><td>Higher-level utility</td><td>Lower-level utility</td></tr>
+<tr><td>Interaction</td><td>Interactive by default</td><td>Uses command-line options</td></tr>
+<tr><td>Home directory</td><td>Normally created automatically</td><td>Use -m to create it</td></tr>
+<tr><td>Default files</td><td>Copies files from /etc/skel</td><td>With -m, initializes from the skeleton directory</td></tr>
+<tr><td>Automation</td><td>Supports non-interactive options</td><td>Commonly used in scripts</td></tr>
+</table>
+
+<div class="warning">
+Do not execute both commands for the same username. If David
+already exists, check the account using <code>id david</code>
+before trying to create it again.
+</div>
+</section>
+
+<!-- USER CREATION -->
+<section>
+<h2>6. Creating and Managing User Accounts</h2>
+
+<h3>6.1 Create a user with adduser</h3>
+
+<pre><code>adduser david</code></pre>
+
+<h3>6.2 Create a user without interactive prompts</h3>
+
+<pre><code>adduser --disabled-password --gecos "" david</code></pre>
+
+<h3>6.3 Create a user with a specific home directory</h3>
+
+<pre><code>useradd -m -d /data/users/david david</code></pre>
+
+<p>
+The <code>-d</code> option specifies the home directory path.
+The <code>-m</code> option creates that directory and initializes it
+with files from the skeleton directory.
+</p>
+
+<h3>6.4 Create a user with a specific shell</h3>
+
+<pre><code>useradd -m -s /bin/bash david</code></pre>
+
+<h3>6.5 Create a user with a specific UID and group</h3>
+
+<pre><code>groupadd developers
+
+useradd -m -u 1500 -g developers -s /bin/bash david</code></pre>
+
+<h3>6.6 Check whether a user exists</h3>
+
+<pre><code>id david
+getent passwd david</code></pre>
+
+<p>
+If the account exists, these commands display its identity and
+account information. If it does not exist, they will not return
+a valid account entry.
+</p>
+
+<h3>6.7 List all local users</h3>
+
+<pre><code>cat /etc/passwd</code></pre>
+
+<h3>Display only usernames</h3>
+
+<pre><code>cut -d: -f1 /etc/passwd</code></pre>
+</section>
+
+<!-- HOME DIRECTORY -->
+<section>
+<h2>7. Home Directory Management</h2>
+
+<p>
+A home directory is the personal directory associated with a user.
+It normally stores personal files, configuration files and
+user-specific data.
+</p>
+
+<p>For David, the default home directory is:</p>
+
+<pre><code>/home/david</code></pre>
+
+<h3>7.1 Create a home directory automatically</h3>
+
+<pre><code>useradd -m david</code></pre>
+
+<p>
+The <code>-m</code> option tells useradd to create the home directory.
+It also initializes the directory using files from the configured
+skeleton directory.
+</p>
+
+<h3>7.2 Verify the home directory</h3>
+
+<pre><code>ls -ld /home/david
+ls -la /home/david</code></pre>
+
+<h3>7.3 Check the configured home directory</h3>
+
+<pre><code>getent passwd david</code></pre>
+
+<h3>7.4 Create a missing home directory</h3>
+
+<p>
+If an account was created without the <code>-m</code> option,
+the account may exist without a home directory.
+</p>
+
+<pre><code>mkdir -p /home/david
+usermod -d /home/david david
+chown david:david /home/david</code></pre>
+
+<h3>7.5 Change a user's home directory</h3>
+
+<pre><code>usermod -d /data/david -m david</code></pre>
+
+<p>
+The <code>-d</code> option changes the home directory setting.
+The <code>-m</code> option moves existing home-directory contents
+to the new location.
+</p>
+
+<h3>7.6 Understand the home directory entry</h3>
+
+<pre><code>getent passwd david</code></pre>
+
+<p>
+The home directory is the sixth field in the account entry.
+For example, <code>/home/david</code> tells Linux where David's
+home directory is configured.
+</p>
+</section>
+
+<!-- UID GID -->
+<section>
+<h2>8. Understanding UID and GID</h2>
+
+<h3>8.1 What is UID?</h3>
+
+<p>
+UID stands for User ID. It is a numeric identifier assigned to
+each Linux user account. Linux uses the UID internally to identify
+the owner of processes and files.
+</p>
+
+<pre><code># Display David's UID and GID
+id david
+
+# Display only UID
+id -u david
+
+# Display username
+id -un david</code></pre>
+
+<h3>8.2 What is GID?</h3>
+
+<p>
+GID stands for Group ID. It identifies a Linux group. Every user
+has a primary group and can also belong to additional groups.
+</p>
+
+<pre><code># Display primary group ID
+id -g david
+
+# Display primary group name
+id -gn david
+
+# Display all group memberships
+id -Gn david</code></pre>
+
+<h3>8.3 Understanding id output</h3>
+
+<pre><code>uid=1000(david) gid=1000(david) groups=1000(david),27(sudo),1002(developers)</code></pre>
+
+<p>This means:</p>
+
+<ul>
+    <li>David's UID is 1000.</li>
+    <li>David's primary GID is 1000.</li>
+    <li>David belongs to the sudo group.</li>
+    <li>David also belongs to the developers group.</li>
+</ul>
+
+<h3>8.4 Assign a specific UID</h3>
+
+<pre><code>useradd -m -u 1500 david</code></pre>
+
+<p>
+The <code>-u</code> option specifies the UID. Ensure the UID is
+not already assigned to another account.
+</p>
+
+<h3>8.5 Assign a specific primary group</h3>
+
+<pre><code>groupadd developers
+useradd -m -g developers david</code></pre>
+
+<p>
+The <code>-g</code> option assigns an existing group as the
+user's primary group.
+</p>
+</section>
+
+<!-- GROUPS -->
+<section>
+<h2>9. Linux Group Management</h2>
+
+<p>
+A group is a collection of users. Groups make it easier to organize
+accounts and manage access to shared resources.
+</p>
+
+<h3>9.1 Create a group</h3>
+
+<pre><code>groupadd developers</code></pre>
+
+<h3>9.2 Create another group</h3>
+
+<pre><code>groupadd administrators</code></pre>
+
+<h3>9.3 View all groups</h3>
+
+<pre><code>cat /etc/group</code></pre>
+
+<h3>9.4 View a specific group</h3>
+
+<pre><code>getent group developers</code></pre>
+
+<h3>9.5 Add David to a supplementary group</h3>
+
+<pre><code>usermod -aG developers david</code></pre>
+
+<p>
+The <code>-a</code> option means append, and <code>-G</code>
+specifies supplementary groups.
+</p>
+
+<div class="warning">
+Always use <code>-aG</code> when adding a supplementary group.
+Using <code>-G</code> without <code>-a</code> replaces the user's
+existing supplementary group list.
+</div>
+
+<h3>9.6 Add David to multiple groups</h3>
+
+<pre><code>usermod -aG developers,administrators david</code></pre>
+
+<h3>9.7 Check group membership</h3>
+
+<pre><code>groups david
+id david</code></pre>
+
+<h3>9.8 Remove David from a group</h3>
+
+<pre><code>gpasswd -d david developers</code></pre>
+
+<h3>9.9 Change the primary group</h3>
+
+<pre><code>usermod -g administrators david</code></pre>
+
+<h3>9.10 Delete a group</h3>
+
+<pre><code>groupdel developers</code></pre>
+
+<p>
+A group cannot normally be deleted while it is the primary group
+of an existing user.
+</p>
+</section>
+
+<!-- PRIMARY AND SUPPLEMENTARY -->
+<section>
+<h2>10. Primary Groups and Supplementary Groups</h2>
+
+<h3>10.1 Primary Group</h3>
+
+<p>
+Every user has one primary group. When a user creates a new file,
+the file normally inherits the user's primary group, subject to
+the directory and system configuration.
+</p>
+
+<h3>10.2 Supplementary Groups</h3>
+
+<p>
+A user can belong to multiple supplementary groups. These groups
+provide additional access to resources.
+</p>
+
+<h3>10.3 Example</h3>
+
+<pre><code># Create groups
+groupadd developers
+groupadd testers
+
+# Create David
+useradd -m -s /bin/bash david
+
+# Add supplementary groups
+usermod -aG developers,testers david
+
+# Check memberships
+id david</code></pre>
+
+<p>
+David now has a primary group and additional supplementary groups.
+</p>
+</section>
+
+<!-- SUDO -->
+<section>
+<h2>11. Sudo and Administrative Privileges</h2>
+
+<p>
+The sudo command allows an authorized user to execute specific
+commands with another user's privileges, commonly root privileges.
+It provides controlled administrative access without requiring
+users to log in directly as root.
+</p>
+
+<h3>11.1 Install sudo</h3>
+
+<pre><code>apt-get update
+apt-get install -y sudo</code></pre>
+
+<h3>11.2 Add David to the sudo group</h3>
+
+<pre><code>usermod -aG sudo david</code></pre>
+
+<h3>11.3 Verify group membership</h3>
+
+<pre><code>groups david</code></pre>
+
+<h3>11.4 Switch to David</h3>
+
+<pre><code>su - david</code></pre>
+
+<h3>11.5 Execute a command using sudo</h3>
+
+<pre><code>sudo whoami</code></pre>
+
+<p>Expected output when sudo is configured correctly:</p>
+
+<pre><code>root</code></pre>
+
+<h3>11.6 Execute administrative commands</h3>
+
+<pre><code>sudo apt-get update
+sudo apt-get install curl</code></pre>
+
+<h3>11.7 Check sudo permissions</h3>
+
+<pre><code>sudo -l</code></pre>
+
+<p>
+This displays the commands the current user is permitted to
+execute through sudo.
+</p>
+
+<h3>11.8 Configure sudo permissions</h3>
+
+<p>
+The sudoers configuration defines who can execute which commands.
+Use <code>visudo</code> to edit the configuration because it validates
+the syntax before saving.
+</p>
+
+<pre><code>visudo</code></pre>
+
+<p>Example rule:</p>
+
+<pre><code>david ALL=(ALL:ALL) ALL</code></pre>
+
+<p>
+This permits David to execute commands as any user or group on
+the system, subject to the configured authentication requirements.
+</p>
+
+<div class="warning">
+Do not edit sudoers directly with a normal text editor. Use visudo
+to avoid syntax errors that could prevent administrative access.
+</div>
+</section>
+
+<!-- PASSWORD MANAGEMENT -->
+<section>
+<h2>12. Password Management</h2>
+
+<p>
+Linux uses password hashes for authentication. Password-related
+information is maintained in the protected shadow database.
+</p>
+
+<h3>12.1 Set a password</h3>
+
+<pre><code>passwd david</code></pre>
+
+<h3>12.2 Change your own password</h3>
+
+<pre><code>passwd</code></pre>
+
+<h3>12.3 Set a password non-interactively</h3>
+
+<pre><code>echo 'david:YourStrongPassword' | chpasswd</code></pre>
+
+<h3>12.4 Lock a user's password</h3>
+
+<pre><code>passwd -l david</code></pre>
+
+<p>
+This locks password authentication for the account. It does not
+necessarily disable every other authentication method.
+</p>
+
+<h3>12.5 Unlock a user's password</h3>
+
+<pre><code>passwd -u david</code></pre>
+
+<h3>12.6 Check password status</h3>
+
+<pre><code>passwd -S david</code></pre>
+
+<h3>12.7 Delete a user's password</h3>
+
+<pre><code>passwd -d david</code></pre>
+
+<div class="warning">
+Deleting a password is not the same as securely disabling an account.
+It may permit passwordless authentication depending on the system
+configuration. Avoid using it on accounts that require protection.
+</div>
+</section>
+
+<!-- PASSWORD AGING -->
+<section>
+<h2>13. Password Aging and Account Expiration</h2>
+
+<p>
+Password aging controls how long a password remains valid and when
+a user must change it. Account expiration controls when an account
+becomes invalid.
+</p>
+
+<h3>13.1 View password aging information</h3>
+
+<pre><code>chage -l david</code></pre>
+
+<h3>13.2 Set maximum password age</h3>
+
+<pre><code>chage -M 90 david</code></pre>
+
+<p>
+This sets the maximum password age to 90 days.
+</p>
+
+<h3>13.3 Set minimum password age</h3>
+
+<pre><code>chage -m 7 david</code></pre>
+
+<p>
+David must wait at least seven days before changing the password again.
+</p>
+
+<h3>13.4 Set password expiry warning</h3>
+
+<pre><code>chage -W 7 david</code></pre>
+
+<p>
+This configures a warning seven days before password expiration.
+</p>
+
+<h3>13.5 Set account expiration date</h3>
+
+<pre><code>chage -E 2026-12-31 david</code></pre>
+
+<p>
+This sets the account expiration date.
+</p>
+
+<h3>13.6 Remove account expiration</h3>
+
+<pre><code>chage -E -1 david</code></pre>
+
+<h3>13.7 Force a password change at next login</h3>
+
+<pre><code>chage -d 0 david</code></pre>
+
+<h3>13.8 View account aging information</h3>
+
+<pre><code>chage -l david</code></pre>
+</section>
+
+<!-- SHELLS -->
+<section>
+<h2>14. Linux Login Shell Management</h2>
+
+<p>
+A login shell is the command interpreter started when a user logs in.
+It determines the command environment available to that user.
+</p>
+
+<h3>14.1 View available shells</h3>
+
+<pre><code>cat /etc/shells</code></pre>
+
+<h3>14.2 Check David's configured shell</h3>
+
+<pre><code>getent passwd david</code></pre>
+
+<h3>14.3 Change the login shell</h3>
+
+<pre><code>usermod -s /bin/bash david</code></pre>
+
+<h3>14.4 Switch to David</h3>
+
+<pre><code>su - david</code></pre>
+
+<h3>14.5 Assign a non-login shell</h3>
+
+<pre><code>usermod -s /usr/sbin/nologin appservice</code></pre>
+
+<p>
+A non-login shell prevents normal interactive shell login.
+It is commonly used for service accounts that do not need
+interactive access.
+</p>
+</section>
+
+<!-- USERMOD -->
+<section>
+<h2>15. Modifying Existing Users with usermod</h2>
+
+<p>
+The <code>usermod</code> command changes the properties of an
+existing Linux user account.
+</p>
+
+<table>
+<tr><th>Option</th><th>Purpose</th></tr>
+<tr><td>-l</td><td>Change the username</td></tr>
+<tr><td>-u</td><td>Change the UID</td></tr>
+<tr><td>-g</td><td>Change the primary group</td></tr>
+<tr><td>-G</td><td>Set supplementary groups</td></tr>
+<tr><td>-aG</td><td>Append supplementary groups</td></tr>
+<tr><td>-d</td><td>Change the home directory setting</td></tr>
+<tr><td>-m</td><td>Move home directory contents when used with -d</td></tr>
+<tr><td>-s</td><td>Change the login shell</td></tr>
+<tr><td>-L</td><td>Lock the account password</td></tr>
+<tr><td>-U</td><td>Unlock the account password</td></tr>
+</table>
+
+<h3>15.1 Change username</h3>
+
+<pre><code>usermod -l david_new david</code></pre>
+
+<h3>15.2 Change UID</h3>
+
+<pre><code>usermod -u 1500 david</code></pre>
+
+<h3>15.3 Change primary group</h3>
+
+<pre><code>usermod -g developers david</code></pre>
+
+<h3>15.4 Add supplementary groups</h3>
+
+<pre><code>usermod -aG developers,administrators david</code></pre>
+
+<h3>15.5 Change home directory</h3>
+
+<pre><code>usermod -d /data/david -m david</code></pre>
+
+<h3>15.6 Change login shell</h3>
+
+<pre><code>usermod -s /bin/bash david</code></pre>
+
+<h3>15.7 Lock account password</h3>
+
+<pre><code>usermod -L david</code></pre>
+
+<h3>15.8 Unlock account password</h3>
+
+<pre><code>usermod -U david</code></pre>
+
+<div class="note">
+Changing a UID or username can affect existing account references
+and running processes. Review these dependencies before modifying
+production accounts.
+</div>
+</section>
+
+<!-- SWITCH USERS -->
+<section>
+<h2>16. Switching Between Linux Users</h2>
+
+<p>
+The <code>su</code> command allows you to switch from one user account
+to another. It is useful when testing account configuration or
+performing tasks under a different user identity.
+</p>
+
+<h3>16.1 Switch to David</h3>
+
+<pre><code>su - david</code></pre>
+
+<p>
+The hyphen starts a login shell and loads David's login environment.
+</p>
+
+<h3>16.2 Check the current user</h3>
+
+<pre><code>whoami</code></pre>
+
+<h3>16.3 Check the current directory</h3>
+
+<pre><code>pwd</code></pre>
+
+<h3>16.4 Check user identity</h3>
+
+<pre><code>id</code></pre>
+
+<h3>16.5 Return to the previous account</h3>
+
+<pre><code>exit</code></pre>
+
+<h3>16.6 Execute a command as another user</h3>
+
+<pre><code>su - david -c "whoami"</code></pre>
+
+<p>
+The <code>-c</code> option executes the specified command and
+then exits the switched-user shell.
+</p>
+</section>
+
+<!-- DELETE USERS -->
+<section>
+<h2>17. Deleting Linux Users</h2>
+
+<p>
+When an account is no longer required, an administrator can
+remove it from the system.
+</p>
+
+<h3>17.1 Delete a user account</h3>
+
+<pre><code>userdel david</code></pre>
+
+<p>
+This removes the account but normally retains the user's home directory.
+</p>
+
+<h3>17.2 Delete a user and home directory</h3>
+
+<pre><code>userdel -r david</code></pre>
+
+<p>
+The <code>-r</code> option also removes the user's home directory
+and mail spool, if present.
+</p>
+
+<h3>17.3 Delete using deluser</h3>
+
+<pre><code>deluser david</code></pre>
+
+<h3>17.4 Delete a user and home directory using deluser</h3>
+
+<pre><code>deluser --remove-home david</code></pre>
+
+<h3>17.5 Verify user deletion</h3>
+
+<pre><code>id david
+getent passwd david</code></pre>
+
+<h3>17.6 Delete an unused group</h3>
+
+<pre><code>groupdel developers</code></pre>
+
+<div class="warning">
+Before deleting an account, check whether it is used by running
+services, scheduled tasks or applications. Also consider any
+important account data that needs to be retained.
+</div>
+</section>
+
+<!-- ACCOUNT LOCKING -->
+<section>
+<h2>18. Locking and Disabling User Accounts</h2>
+
+<p>
+Account locking is useful when access must be temporarily restricted.
+Password locking and account expiration are related but different
+mechanisms.
+</p>
+
+<h3>18.1 Lock password authentication</h3>
+
+<pre><code>passwd -l david</code></pre>
+
+<h3>18.2 Unlock password authentication</h3>
+
+<pre><code>passwd -u david</code></pre>
+
+<h3>18.3 Set an account expiration date</h3>
+
+<pre><code>chage -E 2026-12-31 david</code></pre>
+
+<h3>18.4 Check account expiration</h3>
+
+<pre><code>chage -l david</code></pre>
+
+<h3>18.5 Prevent interactive login</h3>
+
+<pre><code>usermod -s /usr/sbin/nologin david</code></pre>
+
+<h3>18.6 Restore Bash login</h3>
+
+<pre><code>usermod -s /bin/bash david</code></pre>
+
+<p>
+Choose the appropriate control based on the requirement. Locking a
+password does not necessarily block SSH keys or every other
+authentication mechanism.
+</p>
+</section>
+
+<!-- USEFUL COMMANDS -->
+<section>
+<h2>19. Useful Linux User Administration Commands</h2>
+
+<table>
+<tr><th>Command</th><th>Description</th></tr>
+<tr><td>whoami</td><td>Display current username</td></tr>
+<tr><td>who</td><td>Display logged-in sessions</td></tr>
+<tr><td>w</td><td>Display logged-in users and activity</td></tr>
+<tr><td>id</td><td>Display UID, GID and group membership</td></tr>
+<tr><td>id david</td><td>Display David's account identifiers</td></tr>
+<tr><td>users</td><td>Display usernames in logged-in sessions</td></tr>
+<tr><td>getent passwd</td><td>Retrieve user account records</td></tr>
+<tr><td>getent group</td><td>Retrieve group records</td></tr>
+<tr><td>last</td><td>Display login history</td></tr>
+<tr><td>lastlog</td><td>Display last login information, where available</td></tr>
+<tr><td>su - david</td><td>Switch to David's login environment</td></tr>
+<tr><td>sudo -l</td><td>Display permitted sudo commands</td></tr>
+<tr><td>passwd -S david</td><td>Display password status</td></tr>
+<tr><td>chage -l david</td><td>Display password aging details</td></tr>
+</table>
+</section>
+
+<!-- TROUBLESHOOTING -->
+<section>
+<h2>20. Common User Management Problems</h2>
+
+<h3>Problem 1: adduser command not found</h3>
+
+<p>Install the required package:</p>
+
+<pre><code>apt-get update
+apt-get install -y adduser</code></pre>
+
+<h3>Problem 2: useradd does not create a home directory</h3>
+
+<p>Use the <code>-m</code> option:</p>
+
+<pre><code>useradd -m david</code></pre>
+
+<h3>Problem 3: Home directory does not exist</h3>
+
+<p>For an account that already exists:</p>
+
+<pre><code>mkdir -p /home/david
+usermod -d /home/david david
+chown david:david /home/david</code></pre>
+
+<h3>Problem 4: User cannot execute sudo</h3>
+
+<p>Install sudo and add the user to the sudo group:</p>
+
+<pre><code>apt-get install -y sudo
+usermod -aG sudo david</code></pre>
+
+<p>
+Start a new login session and verify the group membership.
+</p>
+
+<h3>Problem 5: User cannot switch accounts</h3>
+
+<p>Check the account, home directory and login shell:</p>
+
+<pre><code>getent passwd david
+ls -ld /home/david
+cat /etc/shells</code></pre>
+
+<h3>Problem 6: User already exists</h3>
+
+<p>Verify the account before attempting to create it again:</p>
+
+<pre><code>id david
+getent passwd david</code></pre>
+
+<h3>Problem 7: Group membership is not updated</h3>
+
+<p>Check David's current group membership:</p>
+
+<pre><code>id david
+groups david</code></pre>
+
+<p>
+Start a new login session after changing supplementary group
+membership.
+</p>
+
+<h3>Problem 8: Password authentication is locked</h3>
+
+<p>Check password status:</p>
+
+<pre><code>passwd -S david</code></pre>
+
+<p>Unlock the password if appropriate:</p>
+
+<pre><code>passwd -u david</code></pre>
+</section>
+
+<!-- PRACTICAL LAB -->
+<section>
+<h2>21. Practical Lab - Create and Manage David</h2>
+
+<h3>Scenario</h3>
+
+<p>
+You are a Linux administrator. Your organization has hired a developer
+named David. You must create his account, configure his access and
+allow him to work with the development team.
+</p>
+
+<h3>Requirements</h3>
+
+<ol>
+    <li>Update package repositories.</li>
+    <li>Install the required user administration utilities.</li>
+    <li>Create a user named david.</li>
+    <li>Create his home directory automatically.</li>
+    <li>Set a password for David.</li>
+    <li>Configure Bash as his login shell.</li>
+    <li>Create a group named developers.</li>
+    <li>Add David to the developers group.</li>
+    <li>Give David sudo privileges.</li>
+    <li>Verify his UID, GID and group memberships.</li>
+    <li>Switch to David's account.</li>
+    <li>Verify his login environment.</li>
+    <li>Return to the root account.</li>
+</ol>
+
+<h3>Complete command sequence</h3>
+
+<pre><code># 1. Update repositories
+apt-get update
+
+# 2. Install required utilities
+apt-get install -y coreutils util-linux passwd login sudo procps iproute2 iputils-ping curl wget vim nano less adduser
+
+# 3. Create David without information prompts
+adduser --disabled-password --gecos "" david
+
+# 4. Set password
+passwd david
+
+# 5. Set Bash as login shell
+usermod -s /bin/bash david
+
+# 6. Create developers group
+groupadd developers
+
+# 7. Add David to developers
+usermod -aG developers david
+
+# 8. Give David sudo privileges
+usermod -aG sudo david
+
+# 9. Verify user details
+id david
+
+# 10. Verify account information
+getent passwd david
+
+# 11. Verify home directory
+ls -ld /home/david
+
+# 12. Switch to David
+su - david
+
+# 13. Verify current user
+whoami
+
+# 14. Verify current directory
+pwd
+
+# 15. Verify group membership
+id
+
+# 16. Test sudo access
+sudo whoami
+
+# 17. Return to previous account
+exit</code></pre>
+
+<div class="success">
+Lab completed: David's account, home directory, password,
+group membership and administrative privileges have been
+configured and verified.
+</div>
+</section>
+
+<!-- INTERVIEW QUESTIONS -->
+<section>
+<h2>22. Linux User Management Interview Questions</h2>
+
+<ol>
+    <li>What is Linux user management?</li>
+    <li>What is the difference between root and a regular user?</li>
+    <li>What is UID and why is it important?</li>
+    <li>What is GID?</li>
+    <li>What is the purpose of /etc/passwd?</li>
+    <li>What information is stored in /etc/shadow?</li>
+    <li>What is the difference between adduser and useradd?</li>
+    <li>How do you create a user with a home directory?</li>
+    <li>How do you change a user's password?</li>
+    <li>How do you add a user to multiple groups?</li>
+    <li>What is the difference between primary and supplementary groups?</li>
+    <li>How do you give a user sudo privileges?</li>
+    <li>What is the purpose of /etc/sudoers?</li>
+    <li>Why should visudo be used to edit sudoers?</li>
+    <li>How do you lock and unlock a user account?</li>
+    <li>What is the purpose of the chage command?</li>
+    <li>What is the difference between userdel and userdel -r?</li>
+    <li>How do you change a user's login shell?</li>
+    <li>How do you configure password expiration?</li>
+    <li>How do you verify a user's UID and GID?</li>
+</ol>
+</section>
+
+<!-- PRACTICE -->
+<section>
+<h2>23. Practice Exercises</h2>
+
+<ol>
+    <li>Create a user named john with a home directory.</li>
+    <li>Create a user named sarah with UID 1500.</li>
+    <li>Create a group named testers.</li>
+    <li>Add john and sarah to testers.</li>
+    <li>Set passwords for both users.</li>
+    <li>Change john's login shell to Bash.</li>
+    <li>Give sarah sudo privileges.</li>
+    <li>Set a maximum password age of 60 days for john.</li>
+    <li>Lock sarah's password and then unlock it.</li>
+    <li>Verify both users' UID and GID.</li>
+    <li>Change john's primary group.</li>
+    <li>Change sarah's home directory.</li>
+    <li>Verify both users' group memberships.</li>
+    <li>Delete john while retaining his home directory.</li>
+    <li>Delete sarah and her home directory.</li>
+</ol>
+</section>
+
+<!-- QUICK REFERENCE -->
+<section>
+<h2>24. Quick Command Reference</h2>
+
+<pre><code># Update package repositories
+apt-get update
+
+# Install user management utilities
+apt-get install -y adduser sudo
+
+# Create a user interactively
+adduser david
+
+# Create without information prompts
+adduser --disabled-password --gecos "" david
+
+# Create using useradd with home directory
+useradd -m david
+
+# Create with a specific shell
+useradd -m -s /bin/bash david
+
+# Set password
+passwd david
+
+# Set password non-interactively
+echo 'david:YourStrongPassword' | chpasswd
+
+# Check user
+id david
+
+# Display account details
+getent passwd david
+
+# Display home directory
+ls -ld /home/david
+
+# Switch user
+su - david
+
+# Create group
+groupadd developers
+
+# Add user to supplementary group
+usermod -aG developers david
+
+# Add user to sudo group
+usermod -aG sudo david
+
+# Display group memberships
+groups david
+
+# Change primary group
+usermod -g developers david
+
+# Change login shell
+usermod -s /bin/bash david
+
+# Lock password
+passwd -l david
+
+# Unlock password
+passwd -u david
+
+# View password status
+passwd -S david
+
+# View password aging
+chage -l david
+
+# Delete user
+userdel david
+
+# Delete user and home directory
+userdel -r david</code></pre>
+</section>
+
+</main>
+
+<footer>
+    Linux User Management | Ubuntu Administration Guide
+</footer>
+
+<script>
+(function () {
+    const button = document.getElementById("videoToggle");
+    const container = document.getElementById("videoContainer");
+    const iframe = document.getElementById("tutorialVideo");
+
+    const videoUrl = iframe.dataset.src;
+
+    button.addEventListener("click", function () {
+        const isOpen = container.style.display === "block";
+
+        if (isOpen) {
+            container.style.display = "none";
+            iframe.src = "about:blank";
+            button.textContent = "▶ Watch Video";
+            button.setAttribute("aria-expanded", "false");
+        } else {
+            container.style.display = "block";
+            iframe.src = videoUrl;
+            button.textContent = "✕ Hide Video";
+            button.setAttribute("aria-expanded", "true");
+        }
+    });
+})();
+</script>
+
+</body>
+</html>
+
