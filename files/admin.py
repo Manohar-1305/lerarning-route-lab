@@ -1,0 +1,664 @@
+
+import os
+import re
+import secrets
+from datetime import datetime, timedelta, timezone
+from decimal import Decimal, InvalidOperation
+from functools import wraps
+
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from dotenv import dotenv_values
+from flask import flash, redirect, render_template, request, session, url_for
+
+from files.ansible import app
+from files.auth import _check_csrf, get_db
+from files.config import get_db as get_subscription_db
+
+
+ENV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+LABS = {"ansible", "jenkins", "bash"}
+_FALLBACK_PW = secrets.token_urlsafe(10)
+
+
+def _admin_creds():
+    cfg = dotenv_values(ENV_PATH, encoding="utf-8-sig")
+    user = (
+        cfg.get("ADMIN_USER")
+        or os.environ.get("ADMIN_USER")
+        or "admin"
+    ).strip()
+    pw = (
+        cfg.get("ADMIN_PASSWORD")
+        or os.environ.get("ADMIN_PASSWORD")
+        or ""
+    ).strip()
+    return user, pw or _FALLBACK_PW
+
+
+_u, _p = _admin_creds()
+
+print(f"\n[Admin] .env: {ENV_PATH}", flush=True)
+print(
+    f"[Admin] user={_u} password_length={len(_p)} "
+    f"from_env_file={_p != _FALLBACK_PW}",
+    flush=True,
+)
+
+if _p == _FALLBACK_PW:
+    print(
+        f"[Admin] .env not read. Temporary login -> {_u} / {_p}\n",
+        flush=True,
+    )
+
+
+def _now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _get_cursor(conn):
+    return conn.cursor(cursor_factory=RealDictCursor)
+
+
+def init_tracking():
+    conn = get_db()
+
+    try:
+        cur = conn.cursor()
+
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS logins (
+                id BIGSERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL,
+                at TEXT NOT NULL
+            )
+        """)
+
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS lab_visits (
+                id BIGSERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL,
+                lab TEXT NOT NULL,
+                at TEXT NOT NULL
+            )
+        """)
+
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS payments (
+                id BIGSERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL,
+                amount NUMERIC(12, 2) NOT NULL,
+                utr TEXT NOT NULL UNIQUE,
+                status TEXT NOT NULL DEFAULT 'pending',
+                created_at TEXT NOT NULL
+            )
+        """)
+
+        conn.commit()
+        cur.close()
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
+
+
+init_tracking()
+
+
+@app.template_filter("ist")
+def ist(value):
+    if not value:
+        return "—"
+
+    try:
+        if isinstance(value, str):
+            dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        else:
+            dt = value
+
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+
+        india_timezone = timezone(timedelta(hours=5, minutes=30))
+        dt = dt.astimezone(india_timezone)
+
+        return dt.strftime("%d %b %Y, %I:%M %p")
+
+    except (ValueError, TypeError, AttributeError):
+        return str(value)
+
+
+@app.before_request
+def track_activity():
+    if session.get("is_admin"):
+        return
+
+    uid = session.get("user_id")
+
+    if not uid:
+        return
+
+    conn = get_db()
+
+    try:
+        cur = conn.cursor()
+
+        if not session.get("_login_logged"):
+            cur.execute(
+                "INSERT INTO logins (user_id, at) VALUES (%s, %s)",
+                (uid, _now()),
+            )
+            session["_login_logged"] = True
+
+        if request.method == "GET":
+            first = request.path.strip("/").split("/")[0]
+
+            if first in LABS:
+                seen = session.get("_labs_seen", [])
+
+                if first not in seen:
+                    cur.execute(
+                        """
+                        INSERT INTO lab_visits (user_id, lab, at)
+                        VALUES (%s, %s, %s)
+                        """,
+                        (uid, first, _now()),
+                    )
+                    session["_labs_seen"] = seen + [first]
+
+        conn.commit()
+        cur.close()
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
+
+
+def admin_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if not session.get("is_admin"):
+            return redirect(url_for("admin_login"))
+
+        return view(*args, **kwargs)
+
+    return wrapped
+
+
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    if session.get("is_admin"):
+        return redirect(url_for("admin_dashboard"))
+
+    if request.method == "POST":
+        _check_csrf()
+
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
+
+        user, pw = _admin_creds()
+
+        if (
+            secrets.compare_digest(username.encode(), user.encode())
+            and secrets.compare_digest(password.encode(), pw.encode())
+        ):
+            session.clear()
+            session.permanent = True
+            session["is_admin"] = True
+            session["user_id"] = -1
+            session["user"] = "admin"
+            session["session_id"] = secrets.token_urlsafe(32)
+            session["_csrf"] = secrets.token_hex(16)
+            session["login_time"] = _now()
+
+            return redirect(url_for("admin_dashboard"))
+
+        print(
+            f"[Admin] Login failed: typed user='{username}' "
+            f"(expected '{user}'), typed password length={len(password)} "
+            f"(expected {len(pw)})",
+            flush=True,
+        )
+
+        flash("Invalid admin credentials.", "error")
+
+    return render_template("admin_login.html")
+
+
+@app.route("/admin/logout")
+def admin_logout():
+    session.clear()
+    return redirect(url_for("admin_login"))
+
+
+USERS_SQL = """
+SELECT
+    u.id,
+    u.username,
+    u.email,
+    u.created_at,
+
+    (
+        SELECT MAX(l.at)
+        FROM logins l
+        WHERE l.user_id = u.id
+    ) AS last_login,
+
+    (
+        SELECT COUNT(*)
+        FROM logins l
+        WHERE l.user_id = u.id
+    ) AS login_count,
+
+    (
+        SELECT STRING_AGG(DISTINCT v.lab, ',')
+        FROM lab_visits v
+        WHERE v.user_id = u.id
+    ) AS labs,
+
+    (
+        SELECT v.lab
+        FROM lab_visits v
+        WHERE v.user_id = u.id
+        ORDER BY v.at DESC
+        LIMIT 1
+    ) AS current_lab,
+
+    (
+        SELECT COALESCE(SUM(p.amount), 0)
+        FROM payments p
+        WHERE p.user_id = u.id
+          AND p.status = 'verified'
+    ) AS paid
+
+FROM users u
+
+ORDER BY (
+    SELECT MAX(l.at)
+    FROM logins l
+    WHERE l.user_id = u.id
+) DESC NULLS LAST
+"""
+
+
+ACTIVITY_SQL = """
+SELECT *
+FROM (
+    SELECT
+        u.username AS username,
+        'login' AS kind,
+        '' AS detail,
+        l.at AS at
+    FROM logins l
+    JOIN users u ON u.id = l.user_id
+
+    UNION ALL
+
+    SELECT
+        u.username AS username,
+        'lab' AS kind,
+        v.lab AS detail,
+        v.at AS at
+    FROM lab_visits v
+    JOIN users u ON u.id = v.user_id
+) activity
+ORDER BY at DESC
+LIMIT 50
+"""
+
+
+def _fetch_subscription_data():
+    trials = {}
+    subscriptions = {}
+
+    conn = None
+    cur = None
+
+    try:
+        conn = get_subscription_db()
+        cur = _get_cursor(conn)
+
+        cur.execute("""
+            SELECT
+                user_id,
+                started_at,
+                expires_at,
+                (expires_at > NOW()) AS is_active
+            FROM ll_account_trials
+        """)
+
+        for trial in cur.fetchall():
+            trials[int(trial["user_id"])] = dict(trial)
+
+        # Only active, unexpired subscriptions belong in the users'
+        # Paid Subscriptions section. Pending payment attempts must not
+        # be displayed or counted as subscriptions.
+        cur.execute("""
+            SELECT
+                user_id,
+                lab_name,
+                plan_days,
+                amount,
+                status,
+                started_at,
+                expires_at,
+                TRUE AS is_active
+            FROM ll_lab_subscriptions
+            WHERE UPPER(status) = 'ACTIVE'
+              AND expires_at > NOW()
+            ORDER BY created_at DESC
+        """)
+
+        for subscription in cur.fetchall():
+            subscription = dict(subscription)
+            user_id = int(subscription["user_id"])
+
+            subscriptions.setdefault(user_id, []).append(subscription)
+
+    except Exception as exc:
+        print(
+            f"[Admin] Could not load subscription information: {exc}",
+            flush=True,
+        )
+
+    finally:
+        if cur:
+            cur.close()
+
+        if conn:
+            conn.close()
+
+    return trials, subscriptions
+
+
+@app.route("/admin")
+@admin_required
+def admin_dashboard():
+    day_ago = (
+        datetime.now(timezone.utc) - timedelta(days=1)
+    ).isoformat()
+
+    conn = get_db()
+
+    try:
+        cur = _get_cursor(conn)
+
+        cur.execute(USERS_SQL)
+        users = cur.fetchall()
+
+        cur.execute("""
+            SELECT
+                p.*,
+                u.username,
+                u.email
+            FROM payments p
+            JOIN users u ON u.id = p.user_id
+            WHERE LOWER(p.status) = 'pending'
+            ORDER BY p.created_at DESC
+        """)
+        pending = cur.fetchall()
+
+        cur.execute("""
+            SELECT
+                p.*,
+                u.username
+            FROM payments p
+            JOIN users u ON u.id = p.user_id
+            WHERE LOWER(p.status) != 'pending'
+            ORDER BY p.created_at DESC
+            LIMIT 100
+        """)
+        history = cur.fetchall()
+
+        cur.execute(ACTIVITY_SQL)
+        activity = cur.fetchall()
+
+        cur.execute("""
+            SELECT
+                v.lab AS lab,
+                u.username AS username,
+                COUNT(*) AS visits,
+                MAX(v.at) AS last_at
+            FROM lab_visits v
+            JOIN users u ON u.id = v.user_id
+            GROUP BY v.lab, u.id, u.username
+            ORDER BY v.lab, last_at DESC
+        """)
+        by_lab = cur.fetchall()
+
+        cur.execute("""
+            SELECT
+                (SELECT COUNT(*) FROM users) AS users,
+
+                (
+                    SELECT COUNT(DISTINCT user_id)
+                    FROM payments
+                    WHERE LOWER(status) = 'verified'
+                ) AS payers,
+
+                (
+                    SELECT COALESCE(SUM(amount), 0)
+                    FROM payments
+                    WHERE LOWER(status) = 'verified'
+                ) AS total,
+
+                (
+                    SELECT COUNT(DISTINCT user_id)
+                    FROM logins
+                    WHERE at >= %s
+                ) AS active
+        """, (day_ago,))
+
+        stats = dict(cur.fetchone())
+        cur.close()
+
+    finally:
+        conn.close()
+
+    trials, subscriptions = _fetch_subscription_data()
+
+    users_view = []
+
+    for user in users:
+        item = dict(user)
+        user_id = int(item["id"])
+
+        trial = trials.get(user_id)
+
+        item["trial_used"] = trial is not None
+        item["trial_active"] = bool(
+            trial and trial.get("is_active")
+        )
+        item["trial_expires_at"] = (
+            trial.get("expires_at") if trial else None
+        )
+
+        # This list now contains ACTIVE subscriptions only.
+        # Pending and expired payment attempts are excluded.
+        item["subscriptions"] = subscriptions.get(user_id, [])
+
+        item["active_subscriptions"] = item["subscriptions"]
+
+        users_view.append(item)
+
+    stats["trial_users"] = sum(
+        1 for trial in trials.values()
+        if trial.get("is_active")
+    )
+
+    stats["subscribers"] = len(subscriptions)
+
+    return render_template(
+        "admin.html",
+        users=users_view,
+        pending=pending,
+        history=history,
+        activity=activity,
+        by_lab=by_lab,
+        stats=stats,
+    )
+
+
+@app.route("/admin/user/<int:user_id>/delete", methods=["POST"])
+@admin_required
+def admin_delete_user(user_id):
+    _check_csrf()
+
+    conn = get_db()
+
+    try:
+        cur = _get_cursor(conn)
+
+        cur.execute(
+            "SELECT id, username FROM users WHERE id = %s",
+            (user_id,),
+        )
+
+        user = cur.fetchone()
+
+        if not user:
+            cur.close()
+            flash("User not found.", "error")
+            return redirect(url_for("admin_dashboard"))
+
+        for table in (
+            "payments",
+            "lab_visits",
+            "logins",
+            "password_resets",
+        ):
+            cur.execute(
+                f"DELETE FROM {table} WHERE user_id = %s",
+                (user_id,),
+            )
+
+        cur.execute(
+            "DELETE FROM users WHERE id = %s",
+            (user_id,),
+        )
+
+        conn.commit()
+        cur.close()
+
+        flash(
+            f"User {user['username']} deleted successfully.",
+            "success",
+        )
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
+
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/admin/payment/<int:pid>", methods=["POST"])
+@admin_required
+def admin_payment(pid):
+    _check_csrf()
+
+    action = request.form.get("action")
+
+    if action in ("verified", "rejected"):
+        conn = get_db()
+
+        try:
+            cur = conn.cursor()
+
+            cur.execute(
+                "UPDATE payments SET status = %s WHERE id = %s",
+                (action, pid),
+            )
+
+            conn.commit()
+            cur.close()
+
+        except Exception:
+            conn.rollback()
+            raise
+
+        finally:
+            conn.close()
+
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/contribute/submit", methods=["POST"])
+def contribute_submit():
+    if not session.get("user_id") or session.get("is_admin"):
+        return redirect(url_for("login", next="/contribute"))
+
+    _check_csrf()
+
+    utr = re.sub(r"\s", "", request.form.get("utr", ""))
+
+    try:
+        amount = Decimal(request.form.get("amount", ""))
+    except (InvalidOperation, TypeError):
+        amount = Decimal(0)
+
+    if not re.fullmatch(r"\d{12}", utr):
+        flash(
+            "Enter the 12-digit UPI reference (UTR) number.",
+            "error",
+        )
+
+    elif not amount.is_finite() or amount < 1 or amount > 100000:
+        flash(
+            "Enter a valid amount between 1 and 100000.",
+            "error",
+        )
+
+    else:
+        conn = get_db()
+
+        try:
+            cur = conn.cursor()
+
+            cur.execute(
+                """
+                INSERT INTO payments
+                    (user_id, amount, utr, created_at)
+                VALUES (%s, %s, %s, %s)
+                """,
+                (
+                    session["user_id"],
+                    amount,
+                    utr,
+                    _now(),
+                ),
+            )
+
+            conn.commit()
+            cur.close()
+
+            flash(
+                "Thank you! Your payment is submitted and awaiting verification.",
+                "success",
+            )
+
+        except psycopg2.IntegrityError:
+            conn.rollback()
+            flash(
+                "This reference number was already submitted.",
+                "error",
+            )
+
+        except Exception:
+            conn.rollback()
+            raise
+
+        finally:
+            conn.close()
+
+    return redirect(url_for("contribute"))
+
