@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ansible Blockinfile Module</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 18px;
+            background: #0b1120;
+            color: #e5e7eb;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1, h2, h3 {
+            color: #60a5fa;
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 25px;
+            margin-top: 38px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 9px;
+        }
+
+        h3 {
+            font-size: 19px;
+            margin-top: 25px;
+        }
+
+        p {
+            color: #cbd5e1;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        .intro {
+            color: #94a3b8;
+            font-size: 17px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            margin: 25px 0 12px;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-button {
+            display: inline-block;
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .video-button:hover {
+            background: #15803d;
+        }
+
+        .info-box {
+            background: #172554;
+            border-left: 4px solid #3b82f6;
+            padding: 16px 20px;
+            border-radius: 7px;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            background: #422006;
+            border-left: 4px solid #f59e0b;
+            padding: 16px 20px;
+            border-radius: 7px;
+            margin: 20px 0;
+        }
+
+        .why-box {
+            background: #451a03;
+            border: 1px solid #92400e;
+            border-left: 6px solid #d97706;
+            padding: 24px;
+            border-radius: 10px;
+            margin-top: 45px;
+        }
+
+        .why-box h2 {
+            color: #fbbf24;
+            border-bottom-color: #92400e;
+            margin-top: 0;
+        }
+
+        .why-box p,
+        .why-box li {
+            color: #fde68a;
+        }
+
+        pre {
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 18px;
+            overflow-x: auto;
+            color: #d1d5db;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: Consolas, Monaco, monospace;
+            color: #86efac;
+        }
+
+        pre code {
+            color: #d1d5db;
+        }
+
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            display: block;
+            overflow-x: auto;
+        }
+
+        .parameter-table th,
+        .parameter-table td {
+            border: 1px solid #334155;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .parameter-table th {
+            background: #1e293b;
+            color: #93c5fd;
+        }
+
+        .parameter-table td {
+            color: #cbd5e1;
+        }
+
+        .step {
+            background: #111c30;
+            border: 1px solid #263449;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 18px 0;
+        }
+
+        .step h3 {
+            margin-top: 0;
+        }
+
+        .footer {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px 12px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            pre {
+                font-size: 12px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Ansible Blockinfile Module</h1>
+
+    <p class="intro">
+        Learn how to insert, update, and remove complete blocks of text
+        inside configuration files using Ansible playbooks.
+    </p>
+
+    <div id="videoContainer" class="video-container">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible Blockinfile Module Tutorial"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <button id="videoToggle" class="video-button" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <h2>1. What Is the Blockinfile Module?</h2>
+
+    <p>
+        The <code>ansible.builtin.blockinfile</code> module manages
+        multiple lines of text inside a file.
+    </p>
+
+    <p>
+        It is useful when you need to add an entire configuration section,
+        rather than managing individual lines separately.
+    </p>
+
+    <p>
+        For example, an application configuration file may need a complete
+        database configuration section containing several settings.
+        Instead of adding each line individually, you can manage the
+        entire section as one block.
+    </p>
+
+    <div class="info-box">
+        <strong>Important:</strong>
+        Use <code>lineinfile</code> to manage individual lines.
+        Use <code>blockinfile</code> to manage multiple lines as a block.
+    </div>
+
+    <h2>2. Understanding Blockinfile Markers</h2>
+
+    <p>
+        By default, Ansible places marker comments around the block it
+        manages. These markers identify the section that Ansible owns.
+    </p>
+
+    <p>For example, a playbook may insert this configuration:</p>
+
+    <pre><code># BEGIN ANSIBLE MANAGED BLOCK
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=learning_labs
+# END ANSIBLE MANAGED BLOCK</code></pre>
+
+    <p>
+        The markers help Ansible locate the block during subsequent
+        playbook executions. When the block content changes, Ansible
+        updates the managed section instead of adding another copy.
+    </p>
+
+    <h2>3. Basic Playbook Structure</h2>
+
+    <pre><code>---
+- name: Manage configuration block
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Add database configuration block
+      ansible.builtin.blockinfile:
+        path: /tmp/app.conf
+        block: |
+          DB_HOST=localhost
+          DB_PORT=5432
+          DB_NAME=learning_labs
+        state: present
+        create: true</code></pre>
+
+    <p>Important fields:</p>
+
+    <ul>
+        <li><code>hosts</code>: Specifies the target managed host.</li>
+        <li><code>become</code>: Enables privilege escalation.</li>
+        <li><code>path</code>: Specifies the file to modify.</li>
+        <li><code>block</code>: Contains the multiple lines to manage.</li>
+        <li><code>state</code>: Controls whether the block exists.</li>
+        <li><code>create</code>: Creates the file if it does not exist.</li>
+    </ul>
+
+    <h2>4. Important Parameters</h2>
+
+    <table class="parameter-table">
+        <thead>
+        <tr>
+            <th>Parameter</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><code>path</code></td>
+            <td>Absolute path of the file to modify. Required.</td>
+        </tr>
+        <tr>
+            <td><code>block</code></td>
+            <td>Multiple lines of content to insert or manage.</td>
+        </tr>
+        <tr>
+            <td><code>state</code></td>
+            <td><code>present</code> ensures the block exists. <code>absent</code> removes the managed block.</td>
+        </tr>
+        <tr>
+            <td><code>marker</code></td>
+            <td>Defines the marker format surrounding the managed block.</td>
+        </tr>
+        <tr>
+            <td><code>marker_begin</code></td>
+            <td>Customizes the beginning marker text.</td>
+        </tr>
+        <tr>
+            <td><code>marker_end</code></td>
+            <td>Customizes the ending marker text.</td>
+        </tr>
+        <tr>
+            <td><code>insertafter</code></td>
+            <td>Inserts the block after a matching expression or at EOF.</td>
+        </tr>
+        <tr>
+            <td><code>insertbefore</code></td>
+            <td>Inserts the block before a matching expression or at BOF.</td>
+        </tr>
+        <tr>
+            <td><code>backup</code></td>
+            <td>Creates a backup before modifying the file.</td>
+        </tr>
+        <tr>
+            <td><code>create</code></td>
+            <td>Creates the target file if it does not exist.</td>
+        </tr>
+        <tr>
+            <td><code>validate</code></td>
+            <td>Runs a validation command against a temporary file before replacing the target file.</td>
+        </tr>
+        <tr>
+            <td><code>owner</code></td>
+            <td>Sets the file owner.</td>
+        </tr>
+        <tr>
+            <td><code>group</code></td>
+            <td>Sets the file group.</td>
+        </tr>
+        <tr>
+            <td><code>mode</code></td>
+            <td>Sets file permissions.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>5. Adding a Multiline Configuration Block</h2>
+
+    <p>
+        The <code>block</code> parameter accepts multiple lines.
+        YAML's pipe character (<code>|</code>) preserves the line breaks.
+    </p>
+
+    <p>Create <code>add-block.yml</code>:</p>
+
+    <pre><code>---
+- name: Add application configuration block
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Add database settings
+      ansible.builtin.blockinfile:
+        path: /tmp/app.conf
+        block: |
+          DB_HOST=localhost
+          DB_PORT=5432
+          DB_NAME=learning_labs
+          DB_USER=learning_user
+        state: present
+        create: true</code></pre>
+
+    <p>The resulting file contains:</p>
+
+    <pre><code># BEGIN ANSIBLE MANAGED BLOCK
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=learning_labs
+DB_USER=learning_user
+# END ANSIBLE MANAGED BLOCK</code></pre>
+
+    <h2>6. Updating an Existing Block</h2>
+
+    <p>
+        If you change the content of the <code>block</code> parameter,
+        Ansible updates the existing managed block.
+    </p>
+
+    <p>For example, change the database port to 3306:</p>
+
+    <pre><code>---
+- name: Update database configuration
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Update database settings
+      ansible.builtin.blockinfile:
+        path: /tmp/app.conf
+        block: |
+          DB_HOST=localhost
+          DB_PORT=3306
+          DB_NAME=learning_labs
+          DB_USER=learning_user
+        state: present</code></pre>
+
+    <p>Updated content:</p>
+
+    <pre><code># BEGIN ANSIBLE MANAGED BLOCK
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=learning_labs
+DB_USER=learning_user
+# END ANSIBLE MANAGED BLOCK</code></pre>
+
+    <div class="info-box">
+        Ansible identifies the existing block using its markers and
+        updates its contents. It does not create another managed block
+        on every execution.
+    </div>
+
+    <h2>7. Removing a Managed Block</h2>
+
+    <p>
+        Set <code>state: absent</code> to remove the block managed by
+        Ansible.
+    </p>
+
+    <pre><code>---
+- name: Remove database configuration block
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Remove database settings
+      ansible.builtin.blockinfile:
+        path: /tmp/app.conf
+        block: |
+          DB_HOST=localhost
+          DB_PORT=5432
+          DB_NAME=learning_labs
+          DB_USER=learning_user
+        state: absent</code></pre>
+
+    <p>
+        Ansible removes the managed block and its markers. Other content
+        outside that block remains untouched.
+    </p>
+
+    <h2>8. Using Custom Markers</h2>
+
+    <p>
+        You can customize the marker comments to make managed sections
+        easier to identify.
+    </p>
+
+    <pre><code>---
+- name: Add block with custom markers
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Add custom application block
+      ansible.builtin.blockinfile:
+        path: /tmp/app.conf
+        block: |
+          CACHE_ENABLED=true
+          CACHE_HOST=localhost
+          CACHE_PORT=6379
+        marker: "# {mark} APPLICATION CACHE CONFIGURATION"
+        state: present
+        create: true</code></pre>
+
+    <p>Result:</p>
+
+    <pre><code># BEGIN APPLICATION CACHE CONFIGURATION
+CACHE_ENABLED=true
+CACHE_HOST=localhost
+CACHE_PORT=6379
+# END APPLICATION CACHE CONFIGURATION</code></pre>
+
+    <div class="warning-box">
+        <strong>Important:</strong>
+        Keep the <code>{mark}</code> placeholder in the marker format.
+        Ansible replaces it with the beginning and ending marker text.
+        If you use the same marker format for multiple independent blocks
+        in one file, Ansible may identify the wrong block.
+    </div>
+
+    <h2>9. Inserting a Block at a Specific Position</h2>
+
+    <p>
+        You can control where Ansible inserts a block using
+        <code>insertafter</code> and <code>insertbefore</code>.
+    </p>
+
+    <h3>Using insertafter</h3>
+
+    <pre><code>---
+- name: Insert block after application section
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Add logging configuration
+      ansible.builtin.blockinfile:
+        path: /tmp/app.conf
+        block: |
+          LOG_LEVEL=INFO
+          LOG_FILE=/tmp/application.log
+        insertafter: '^APP_NAME='
+        state: present</code></pre>
+
+    <h3>Using insertbefore</h3>
+
+    <pre><code>---
+- name: Insert block before database section
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Add application metadata
+      ansible.builtin.blockinfile:
+        path: /tmp/app.conf
+        block: |
+          APP_OWNER=admin
+          APP_VERSION=1.0
+        insertbefore: '^DB_HOST='
+        state: present</code></pre>
+
+    <h3>Special insertion positions</h3>
+
+    <ul>
+        <li><code>EOF</code>: End of the file.</li>
+        <li><code>BOF</code>: Beginning of the file.</li>
+    </ul>
+
+    <h2>10. Creating a Backup Before Modification</h2>
+
+    <p>
+        Use <code>backup: true</code> to preserve the original file
+        before Ansible modifies it.
+    </p>
+
+    <pre><code>---
+- name: Update configuration with backup
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Update application settings
+      ansible.builtin.blockinfile:
+        path: /tmp/app.conf
+        block: |
+          APP_ENV=production
+          APP_DEBUG=false
+          APP_LOG_LEVEL=INFO
+        state: present
+        backup: true</code></pre>
+
+    <h2>11. Using Validate</h2>
+
+    <p>
+        The <code>validate</code> parameter allows you to check the
+        proposed file content before Ansible replaces the original file.
+    </p>
+
+    <p>
+        Ansible creates a temporary file containing the proposed changes
+        and passes its path to the validation command through
+        <code>%s</code>.
+    </p>
+
+    <pre><code>---
+- name: Validate configuration before applying
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Manage application configuration
+      ansible.builtin.blockinfile:
+        path: /tmp/app.conf
+        block: |
+          APP_NAME=learning-labs
+          APP_PORT=8080
+          APP_ENV=production
+        state: present
+        create: true
+        validate: "/usr/bin/test -s %s"</code></pre>
+
+    <p>
+        This example checks that the temporary file is not empty.
+        For real applications, use the application's own configuration
+        validation command when one is available.
+    </p>
+
+    <h2>12. Understanding Idempotency</h2>
+
+    <p>
+        Idempotency ensures that repeatedly executing the same playbook
+        does not create duplicate configuration blocks.
+    </p>
+
+    <p>Consider this task:</p>
+
+    <pre><code>- name: Ensure database configuration
+  ansible.builtin.blockinfile:
+    path: /tmp/app.conf
+    block: |
+      DB_HOST=localhost
+      DB_PORT=5432
+      DB_NAME=learning_labs
+    state: present
+    create: true</code></pre>
+
+    <ul>
+        <li>First execution: Ansible creates the managed block.</li>
+        <li>Second execution: Ansible detects that the block already exists.</li>
+        <li>Third execution: No duplicate block is added.</li>
+        <li>If the block content changes, Ansible updates the managed block.</li>
+    </ul>
+
+    <h2>13. Practical Project: Manage Application Configuration Sections</h2>
+
+    <p>
+        In this project, you will create an application configuration
+        file and manage separate configuration sections for the
+        application, database, and logging.
+    </p>
+
+    <h3>Project Requirements</h3>
+
+    <ul>
+        <li>Create an application configuration file.</li>
+        <li>Add an application configuration block.</li>
+        <li>Add a database configuration block.</li>
+        <li>Add a logging configuration block.</li>
+        <li>Use custom markers for each block.</li>
+        <li>Update an existing database configuration block.</li>
+        <li>Remove the logging configuration block.</li>
+        <li>Create backups before modifications.</li>
+    </ul>
+
+    <h3>Step 1: Create the Complete Playbook</h3>
+
+    <p>
+        Create a file named <code>application-config.yml</code>
+        on the Ansible controller.
+    </p>
+
+    <pre><code>---
+- name: Manage application configuration sections
+  hosts: ansible-client
+  become: true
+
+  vars:
+    config_dir: /tmp/ansible-blockinfile-lab
+    config_file: /tmp/ansible-blockinfile-lab/app.conf
+
+  tasks:
+
+    - name: Create configuration directory
+      ansible.builtin.file:
+        path: "{{ config_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create initial configuration file
+      ansible.builtin.copy:
+        dest: "{{ config_file }}"
+        content: |
+          # Application configuration
+          APP_NAME=learning-labs
+
+          # Additional settings
+        force: false
+        mode: '0644'
+
+    - name: Add application configuration block
+      ansible.builtin.blockinfile:
+        path: "{{ config_file }}"
+        marker: "# {mark} APPLICATION SETTINGS"
+        block: |
+          APP_PORT=8080
+          APP_ENV=production
+          APP_DEBUG=false
+        state: present
+        backup: true
+
+    - name: Add database configuration block
+      ansible.builtin.blockinfile:
+        path: "{{ config_file }}"
+        marker: "# {mark} DATABASE SETTINGS"
+        block: |
+          DB_HOST=localhost
+          DB_PORT=5432
+          DB_NAME=learning_labs
+          DB_USER=learning_user
+        state: present
+        backup: true
+
+    - name: Add logging configuration block
+      ansible.builtin.blockinfile:
+        path: "{{ config_file }}"
+        marker: "# {mark} LOGGING SETTINGS"
+        block: |
+          LOG_LEVEL=INFO
+          LOG_FILE=/tmp/application.log
+          LOG_ENABLED=true
+        state: present
+
+    - name: Update database configuration block
+      ansible.builtin.blockinfile:
+        path: "{{ config_file }}"
+        marker: "# {mark} DATABASE SETTINGS"
+        block: |
+          DB_HOST=127.0.0.1
+          DB_PORT=5432
+          DB_NAME=learning_labs
+          DB_USER=learning_user
+        state: present
+        backup: true
+
+    - name: Remove logging configuration block
+      ansible.builtin.blockinfile:
+        path: "{{ config_file }}"
+        marker: "# {mark} LOGGING SETTINGS"
+        state: absent
+
+    - name: Display project completion message
+      ansible.builtin.debug:
+        msg: "Application configuration blocks have been managed successfully."</code></pre>
+
+    <h3>Step 2: Expected Configuration</h3>
+
+    <p>
+        After the playbook completes, the configuration file should
+        contain the following sections:
+    </p>
+
+    <pre><code># Application configuration
+APP_NAME=learning-labs
+
+# Additional settings
+
+# BEGIN APPLICATION SETTINGS
+APP_PORT=8080
+APP_ENV=production
+APP_DEBUG=false
+# END APPLICATION SETTINGS
+
+# BEGIN DATABASE SETTINGS
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_NAME=learning_labs
+DB_USER=learning_user
+# END DATABASE SETTINGS</code></pre>
+
+    <h3>Step 3: Verify the Configuration</h3>
+
+    <p>
+        Create <code>verify-config.yml</code> on the controller.
+    </p>
+
+    <pre><code>---
+- name: Verify application configuration
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Read application configuration
+      ansible.builtin.slurp:
+        src: /tmp/ansible-blockinfile-lab/app.conf
+      register: config_file_content
+
+    - name: Display application configuration
+      ansible.builtin.debug:
+        msg: "{{ config_file_content.content | b64decode }}"</code></pre>
+
+    <h3>Step 4: Test Idempotency</h3>
+
+    <p>
+        Execute the project playbook again. Ansible should not add
+        duplicate application or database blocks.
+    </p>
+
+    <div class="info-box">
+        <strong>Project outcome:</strong>
+        You have automated the management of multiple configuration
+        sections on the ansible-client Ubuntu host using blockinfile.
+    </div>
+
+    <h2>14. What This Lab Covers</h2>
+
+    <ul>
+        <li>Understanding the Ansible blockinfile module.</li>
+        <li>Adding multiline configuration blocks.</li>
+        <li>Updating existing managed blocks.</li>
+        <li>Removing managed blocks.</li>
+        <li>Using default and custom markers.</li>
+        <li>Controlling block insertion positions.</li>
+        <li>Creating backups before modifications.</li>
+        <li>Validating configuration files.</li>
+        <li>Understanding idempotency.</li>
+        <li>Managing multiple configuration sections in a playbook.</li>
+    </ul>
+
+    <div class="why-box">
+        <h2>Why Do We Use the Ansible Blockinfile Module?</h2>
+
+        <p>
+            Linux applications frequently use configuration files that
+            contain multiple related settings. These settings may be
+            grouped into sections for databases, application behavior,
+            logging, caching, security, and other components.
+        </p>
+
+        <p>
+            Managing each line separately becomes difficult when an
+            entire configuration section needs to be added, updated,
+            or removed. The blockinfile module solves this problem by
+            allowing administrators to manage multiple lines as one
+            identifiable block.
+        </p>
+
+        <p>
+            Ansible uses marker comments to identify the section it
+            manages. This makes it possible to update or remove that
+            section without unnecessarily changing unrelated content
+            in the same file.
+        </p>
+
+        <h3>Practical Reasons to Use It</h3>
+
+        <ul>
+            <li>
+                <strong>Manage complete configuration sections:</strong>
+                Add multiple related settings together instead of
+                managing each line independently.
+            </li>
+            <li>
+                <strong>Update configurations consistently:</strong>
+                Maintain standard application, database, and logging
+                sections across multiple managed servers.
+            </li>
+            <li>
+                <strong>Remove configuration sections safely:</strong>
+                Remove a managed block without deleting unrelated
+                file content.
+            </li>
+            <li>
+                <strong>Prevent duplicate blocks:</strong>
+                Use markers to identify and maintain the existing
+                managed section.
+            </li>
+            <li>
+                <strong>Support deployment automation:</strong>
+                Add application-specific configuration sections
+                during deployment workflows.
+            </li>
+            <li>
+                <strong>Improve configuration consistency:</strong>
+                Apply the same structured configuration to multiple
+                Ubuntu servers.
+            </li>
+        </ul>
+
+        <h3>Real-World DevOps Example</h3>
+
+        <p>
+            Imagine an organization managing 30 Ubuntu application
+            servers. A new release requires adding a database
+            configuration section containing the database host,
+            port, database name, and username.
+        </p>
+
+        <p>
+            Instead of manually editing the configuration file on
+            every server, an administrator can create one Ansible
+            playbook using blockinfile and execute it against the
+            managed inventory.
+        </p>
+
+        <p>
+            Ansible inserts the required block, identifies it using
+            markers, and updates the same block when configuration
+            values change.
+        </p>
+
+        <p>
+            This makes blockinfile useful for configuration management,
+            application deployment, and infrastructure automation.
+        </p>
+
+        <p>
+            <strong>Remember:</strong> Use blockinfile for multiline
+            sections, lineinfile for individual lines, and template
+            when you need to manage an entire file from a template.
+        </p>
+    </div>
+
+    <div class="footer">
+        Ansible Learning Labs
+    </div>
+
+</div>
+
+<script>
+    function toggleVideo() {
+        const video = document.getElementById("videoContainer");
+        const button = document.getElementById("videoToggle");
+
+        if (video.style.display === "none") {
+            video.style.display = "block";
+            button.textContent = "✕ Hide Video";
+        } else {
+            video.style.display = "none";
+            button.textContent = "▶ Watch Video";
+        }
+    }
+</script>
+
+</body>
+</html>
