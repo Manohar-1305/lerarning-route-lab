@@ -1,0 +1,455 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible import_tasks Module</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note { background: #172554; border-left: 4px solid #3b82f6; padding:14px; border-radius:6px; margin:18px 0; }
+.warning { background: #451a03; border-left: 4px solid #f59e0b; padding:14px; border-radius:6px; margin:18px 0; }
+table { width:100%; border-collapse:collapse; margin:18px 0; }
+th,td { border:1px solid #334155; padding:10px; text-align:left; }
+th { background:#1e293b; color:#93c5fd; }
+td { color:#cbd5e1; }
+.video-container { margin:24px 0; }
+.video-container iframe { width:100%; aspect-ratio:16 / 9; border:0; border-radius:10px; display:block; }
+.video-button { display:block; background:#16a34a; color:white; border:0; border-radius:6px; padding:10px 16px; cursor:pointer; font-size:14px; margin-bottom:12px; }
+.project { background:#172033; border:1px solid #334155; border-radius:8px; padding:18px; margin-top:20px; }
+.why { background:#451f0b; border:1px solid #92400e; border-radius:10px; padding:24px; margin-top:40px; }
+.why h2 { color:#fbbf24; margin-top:0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible import_tasks Module</h1>
+
+<p>
+The <code>import_tasks</code> module allows you to import tasks from another YAML file into your playbook. It helps organize large playbooks by separating tasks into smaller files.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. Why Do We Need import_tasks?</h2>
+
+<p>Imagine you are managing multiple Ubuntu servers using Ansible. Your playbook performs several operations:</p>
+
+<ul>
+    <li>Create application directories.</li>
+    <li>Install required packages.</li>
+    <li>Create configuration files.</li>
+    <li>Manage file permissions.</li>
+</ul>
+
+<p>Writing all these tasks in one playbook can make it difficult to maintain.</p>
+
+<p>With <code>import_tasks</code>, you can divide the tasks into separate files and import them into your main playbook.</p>
+
+<h2>2. Basic Syntax</h2>
+
+<pre><code>---
+- name: Main playbook
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Import additional tasks
+      ansible.builtin.import_tasks: tasks.yml</code></pre>
+
+<p>Here, Ansible imports the tasks defined in <code>tasks.yml</code> as part of the main playbook.</p>
+
+<h2>3. Understanding the Syntax</h2>
+
+<table>
+<tr>
+    <th>Component</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td>import_tasks</td>
+    <td>Imports tasks from another YAML file.</td>
+</tr>
+<tr>
+    <td>tasks.yml</td>
+    <td>The file containing the tasks to import.</td>
+</tr>
+<tr>
+    <td>ansible.builtin</td>
+    <td>The built-in Ansible collection containing the module.</td>
+</tr>
+<tr>
+    <td>tasks</td>
+    <td>The main playbook section where imported tasks are declared.</td>
+</tr>
+</table>
+
+<div class="note">
+<strong>Important:</strong> The imported file contains a list of tasks. It does not contain its own <code>hosts</code>, <code>become</code>, or <code>tasks</code> play structure.
+</div>
+
+<h2>4. Create a Separate Task File</h2>
+
+<p>Create a file named <code>application_tasks.yml</code>.</p>
+
+<p><strong>application_tasks.yml</strong></p>
+
+<pre><code>---
+- name: Create application directory
+  ansible.builtin.file:
+    path: /opt/import-demo
+    state: directory
+    mode: '0755'
+
+- name: Create application configuration
+  ansible.builtin.copy:
+    dest: /opt/import-demo/app.conf
+    content: |
+      APP_NAME=ImportDemo
+      APP_ENV=development
+    mode: '0644'
+
+- name: Create application log directory
+  ansible.builtin.file:
+    path: /opt/import-demo/logs
+    state: directory
+    mode: '0755'</code></pre>
+
+<p>This file contains three tasks that will be imported into the main playbook.</p>
+
+<h2>5. Import the Task File into the Main Playbook</h2>
+
+<p>Create a file named <code>main.yml</code>.</p>
+
+<p><strong>main.yml</strong></p>
+
+<pre><code>---
+- name: Configure application
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Import application tasks
+      ansible.builtin.import_tasks: application_tasks.yml</code></pre>
+
+<p>When Ansible processes the playbook, it incorporates the imported tasks into the play.</p>
+
+<h2>6. Execute the Playbook</h2>
+
+<p>Run the playbook from your Ansible controller:</p>
+
+<pre><code>ansible-playbook main.yml</code></pre>
+
+<p>To verify the result, create a separate playbook named <code>verify.yml</code>.</p>
+
+<pre><code>---
+- name: Verify application configuration
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Check application directory
+      ansible.builtin.command: test -d /opt/import-demo
+      changed_when: false
+
+    - name: Check configuration file
+      ansible.builtin.command: test -f /opt/import-demo/app.conf
+      changed_when: false
+
+    - name: Read application configuration
+      ansible.builtin.command: cat /opt/import-demo/app.conf
+      register: config_output
+      changed_when: false
+
+    - name: Display configuration
+      ansible.builtin.debug:
+        var: config_output.stdout</code></pre>
+
+<p>Execute the verification playbook:</p>
+
+<pre><code>ansible-playbook verify.yml</code></pre>
+
+<h2>7. Import Multiple Task Files</h2>
+
+<p>You can import multiple task files into one playbook.</p>
+
+<p>Example directory structure:</p>
+
+<pre><code>ansible-project/
+├── main.yml
+├── directories.yml
+├── configuration.yml
+└── permissions.yml</code></pre>
+
+<p><strong>main.yml</strong></p>
+
+<pre><code>---
+- name: Configure application server
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Import directory tasks
+      ansible.builtin.import_tasks: directories.yml
+
+    - name: Import configuration tasks
+      ansible.builtin.import_tasks: configuration.yml
+
+    - name: Import permission tasks
+      ansible.builtin.import_tasks: permissions.yml</code></pre>
+
+<p>Ansible imports the task lists in the order they appear in the playbook.</p>
+
+<h2>8. Using Variables with import_tasks</h2>
+
+<p>You can use variables to provide values to tasks in the imported file.</p>
+
+<p><strong>main.yml</strong></p>
+
+<pre><code>---
+- name: Configure application
+  hosts: ansible-client
+  become: true
+
+  vars:
+    application_name: import-demo
+    application_path: /opt/import-demo
+
+  tasks:
+    - name: Import application tasks
+      ansible.builtin.import_tasks: application_tasks.yml</code></pre>
+
+<p><strong>application_tasks.yml</strong></p>
+
+<pre><code>---
+- name: Create application directory
+  ansible.builtin.file:
+    path: "{{ application_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Create application information file
+  ansible.builtin.copy:
+    dest: "{{ application_path }}/info.txt"
+    content: |
+      Application: {{ application_name }}
+    mode: '0644'</code></pre>
+
+<p>The imported tasks can access variables defined in the main play.</p>
+
+<h2>9. Using Conditions with import_tasks</h2>
+
+<p>You can apply a <code>when</code> condition to an imported task file.</p>
+
+<pre><code>---
+- name: Conditional task import
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Import Ubuntu tasks
+      ansible.builtin.import_tasks: ubuntu_tasks.yml
+      when: ansible_facts['distribution'] == "Ubuntu"</code></pre>
+
+<p><strong>Important difference:</strong> With static imports, the condition is applied to each imported task. Each task evaluates the condition when it executes.</p>
+
+<p>If a task changes a variable used by the condition, later imported tasks can evaluate that condition differently.</p>
+
+<h2>10. import_tasks vs include_tasks</h2>
+
+<p>Both methods allow you to organize tasks into separate files, but they work differently.</p>
+
+<table>
+<tr>
+    <th>Feature</th>
+    <th>import_tasks</th>
+    <th>include_tasks</th>
+</tr>
+<tr>
+    <td>Type</td>
+    <td>Static inclusion</td>
+    <td>Dynamic inclusion</td>
+</tr>
+<tr>
+    <td>Processing</td>
+    <td>Processed when Ansible loads the playbook</td>
+    <td>Processed during playbook execution</td>
+</tr>
+<tr>
+    <td>Conditions</td>
+    <td>Condition applies to each imported task</td>
+    <td>Condition controls whether the file is included</td>
+</tr>
+<tr>
+    <td>Loops</td>
+    <td>Cannot loop directly over an import_tasks statement</td>
+    <td>Can loop over an include_tasks statement</td>
+</tr>
+<tr>
+    <td>Task visibility</td>
+    <td>Imported tasks are visible during task listing</td>
+    <td>Included tasks may not appear until execution</td>
+</tr>
+</table>
+
+<div class="note">
+<strong>Remember:</strong> Use <code>import_tasks</code> when you want static task inclusion. Use <code>include_tasks</code> when you need dynamic inclusion, such as including a task file conditionally or repeatedly using a loop.
+</div>
+
+<h2>11. Practical Project: Modular Application Configuration</h2>
+
+<div class="project">
+<h3>Objective</h3>
+
+<p>Build a modular playbook that creates an application directory, writes configuration, and creates a log directory using imported task files.</p>
+
+<p><strong>Directory structure:</strong></p>
+
+<pre><code>import-project/
+├── main.yml
+├── directories.yml
+├── config.yml
+└── logs.yml</code></pre>
+
+<p><strong>directories.yml</strong></p>
+
+<pre><code>---
+- name: Create application directory
+  ansible.builtin.file:
+    path: /opt/import-project
+    state: directory
+    mode: '0755'</code></pre>
+
+<p><strong>config.yml</strong></p>
+
+<pre><code>---
+- name: Create application configuration
+  ansible.builtin.copy:
+    dest: /opt/import-project/application.conf
+    content: |
+      APPLICATION=LearningLabs
+      ENVIRONMENT=lab
+    mode: '0644'</code></pre>
+
+<p><strong>logs.yml</strong></p>
+
+<pre><code>---
+- name: Create application log directory
+  ansible.builtin.file:
+    path: /opt/import-project/logs
+    state: directory
+    mode: '0755'
+
+- name: Create initial log file
+  ansible.builtin.copy:
+    dest: /opt/import-project/logs/application.log
+    content: "Application initialized\n"
+    mode: '0644'</code></pre>
+
+<p><strong>main.yml</strong></p>
+
+<pre><code>---
+- name: Deploy application structure
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Import directory tasks
+      ansible.builtin.import_tasks: directories.yml
+
+    - name: Import configuration tasks
+      ansible.builtin.import_tasks: config.yml
+
+    - name: Import log tasks
+      ansible.builtin.import_tasks: logs.yml</code></pre>
+
+<p><strong>Execute:</strong></p>
+
+<pre><code>ansible-playbook main.yml</code></pre>
+
+<h3>Expected Result</h3>
+
+<p>The target Ubuntu container should contain:</p>
+
+<pre><code>/opt/import-project/
+├── application.conf
+└── logs/
+    └── application.log</code></pre>
+
+<p>The configuration and log files should contain the content defined in their respective task files.</p>
+</div>
+
+<h2>12. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the purpose of <code>import_tasks</code>.</li>
+    <li>Creating separate task files.</li>
+    <li>Importing tasks into a main playbook.</li>
+    <li>Importing multiple task files.</li>
+    <li>Using variables with imported tasks.</li>
+    <li>Applying conditions to imported tasks.</li>
+    <li>Understanding static versus dynamic inclusion.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use Ansible import_tasks?</h2>
+
+<p>We use <code>import_tasks</code> to divide large playbooks into smaller, organized task files while keeping their execution structure predictable.</p>
+
+<p>In real-world DevOps automation, a server deployment may require several operations, such as creating directories, installing dependencies, configuring applications, and setting permissions.</p>
+
+<p>Instead of maintaining every task in one large playbook, we can place related tasks in separate files and statically import them into the main playbook.</p>
+
+<p>This improves readability, maintainability, and code reuse. It also allows Ansible to process imported tasks before execution, making the task structure visible during playbook inspection.</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
