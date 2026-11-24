@@ -1,362 +1,704 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>File Module</title>
-    <style>
-      :root {
-        color-scheme: dark;
-        --bg: #0b1020;
-        --surface: #121b2e;
-        --border: #2a3954;
-        --text: #edf3ff;
-        --muted: #94a6c1;
-        --blue: #78a7ff;
-        --green: #42d6a0;
-      }
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible File Module</title>
 
-      * {
-        box-sizing: border-box;
-      }
+<style>
+* { box-sizing: border-box; }
 
-      body {
-        margin: 0;
-        padding: 24px;
-        background: var(--surface);
-        color: var(--text);
-        font-family: "Segoe UI", Arial, sans-serif;
-        font-size: 13px;
-        line-height: 1.75;
-      }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.7;
+}
 
-      h1 {
-        margin: 0 0 24px;
-        padding-bottom: 14px;
-        border-bottom: 1px solid var(--border);
-        color: #fff;
-        font-size: 26px;
-      }
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
 
-      h2 {
-        margin: 28px 0 10px;
-        color: var(--blue);
-        font-size: 19px;
-      }
+h1, h2, h3 { color: #f8fafc; }
 
-      p {
-        margin: 10px 0;
-        color: #dce6f6;
-      }
+h1 { font-size: 32px; }
 
-      .code-box {
-        margin: 12px 0 20px;
-        overflow-x: auto;
-        border: 1px solid var(--border);
-        border-left: 4px solid var(--blue);
-        border-radius: 7px;
-        background: #080d18;
-      }
+h2 {
+    margin-top: 38px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 9px;
+}
 
-      .code-label {
-        padding: 7px 12px;
-        border-bottom: 1px solid var(--border);
-        background: #121b2e;
-        color: var(--muted);
-        font-size: 11px;
-      }
+h3 {
+    margin-top: 25px;
+    color: #93c5fd;
+}
 
-      pre {
-        margin: 0;
-        padding: 14px;
-        overflow-x: auto;
-        color: var(--green);
-        font-family: Consolas, "Courier New", monospace;
-        font-size: 12px;
-        line-height: 1.7;
-        white-space: pre;
-      }
+p, li { color: #cbd5e1; }
 
-      code {
-        font-family: Consolas, "Courier New", monospace;
-      }
+code {
+    color: #86efac;
+    background: #1e293b;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
 
-      p code {
-        padding: 2px 5px;
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        background: #25344d;
-        color: var(--blue);
-      }
+pre {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    color: #d1d5db;
+    line-height: 1.6;
+}
 
-      .important {
-        margin-top: 28px;
-        padding: 14px 16px;
-        border-left: 4px solid var(--green);
-        border-radius: 5px;
-        background: #102c29;
-      }
+pre code {
+    background: transparent;
+    padding: 0;
+    color: #d1d5db;
+}
 
-      .important h2 {
-        margin: 0 0 8px;
-        color: var(--green);
-      }
+.video-container { margin: 25px 0; }
 
-      .important p {
-        margin-bottom: 0;
-      }
-    </style>
-  </head>
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+}
 
-  <body>
-    <h1>File Module</h1>
+.video-button {
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 10px 17px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
 
-    <h2>1. Create a directory using an ad hoc command</h2>
-    <p>
-      Run the following command on the Ansible controller to create a directory
-      on the managed host:
-    </p>
+.info-box, .warning-box, .project-box {
+    padding: 16px;
+    border-radius: 7px;
+    margin: 20px 0;
+}
 
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -m ansible.builtin.file -a "path=/tmp/ansible-demo state=directory"</code></pre>
+.info-box {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+}
+
+.warning-box {
+    background: #422006;
+    border-left: 4px solid #f59e0b;
+}
+
+.project-box {
+    background: #132e25;
+    border-left: 4px solid #22c55e;
+}
+
+.why-box {
+    background: #713f12;
+    border: 1px solid #a16207;
+    padding: 24px;
+    border-radius: 10px;
+    margin-top: 45px;
+}
+
+.why-box h2 {
+    border: none;
+    margin-top: 0;
+    color: #fef3c7;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #334155;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+td { color: #cbd5e1; }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Ansible File Module</h1>
+
+<p>
+The Ansible File module manages files, directories, symbolic links,
+permissions and ownership on managed hosts. It can create, delete
+and modify filesystem objects without manually executing Linux commands.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <div id="videoWrapper">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible File Module Tutorial"
+            allowfullscreen>
+        </iframe>
     </div>
+</div>
 
-    <p>
-      The <code>path</code> parameter specifies the directory path, and
-      <code>state=directory</code> ensures that the directory exists.
-    </p>
+<h2>1. What Is the File Module?</h2>
 
-    <h2>2. Verify the directory</h2>
-    <p>
-      Execute the following command to verify that the directory exists on the
-      managed host:
-    </p>
+<p>
+The <code>ansible.builtin.file</code> module manages filesystem
+objects on remote managed hosts.
+</p>
 
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -m ansible.builtin.command -a "ls -ld /tmp/ansible-demo"</code></pre>
-    </div>
+<p>Common use cases include:</p>
 
-    <p>Expected output:</p>
+<ul>
+    <li>Creating files and directories.</li>
+    <li>Deleting files and directories.</li>
+    <li>Changing file permissions.</li>
+    <li>Changing file ownership and group.</li>
+    <li>Creating symbolic links.</li>
+    <li>Changing timestamps.</li>
+    <li>Managing directory structures.</li>
+</ul>
 
-    <div class="code-box">
-      <div class="code-label">OUTPUT — Expected result</div>
-      <pre><code>drwxr-xr-x ... /tmp/ansible-demo</code></pre>
-    </div>
+<h2>2. How Does the File Module Work?</h2>
 
-    <h2>3. Create an empty file</h2>
-    <p>Use the file module to create an empty file on the managed host:</p>
+<pre><code>             Ansible Controller
+             ------------------
+             Playbook
+                 |
+                 |
+             SSH Connection
+                 |
+                 v
+             Managed Host
+             -------------
+             Filesystem
+                 |
+                 v
+          Create / Delete / Modify
+                 |
+                 v
+          Updated File or Directory</code></pre>
 
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -m ansible.builtin.file -a "path=/tmp/ansible-demo/test.txt state=touch"</code></pre>
-    </div>
+<p>
+Ansible connects to the managed host and applies the requested
+filesystem changes.
+</p>
 
-    <p>Verify the file:</p>
+<h2>3. Important Parameters</h2>
 
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -m ansible.builtin.command -a "ls -l /tmp/ansible-demo/test.txt"</code></pre>
-    </div>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>path</code></td>
+<td>Path of the file or directory to manage.</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td>Defines whether to create, remove or manage the filesystem object.</td>
+</tr>
+<tr>
+<td><code>owner</code></td>
+<td>Sets the file or directory owner.</td>
+</tr>
+<tr>
+<td><code>group</code></td>
+<td>Sets the file or directory group.</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td>Sets filesystem permissions.</td>
+</tr>
+<tr>
+<td><code>recurse</code></td>
+<td>Applies ownership and permission changes recursively to directory contents.</td>
+</tr>
+<tr>
+<td><code>src</code></td>
+<td>Source path for symbolic links.</td>
+</tr>
+<tr>
+<td><code>follow</code></td>
+<td>Controls whether to follow symbolic links when managing attributes.</td>
+</tr>
+<tr>
+<td><code>force</code></td>
+<td>Controls whether an existing destination is replaced when creating a symbolic link.</td>
+</tr>
+<tr>
+<td><code>access_time</code></td>
+<td>Sets the last access timestamp.</td>
+</tr>
+<tr>
+<td><code>modification_time</code></td>
+<td>Sets the last modification timestamp.</td>
+</tr>
+</tbody>
+</table>
 
-    <h2>4. Set file permissions</h2>
-    <p>Set the file permissions to <code>0644</code>:</p>
+<h2>4. Understanding the State Parameter</h2>
 
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -b -m ansible.builtin.file -a "path=/tmp/ansible-demo/test.txt mode=0644"</code></pre>
-    </div>
+<p>
+The <code>state</code> parameter determines what Ansible should
+do with the filesystem object.
+</p>
 
-    <p>Verify the permissions:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>directory</code></td>
+<td>Creates a directory if it does not exist.</td>
+</tr>
+<tr>
+<td><code>touch</code></td>
+<td>Creates an empty file if missing and updates its timestamps.</td>
+</tr>
+<tr>
+<td><code>file</code></td>
+<td>Manages attributes of an existing file or symbolic link; does not create a missing regular file.</td>
+</tr>
+<tr>
+<td><code>absent</code></td>
+<td>Removes the specified file, directory or symbolic link.</td>
+</tr>
+<tr>
+<td><code>link</code></td>
+<td>Creates a symbolic link.</td>
+</tr>
+<tr>
+<td><code>hard</code></td>
+<td>Creates a hard link.</td>
+</tr>
+</tbody>
+</table>
 
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -b -m ansible.builtin.command -a "stat -c '%a %n' /tmp/ansible-demo/test.txt"</code></pre>
-    </div>
+<h2>5. Create a Directory</h2>
 
-    <p>Expected output:</p>
+<p>
+Use <code>state: directory</code> to create a directory on the
+managed host.
+</p>
 
-    <div class="code-box">
-      <div class="code-label">OUTPUT — Expected result</div>
-      <pre><code>644 /tmp/ansible-demo/test.txt</code></pre>
-    </div>
+<p><strong>Playbook: create-directory.yml</strong></p>
 
-    <h2>5. Set directory permissions</h2>
-    <p>Set the directory permissions to <code>0755</code>:</p>
-
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -b -m ansible.builtin.file -a "path=/tmp/ansible-demo state=directory mode=0755"</code></pre>
-    </div>
-
-    <p>Verify the directory permissions:</p>
-
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -b -m ansible.builtin.command -a "stat -c '%a %n' /tmp/ansible-demo"</code></pre>
-    </div>
-
-    <h2>6. Change file ownership</h2>
-    <p>Set the file owner and group to root:</p>
-
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -b -m ansible.builtin.file -a "path=/tmp/ansible-demo/test.txt owner=root group=root"</code></pre>
-    </div>
-
-    <p>Verify ownership:</p>
-
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -b -m ansible.builtin.command -a "stat -c '%U %G %n' /tmp/ansible-demo/test.txt"</code></pre>
-    </div>
-
-    <p>Expected output:</p>
-
-    <div class="code-box">
-      <div class="code-label">OUTPUT — Expected result</div>
-      <pre><code>root root /tmp/ansible-demo/test.txt</code></pre>
-    </div>
-
-    <h2>7. Create a symbolic link</h2>
-    <p>Create a symbolic link pointing to the test file:</p>
-
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -m ansible.builtin.file -a "src=/tmp/ansible-demo/test.txt path=/tmp/ansible-demo/test-link.txt state=link"</code></pre>
-    </div>
-
-    <p>Verify the symbolic link:</p>
-
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -m ansible.builtin.command -a "ls -l /tmp/ansible-demo/test-link.txt"</code></pre>
-    </div>
-
-    <h2>8. Remove a file</h2>
-    <p>Delete the symbolic link created in the previous step:</p>
-
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -m ansible.builtin.file -a "path=/tmp/ansible-demo/test-link.txt state=absent"</code></pre>
-    </div>
-
-    <p>Verify that the link no longer exists:</p>
-
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -m ansible.builtin.command -a "ls -l /tmp/ansible-demo"</code></pre>
-    </div>
-
-    <h2>9. Create a YAML playbook</h2>
-    <p>
-      Create a file named <code>file_module.yml</code> on the Ansible
-      controller.
-    </p>
-
-    <div class="code-box">
-      <div class="code-label">BASH — Create the YAML file</div>
-      <pre><code>cat > file_module.yml <<'EOF'
----
-- name: Manage files and directories
-  hosts: clients
+<pre><code>---
+- name: Create directory
+  hosts: ansible-client
   become: true
 
   tasks:
-    - name: Create the learning directory
+    - name: Create application directory
       ansible.builtin.file:
-        path: /tmp/ansible-demo
+        path: /tmp/learning-labs
+        state: directory
+        mode: '0755'</code></pre>
+
+<p>
+If the directory already exists, Ansible ensures that its requested
+attributes are applied.
+</p>
+
+<h2>6. Create an Empty File</h2>
+
+<p>
+Use <code>state: touch</code> to create an empty file when it does
+not exist.
+</p>
+
+<p><strong>Playbook: create-file.yml</strong></p>
+
+<pre><code>---
+- name: Create empty file
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create application log file
+      ansible.builtin.file:
+        path: /tmp/learning-labs/application.log
+        state: touch
+        owner: root
+        group: root
+        mode: '0644'</code></pre>
+
+<div class="warning-box">
+<strong>Important:</strong>
+The <code>touch</code> state updates the access and modification
+timestamps when the task runs. It is not necessarily a no-change
+operation on repeated playbook executions.
+</div>
+
+<h2>7. Change File Permissions</h2>
+
+<p>
+Use the <code>mode</code> parameter to change file permissions.
+The file must already exist.
+</p>
+
+<p><strong>Playbook: file-permissions.yml</strong></p>
+
+<pre><code>---
+- name: Change file permissions
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Set application log permissions
+      ansible.builtin.file:
+        path: /tmp/learning-labs/application.log
+        state: file
+        mode: '0640'</code></pre>
+
+<p>
+The permission <code>0640</code> means:
+</p>
+
+<ul>
+    <li>Owner: Read and write.</li>
+    <li>Group: Read only.</li>
+    <li>Others: No permissions.</li>
+</ul>
+
+<h2>8. Change File Ownership</h2>
+
+<p>
+Use <code>owner</code> and <code>group</code> to manage ownership.
+</p>
+
+<p><strong>Playbook: file-ownership.yml</strong></p>
+
+<pre><code>---
+- name: Change file ownership
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Set application file ownership
+      ansible.builtin.file:
+        path: /tmp/learning-labs/application.log
+        state: file
+        owner: root
+        group: root
+        mode: '0644'</code></pre>
+
+<h2>9. Create Nested Directories</h2>
+
+<p>
+The File module can create a complete directory path even when
+its parent directories do not exist.
+</p>
+
+<p><strong>Playbook: nested-directories.yml</strong></p>
+
+<pre><code>---
+- name: Create nested directories
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create application directory structure
+      ansible.builtin.file:
+        path: /tmp/learning-labs/config/production
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'</code></pre>
+
+<h2>10. Apply Permissions Recursively</h2>
+
+<p>
+The <code>recurse</code> parameter applies ownership and permission
+changes to the directory and its contents.
+</p>
+
+<p><strong>Playbook: recursive-permissions.yml</strong></p>
+
+<pre><code>---
+- name: Apply recursive permissions
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Set ownership and permissions recursively
+      ansible.builtin.file:
+        path: /tmp/learning-labs
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+        recurse: true</code></pre>
+
+<div class="warning-box">
+<strong>Important:</strong>
+Recursive permission changes can affect every file and directory
+under the specified path. Use this carefully on production systems.
+</div>
+
+<h2>11. Delete a File</h2>
+
+<p>
+Use <code>state: absent</code> to remove a file.
+</p>
+
+<p><strong>Playbook: delete-file.yml</strong></p>
+
+<pre><code>---
+- name: Delete application log
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Remove application log file
+      ansible.builtin.file:
+        path: /tmp/learning-labs/application.log
+        state: absent</code></pre>
+
+<h2>12. Delete a Directory</h2>
+
+<p>
+The <code>absent</code> state also removes directories and their
+contents.
+</p>
+
+<p><strong>Playbook: delete-directory.yml</strong></p>
+
+<pre><code>---
+- name: Delete application directory
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Remove application directory
+      ansible.builtin.file:
+        path: /tmp/learning-labs
+        state: absent</code></pre>
+
+<h2>13. Create a Symbolic Link</h2>
+
+<p>
+A symbolic link points to another file or directory. Use
+<code>state: link</code> and specify the target using <code>src</code>.
+</p>
+
+<p><strong>Playbook: symbolic-link.yml</strong></p>
+
+<pre><code>---
+- name: Create symbolic link
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create application log directory
+      ansible.builtin.file:
+        path: /tmp/application-logs
+        state: directory
+        mode: '0755'
+
+    - name: Create symbolic link
+      ansible.builtin.file:
+        src: /tmp/application-logs
+        path: /tmp/logs-link
+        state: link</code></pre>
+
+<p>
+The link <code>/tmp/logs-link</code> points to
+<code>/tmp/application-logs</code>.
+</p>
+
+<h2>14. Create a Hard Link</h2>
+
+<p>
+A hard link creates another directory entry that references the
+same underlying file data. The source file must already exist,
+and both paths must be on the same filesystem.
+</p>
+
+<p><strong>Playbook: hard-link.yml</strong></p>
+
+<pre><code>---
+- name: Create hard link
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create original file
+      ansible.builtin.copy:
+        content: "Learning Ansible hard links\n"
+        dest: /tmp/original-file.txt
+        mode: '0644'
+
+    - name: Create hard link
+      ansible.builtin.file:
+        src: /tmp/original-file.txt
+        path: /tmp/hard-link.txt
+        state: hard</code></pre>
+
+<h2>15. Practical Project: Manage Application Filesystem</h2>
+
+<div class="project-box">
+
+<h3>Project Objective</h3>
+
+<p>
+Build an Ansible playbook that prepares a complete application
+directory structure and manages its files, permissions and links.
+</p>
+
+<strong>Requirements:</strong>
+
+<ol>
+    <li>Create an application directory.</li>
+    <li>Create configuration, logs and backup directories.</li>
+    <li>Create an empty application log file.</li>
+    <li>Set the correct ownership and permissions.</li>
+    <li>Create a symbolic link to the logs directory.</li>
+    <li>Apply recursive permissions to the backup directory.</li>
+</ol>
+
+<strong>Project playbook: manage-application-filesystem.yml</strong>
+
+<pre><code>---
+- name: Manage application filesystem
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create application directory
+      ansible.builtin.file:
+        path: /tmp/learning-labs
         state: directory
         owner: root
         group: root
         mode: '0755'
 
-    - name: Create an empty file
+    - name: Create application subdirectories
       ansible.builtin.file:
-        path: /tmp/ansible-demo/test.txt
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      loop:
+        - /tmp/learning-labs/config
+        - /tmp/learning-labs/logs
+        - /tmp/learning-labs/backups
+
+    - name: Create application log file
+      ansible.builtin.file:
+        path: /tmp/learning-labs/logs/application.log
         state: touch
         owner: root
         group: root
         mode: '0644'
 
-    - name: Create a symbolic link
+    - name: Apply backup directory permissions
       ansible.builtin.file:
-        src: /tmp/ansible-demo/test.txt
-        path: /tmp/ansible-demo/test-link.txt
-        state: link
-EOF</code></pre>
-    </div>
+        path: /tmp/learning-labs/backups
+        state: directory
+        owner: root
+        group: root
+        mode: '0750'
+        recurse: true
 
-    <h2>10. Validate the YAML playbook</h2>
-    <p>Check the syntax before execution:</p>
-
-    <div class="code-box">
-      <div class="code-label">BASH — Command</div>
-      <pre><code>ansible-playbook --syntax-check file_module.yml</code></pre>
-    </div>
-
-    <p>Expected output:</p>
-
-    <div class="code-box">
-      <div class="code-label">OUTPUT — Expected result</div>
-      <pre><code>playbook: file_module.yml</code></pre>
-    </div>
-
-    <h2>11. Execute the YAML playbook</h2>
-    <p>Run the playbook on the managed hosts:</p>
-
-    <div class="code-box">
-      <div class="code-label">BASH — Command</div>
-      <pre><code>ansible-playbook file_module.yml</code></pre>
-    </div>
-
-    <p>Expected result summary:</p>
-
-    <div class="code-box">
-      <div class="code-label">OUTPUT — Example</div>
-      <pre><code>PLAY RECAP
-ansible-client : ok=4 changed=3 unreachable=0 failed=0</code></pre>
-    </div>
-
-    <h2>12. Remove a directory using a YAML playbook</h2>
-    <p>Create a separate playbook named <code>remove_directory.yml</code>.</p>
-
-    <div class="code-box">
-      <div class="code-label">BASH — Create the YAML file</div>
-      <pre><code>cat > remove_directory.yml <<'EOF'
----
-- name: Remove the Ansible learning directory
-  hosts: clients
-  become: true
-
-  tasks:
-    - name: Remove the learning directory and its contents
+    - name: Create logs symbolic link
       ansible.builtin.file:
-        path: /tmp/ansible-demo
-        state: absent
-EOF</code></pre>
-    </div>
+        src: /tmp/learning-labs/logs
+        path: /tmp/application-logs
+        state: link</code></pre>
 
-    <p>
-      Run this playbook only when you intend to delete the directory and all its
-      contents:
-    </p>
+</div>
 
-    <div class="code-box">
-      <div class="code-label">BASH — Command</div>
-      <pre><code>ansible-playbook --syntax-check remove_directory.yml
-ansible-playbook remove_directory.yml</code></pre>
-    </div>
+<h2>16. What This Lab Covers</h2>
 
-    <div class="important">
-      <h2>Important</h2>
-      <p>
-        The <code>ansible.builtin.file</code> module manages file and directory
-        state, permissions, ownership, and symbolic links. Use
-        <code>state: absent</code> carefully because it removes the specified
-        file or directory and its contents.
-      </p>
-    </div>
-  </body>
+<ul>
+    <li>Understanding the Ansible File module.</li>
+    <li>Creating files and directories.</li>
+    <li>Managing file permissions and ownership.</li>
+    <li>Creating nested directory structures.</li>
+    <li>Applying recursive permissions.</li>
+    <li>Deleting files and directories.</li>
+    <li>Creating symbolic links and hard links.</li>
+    <li>Managing application filesystem structures through playbooks.</li>
+</ul>
+
+<div class="why-box">
+<h2>Why Do We Use the Ansible File Module?</h2>
+
+<p>
+In production environments, applications require specific directory
+structures, file permissions and ownership settings to operate
+correctly.
+</p>
+
+<p>
+For example, an application may require separate directories for
+configuration files, application logs, backups and temporary data.
+These directories must be created consistently across development,
+testing and production servers.
+</p>
+
+<p>
+The Ansible File module automates filesystem management across
+multiple managed hosts. It helps administrators maintain consistent
+permissions, ownership and directory structures without manually
+executing Linux commands on every server.
+</p>
+
+<p>
+It is commonly used in server provisioning, application deployment,
+configuration management and DevOps automation.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const wrapper = document.getElementById("videoWrapper");
+    const button = document.getElementById("videoToggle");
+
+    if (wrapper.style.display === "none") {
+        wrapper.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        wrapper.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
 </html>
