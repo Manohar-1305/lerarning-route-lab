@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible failed_when Keyword</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+.warning {
+    background: #451a03;
+    border-left: 4px solid #f59e0b;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+th, td { border: 1px solid #334155; padding: 10px; text-align: left; }
+th { background: #1e293b; color: #93c5fd; }
+td { color: #cbd5e1; }
+.video-container { margin: 24px 0; }
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+}
+.video-button {
+    background: #16a34a;
+    color: white;
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.project {
+    background: #172033;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    margin-top: 20px;
+}
+.why {
+    background: #451f0b;
+    border: 1px solid #92400e;
+    border-radius: 10px;
+    padding: 24px;
+    margin-top: 40px;
+}
+.why h2 { color: #fbbf24; margin-top: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible failed_when Keyword</h1>
+<p>
+The <strong>failed_when</strong> keyword allows you to define your own conditions
+for deciding whether an Ansible task should be marked as failed.
+</p>
+
+<div class="video-container">
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+</div>
+
+<h2>1. What Is failed_when?</h2>
+
+<p>
+By default, Ansible considers a task failed when the executed module reports
+a failure. For command and shell tasks, a non-zero return code normally
+indicates failure.
+</p>
+
+<p>
+The <code>failed_when</code> keyword lets you override that default
+failure decision using a condition.
+</p>
+
+<pre>
+- name: Check a directory
+  ansible.builtin.command:
+    cmd: test -d /tmp/learning-labs
+  register: directory_result
+  changed_when: false
+  failed_when: directory_result.rc != 0
+</pre>
+
+<p>
+In this example:
+</p>
+<ul>
+    <li><code>test -d</code> checks whether the directory exists.</li>
+    <li><code>register</code> stores the task result.</li>
+    <li><code>changed_when: false</code> reports that this check does not change the system.</li>
+    <li><code>failed_when</code> marks the task as failed if the return code is not zero.</li>
+</ul>
+
+<h2>2. How failed_when Works</h2>
+
+<table>
+<tr>
+    <th>Condition result</th>
+    <th>Ansible task status</th>
+</tr>
+<tr>
+    <td>True</td>
+    <td>Failed</td>
+</tr>
+<tr>
+    <td>False</td>
+    <td>Not failed</td>
+</tr>
+</table>
+
+<p>
+The condition is evaluated using the result returned by the task.
+</p>
+
+<h2>3. Basic Syntax</h2>
+
+<pre>
+- name: Task name
+  ansible.builtin.command:
+    cmd: your-command
+  register: command_result
+  failed_when: command_result.rc != 0
+</pre>
+
+<p>
+You can use registered result attributes such as:
+</p>
+
+<table>
+<tr>
+    <th>Attribute</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td><code>rc</code></td>
+    <td>Command return code.</td>
+</tr>
+<tr>
+    <td><code>stdout</code></td>
+    <td>Standard output.</td>
+</tr>
+<tr>
+    <td><code>stderr</code></td>
+    <td>Standard error output.</td>
+</tr>
+<tr>
+    <td><code>stdout_lines</code></td>
+    <td>Standard output split into lines.</td>
+</tr>
+</table>
+
+<h2>4. Example: Fail When Output Contains ERROR</h2>
+
+<p>
+A command can return exit code zero but still produce output that your
+automation considers an error. You can define that condition explicitly.
+</p>
+
+<pre>
+---
+- name: Demonstrate failed_when with output
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Generate test output
+      ansible.builtin.command:
+        cmd: /usr/bin/printf ERROR
+      register: output_result
+      changed_when: false
+      failed_when: "'ERROR' in output_result.stdout"
+</pre>
+
+<p>
+The command returns <code>ERROR</code>. The condition evaluates to true,
+so Ansible marks the task as failed even though the command itself
+returns exit code zero.
+</p>
+
+<h2>5. Example: Allow an Expected Return Code</h2>
+
+<p>
+Sometimes a non-zero return code is an expected result. For example,
+checking whether an optional directory exists can return code 1 when
+the directory is absent.
+</p>
+
+<pre>
+---
+- name: Check an optional directory
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Check optional directory
+      ansible.builtin.command:
+        cmd: test -d /tmp/optional-directory
+      register: optional_directory_result
+      changed_when: false
+      failed_when: optional_directory_result.rc not in [0, 1]
+
+    - name: Display check result
+      ansible.builtin.debug:
+        msg: "Return code: {{ optional_directory_result.rc }}"
+</pre>
+
+<p>
+Here:
+</p>
+<ul>
+    <li>Return code <code>0</code> means the directory exists.</li>
+    <li>Return code <code>1</code> means the directory does not exist.</li>
+    <li>Other return codes are treated as failures.</li>
+</ul>
+
+<div class="note">
+<strong>Important:</strong> Allowing a return code through
+<code>failed_when</code> does not mean the command succeeded. It means
+you have explicitly defined that result as acceptable for this task.
+</div>
+
+<h2>6. Multiple Conditions with failed_when</h2>
+
+<p>
+You can define multiple conditions using a YAML list. When written as
+separate list entries, Ansible combines them using logical AND.
+All conditions must be true for the task to be marked as failed.
+</p>
+
+<pre>
+- name: Check command result
+  ansible.builtin.command:
+    cmd: /usr/bin/printf ERROR
+  register: result
+  changed_when: false
+  failed_when:
+    - result.rc == 0
+    - "'ERROR' in result.stdout"
+</pre>
+
+<p>
+The task fails only when both conditions are true.
+</p>
+
+<p>
+If you want logical OR, write the expression explicitly:
+</p>
+
+<pre>
+failed_when: result.rc != 0 or "'ERROR' in result.stdout"
+</pre>
+
+<div class="warning">
+<strong>Remember:</strong> Separate entries in a
+<code>failed_when</code> list use AND, not OR.
+</div>
+
+<h2>7. Difference Between failed_when and changed_when</h2>
+
+<table>
+<tr>
+    <th>Keyword</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td><code>failed_when</code></td>
+    <td>Controls whether a task is considered failed.</td>
+</tr>
+<tr>
+    <td><code>changed_when</code></td>
+    <td>Controls whether a task is reported as changed.</td>
+</tr>
+</table>
+
+<p>
+These keywords control different aspects of a task result. A task can
+be successful without reporting a change, or it can be marked as failed
+based on your custom condition.
+</p>
+
+<h2>8. Difference Between failed_when and ignore_errors</h2>
+
+<p>
+These keywords solve different problems:
+</p>
+
+<ul>
+    <li><code>failed_when</code> defines the condition under which a task is considered failed.</li>
+    <li><code>ignore_errors</code> allows the play to continue after a task has failed.</li>
+</ul>
+
+<p>
+We will cover <code>ignore_errors</code> separately in the next lesson.
+</p>
+
+<h2>9. Practical Lab: Validate an Application Check</h2>
+
+<div class="project">
+<h3>Scenario</h3>
+<p>
+You need to check an application status command. The automation must
+fail if the output contains the word <code>FAILED</code>.
+</p>
+
+<p><strong>Create this playbook:</strong></p>
+
+<pre>
+---
+- name: Application status validation
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Generate application status
+      ansible.builtin.command:
+        cmd: /usr/bin/printf "Application RUNNING"
+      register: application_status
+      changed_when: false
+      failed_when: "'FAILED' in application_status.stdout"
+
+    - name: Display application status
+      ansible.builtin.debug:
+        msg: "{{ application_status.stdout }}"
+</pre>
+
+<p><strong>Run from ansible-controller:</strong></p>
+
+<pre>
+ansible-playbook application-status.yml
+</pre>
+
+<p><strong>Expected behavior:</strong></p>
+<ul>
+    <li>The command produces <code>Application RUNNING</code>.</li>
+    <li>The failure condition evaluates to false.</li>
+    <li>The task completes successfully.</li>
+    <li>The status is displayed by the debug task.</li>
+</ul>
+
+<p>
+Change the command output from <code>Application RUNNING</code> to
+<code>Application FAILED</code> and run the playbook again.
+The first task should now be marked as failed.
+</p>
+</div>
+
+<h2>10. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the <code>failed_when</code> keyword.</li>
+    <li>Defining custom task failure conditions.</li>
+    <li>Checking command return codes.</li>
+    <li>Evaluating stdout and stderr.</li>
+    <li>Using AND and OR conditions.</li>
+    <li>Allowing expected non-zero return codes.</li>
+    <li>Distinguishing task failure from task change status.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use the Ansible failed_when Keyword?</h2>
+
+<p>
+In real DevOps automation, a command's return code does not always
+represent the complete operational result. Some commands return zero
+even when their output contains an application-level error. Other
+commands return non-zero codes for conditions that are expected and
+acceptable.
+</p>
+
+<p>
+The <code>failed_when</code> keyword gives you control over how Ansible
+interprets these results. You can validate application output, inspect
+return codes, and define precise failure conditions for your automation.
+</p>
+
+<p>
+For example, while performing application health checks, deployment
+validation, service verification, or infrastructure checks, you can
+decide exactly when Ansible should stop treating a task as successful.
+</p>
+
+<p>
+This makes playbooks more reliable because failure decisions are based
+on the actual conditions that matter to your automation, rather than
+only on the command's default exit status.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+</body>
+</html>
