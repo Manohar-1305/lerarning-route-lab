@@ -1,0 +1,768 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible Register Keyword</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.7;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+h1, h2, h3 { color: #f8fafc; }
+h1 { font-size: 32px; }
+
+h2 {
+    margin-top: 38px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 9px;
+}
+
+h3 {
+    margin-top: 25px;
+    color: #93c5fd;
+}
+
+p, li { color: #cbd5e1; }
+
+code {
+    color: #86efac;
+    background: #1e293b;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+pre {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    color: #d1d5db;
+    line-height: 1.6;
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+    color: #d1d5db;
+}
+
+.video-container { margin: 25px 0; }
+
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+}
+
+.video-button {
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 10px 17px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.info-box, .warning-box, .project-box {
+    padding: 16px;
+    border-radius: 7px;
+    margin: 20px 0;
+}
+
+.info-box {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+}
+
+.warning-box {
+    background: #422006;
+    border-left: 4px solid #f59e0b;
+}
+
+.project-box {
+    background: #132e25;
+    border-left: 4px solid #22c55e;
+}
+
+.why-box {
+    background: #713f12;
+    border: 1px solid #a16207;
+    padding: 24px;
+    border-radius: 10px;
+    margin-top: 45px;
+}
+
+.why-box h2 {
+    border: none;
+    margin-top: 0;
+    color: #fef3c7;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #334155;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+td { color: #cbd5e1; }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Ansible Register Keyword</h1>
+
+<p>
+The Ansible <code>register</code> keyword captures the result of a task
+and stores it in a variable. That variable can then be used by
+subsequent tasks to make decisions, display output or validate results.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <div id="videoWrapper">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible Register Keyword Tutorial"
+            allowfullscreen>
+        </iframe>
+    </div>
+</div>
+
+<h2>1. What Is Register?</h2>
+
+<p>
+In Ansible, <code>register</code> is a playbook keyword used to save
+the result returned by a task.
+</p>
+
+<p>
+When a task executes, Ansible produces a result containing information
+about the execution. Depending on the module, this may include:
+</p>
+
+<ul>
+    <li>Standard output (<code>stdout</code>).</li>
+    <li>Standard error (<code>stderr</code>).</li>
+    <li>Return code (<code>rc</code>).</li>
+    <li>Whether the task changed something (<code>changed</code>).</li>
+    <li>Whether the task failed (<code>failed</code>).</li>
+    <li>Module-specific returned information.</li>
+</ul>
+
+<p>
+The <code>register</code> keyword stores this result in a variable
+that later tasks can access.
+</p>
+
+<h2>2. How Does Register Work?</h2>
+
+<pre><code>             Ansible Controller
+             ------------------
+                    |
+                    v
+                Playbook
+                    |
+                    v
+                Execute Task
+                    |
+                    v
+             Task Returns Result
+                    |
+                    v
+             register: result
+                    |
+                    v
+             Store Result Variable
+                    |
+                    v
+             Next Task Uses Variable</code></pre>
+
+<p>
+For example, a task can execute a command to retrieve the hostname.
+Ansible stores the result in a variable, which a later task can use
+to display the hostname.
+</p>
+
+<h2>3. Basic Register Syntax</h2>
+
+<p>
+The <code>register</code> keyword is written at the same indentation
+level as the module used in the task.
+</p>
+
+<pre><code>---
+- name: Register example
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Get hostname
+      ansible.builtin.command:
+        cmd: hostname
+      register: hostname_result</code></pre>
+
+<p>
+Here, <code>hostname_result</code> is the variable containing
+the result of the hostname task.
+</p>
+
+<div class="info-box">
+<strong>Important:</strong>
+<code>register</code> is not an Ansible module. It is a playbook
+keyword that captures a task result.
+</div>
+
+<h2>4. Understanding the Registered Result</h2>
+
+<p>
+A registered variable is a dictionary containing fields returned
+by the task.
+</p>
+
+<p>
+For a successful Command or Shell task, commonly available fields
+include:
+</p>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stdout</code></td>
+<td>Standard output returned by the command.</td>
+</tr>
+<tr>
+<td><code>stdout_lines</code></td>
+<td>Standard output split into individual lines.</td>
+</tr>
+<tr>
+<td><code>stderr</code></td>
+<td>Standard error returned by the command.</td>
+</tr>
+<tr>
+<td><code>stderr_lines</code></td>
+<td>Standard error split into individual lines.</td>
+</tr>
+<tr>
+<td><code>rc</code></td>
+<td>Command return code. Usually zero indicates success.</td>
+</tr>
+<tr>
+<td><code>changed</code></td>
+<td>Indicates whether Ansible reports the task as changed.</td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td>Indicates whether the task failed.</td>
+</tr>
+<tr>
+<td><code>cmd</code></td>
+<td>The command that was executed.</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+The exact fields depend on the module. Do not assume every module
+returns all these fields.
+</p>
+
+<h2>5. Capture and Display Command Output</h2>
+
+<p>
+This example captures the hostname and displays the output using
+the Debug module.
+</p>
+
+<p><strong>Playbook: register-hostname.yml</strong></p>
+
+<pre><code>---
+- name: Capture hostname
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Get managed host hostname
+      ansible.builtin.command:
+        cmd: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Display hostname
+      ansible.builtin.debug:
+        msg: "Managed host hostname is {{ hostname_result.stdout }}"</code></pre>
+
+<p>
+The hostname command result is stored in
+<code>hostname_result</code>. The next task accesses its
+<code>stdout</code> field.
+</p>
+
+<h2>6. Access stdout and stdout_lines</h2>
+
+<p>
+The <code>stdout</code> field contains the complete standard output
+as a string. The <code>stdout_lines</code> field contains the output
+as a list of lines.
+</p>
+
+<p><strong>Playbook: register-output.yml</strong></p>
+
+<pre><code>---
+- name: Capture command output
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Get filesystem information
+      ansible.builtin.command:
+        cmd: df -h
+      register: disk_result
+      changed_when: false
+
+    - name: Display complete output
+      ansible.builtin.debug:
+        var: disk_result.stdout
+
+    - name: Display output line by line
+      ansible.builtin.debug:
+        var: disk_result.stdout_lines</code></pre>
+
+<h2>7. Access the Return Code</h2>
+
+<p>
+The <code>rc</code> field contains the return code of a command.
+A return code of <code>0</code> usually indicates success.
+A non-zero return code usually indicates an error.
+</p>
+
+<p><strong>Playbook: register-return-code.yml</strong></p>
+
+<pre><code>---
+- name: Check command return code
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Check whether a directory exists
+      ansible.builtin.command:
+        cmd: test -d /tmp/learning-labs
+      register: directory_result
+      changed_when: false
+      failed_when: false
+
+    - name: Display return code
+      ansible.builtin.debug:
+        msg: "Return code is {{ directory_result.rc }}"</code></pre>
+
+<p>
+The <code>test -d</code> command returns zero when the directory
+exists and a non-zero value when it does not.
+</p>
+
+<h2>8. Register Results from Multiple Tasks</h2>
+
+<p>
+You can use different registered variables to capture the results
+of multiple tasks in the same playbook.
+</p>
+
+<p><strong>Playbook: register-multiple.yml</strong></p>
+
+<pre><code>---
+- name: Collect Linux system information
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Get hostname
+      ansible.builtin.command:
+        cmd: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Get current date
+      ansible.builtin.command:
+        cmd: date
+      register: date_result
+      changed_when: false
+
+    - name: Get kernel version
+      ansible.builtin.command:
+        cmd: uname -r
+      register: kernel_result
+      changed_when: false
+
+    - name: Display system information
+      ansible.builtin.debug:
+        msg:
+          - "Hostname: {{ hostname_result.stdout }}"
+          - "Date: {{ date_result.stdout }}"
+          - "Kernel: {{ kernel_result.stdout }}"</code></pre>
+
+<h2>9. Register Results from the Copy Module</h2>
+
+<p>
+Register can capture results from Ansible modules, not only
+Command and Shell tasks.
+</p>
+
+<p>
+The following example captures the result of a file-copy operation.
+</p>
+
+<p><strong>Playbook: register-copy.yml</strong></p>
+
+<pre><code>---
+- name: Capture copy module result
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create application configuration
+      ansible.builtin.copy:
+        content: |
+          APP_NAME=learning-labs
+          APP_PORT=8080
+        dest: /tmp/learning-labs.conf
+        mode: '0644'
+      register: copy_result
+
+    - name: Display copy operation result
+      ansible.builtin.debug:
+        var: copy_result</code></pre>
+
+<p>
+The registered result may include information such as the destination
+path, checksum and changed status.
+</p>
+
+<div class="info-box">
+<strong>Important:</strong>
+If the file already has the requested content and attributes,
+the Copy module can report <code>changed: false</code>.
+This demonstrates Ansible idempotency.
+</div>
+
+<h2>10. Use Register with a Failed Command</h2>
+
+<p>
+By default, a task that returns a non-zero command return code fails.
+If you want to inspect that result in a later task, you can use
+<code>failed_when: false</code>.
+</p>
+
+<p><strong>Playbook: register-failure.yml</strong></p>
+
+<pre><code>---
+- name: Capture command failure
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Check a non-existent directory
+      ansible.builtin.command:
+        cmd: test -d /tmp/non-existent-directory
+      register: check_result
+      changed_when: false
+      failed_when: false
+
+    - name: Display command status
+      ansible.builtin.debug:
+        msg: "Command return code: {{ check_result.rc }}"</code></pre>
+
+<p>
+The task is allowed to continue even when the command returns
+a non-zero code. The result remains available in
+<code>check_result</code>.
+</p>
+
+<h2>11. Register Results from a Loop</h2>
+
+<p>
+When a task uses a loop and <code>register</code>, Ansible stores
+the individual task results in a <code>results</code> list.
+</p>
+
+<p><strong>Playbook: register-loop.yml</strong></p>
+
+<pre><code>---
+- name: Register results from multiple commands
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Check important directories
+      ansible.builtin.command:
+        cmd: "test -d {{ item }}"
+      loop:
+        - /tmp
+        - /etc
+        - /var
+      register: directory_checks
+      changed_when: false
+      failed_when: false
+
+    - name: Display all directory check results
+      ansible.builtin.debug:
+        var: directory_checks.results</code></pre>
+
+<p>
+Each item produces an individual result. The results are collected
+inside <code>directory_checks.results</code>.
+</p>
+
+<h2>12. Register and Reuse Results in Another Task</h2>
+
+<p>
+A registered result can be used in later tasks to make decisions.
+</p>
+
+<p><strong>Playbook: register-reuse.yml</strong></p>
+
+<pre><code>---
+- name: Reuse registered result
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Get hostname
+      ansible.builtin.command:
+        cmd: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Display hostname result
+      ansible.builtin.debug:
+        msg: "The hostname is {{ hostname_result.stdout }}"
+
+    - name: Display command return code
+      ansible.builtin.debug:
+        msg: "Command completed with return code {{ hostname_result.rc }}"</code></pre>
+
+<h2>13. Register and Assert</h2>
+
+<p>
+The Assert module can validate values captured by a previous task.
+This is useful when a deployment depends on a command returning
+an expected result.
+</p>
+
+<p><strong>Playbook: register-assert.yml</strong></p>
+
+<pre><code>---
+- name: Validate registered command result
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Get hostname
+      ansible.builtin.command:
+        cmd: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Validate hostname is not empty
+      ansible.builtin.assert:
+        that:
+          - hostname_result.stdout | length > 0
+        success_msg: "Hostname validation passed."
+        fail_msg: "Hostname information is empty."</code></pre>
+
+<p>
+This example uses the registered hostname output as the input
+to an assertion.
+</p>
+
+<h2>14. Practical Project: Linux Server Information Collector</h2>
+
+<div class="project-box">
+
+<h3>Project Objective</h3>
+
+<p>
+Build a playbook that collects information from a Linux managed host,
+stores each result in a registered variable and generates a report.
+</p>
+
+<strong>Requirements:</strong>
+
+<ol>
+    <li>Collect the hostname.</li>
+    <li>Collect the kernel version.</li>
+    <li>Collect the current date.</li>
+    <li>Collect root filesystem usage.</li>
+    <li>Capture all command outputs using register.</li>
+    <li>Validate that the hostname is not empty.</li>
+    <li>Display the collected information.</li>
+</ol>
+
+<strong>Project playbook: server-information.yml</strong>
+
+<pre><code>---
+- name: Collect Linux server information
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Collect hostname
+      ansible.builtin.command:
+        cmd: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Collect kernel version
+      ansible.builtin.command:
+        cmd: uname -r
+      register: kernel_result
+      changed_when: false
+
+    - name: Collect current date
+      ansible.builtin.command:
+        cmd: date
+      register: date_result
+      changed_when: false
+
+    - name: Collect root filesystem usage
+      ansible.builtin.command:
+        cmd: df -h /
+      register: disk_result
+      changed_when: false
+
+    - name: Validate hostname
+      ansible.builtin.assert:
+        that:
+          - hostname_result.stdout | length > 0
+        success_msg: "Hostname validation passed."
+        fail_msg: "Hostname information is missing."
+
+    - name: Display server information
+      ansible.builtin.debug:
+        msg:
+          - "Hostname: {{ hostname_result.stdout }}"
+          - "Kernel: {{ kernel_result.stdout }}"
+          - "Date: {{ date_result.stdout }}"
+          - "Disk usage:"
+          - "{{ disk_result.stdout }}"</code></pre>
+
+</div>
+
+<h2>15. Important Considerations</h2>
+
+<ul>
+    <li><code>register</code> captures a task result in a variable.</li>
+    <li>Registered variables are available to subsequent tasks in the same play.</li>
+    <li>A registered variable is not automatically shared between different hosts.</li>
+    <li>Each host normally has its own registered result.</li>
+    <li>Use unique variable names to avoid overwriting earlier results.</li>
+    <li>Command and Shell modules commonly return <code>stdout</code>, <code>stderr</code> and <code>rc</code>.</li>
+    <li>Other modules return their own module-specific result fields.</li>
+    <li>For looped tasks, individual results are available under the registered variable's <code>results</code> field.</li>
+    <li>A failed task can still have a registered result, but execution normally stops for that host unless failure handling is configured.</li>
+    <li>Registered variables are runtime data, not persistent storage between separate playbook runs.</li>
+</ul>
+
+<h2>16. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the Register keyword.</li>
+    <li>Capturing task execution results.</li>
+    <li>Accessing stdout, stderr and return codes.</li>
+    <li>Registering results from multiple tasks.</li>
+    <li>Capturing results from Ansible modules.</li>
+    <li>Registering results from loops.</li>
+    <li>Reusing registered variables in later tasks.</li>
+    <li>Combining Register with Assert.</li>
+    <li>Building a Linux server information collector.</li>
+</ul>
+
+<div class="why-box">
+<h2>Why Do We Use the Register Keyword?</h2>
+
+<p>
+In real-world DevOps environments, executing a task is not always
+enough. Engineers often need to capture its output and use that
+information to decide what should happen next.
+</p>
+
+<p>
+For example, during a server deployment, an engineer may need to
+retrieve the hostname, check a command's return code, inspect disk
+usage or capture the result of a configuration change.
+</p>
+
+<p>
+The Register keyword stores task results in variables, allowing
+subsequent tasks to access and process that information.
+</p>
+
+<p>
+It is commonly used in infrastructure validation, deployment
+automation, troubleshooting, conditional execution and operational
+report generation.
+</p>
+
+<p>
+Register is particularly useful when combined with other Ansible
+features such as Debug, Assert and When.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const wrapper = document.getElementById("videoWrapper");
+    const button = document.getElementById("videoToggle");
+
+    if (wrapper.style.display === "none") {
+        wrapper.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        wrapper.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
