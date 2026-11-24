@@ -34,7 +34,7 @@ body {
 }
 
 header {
-    padding: 35px 20px;
+    padding: 10px 20px;
     background: linear-gradient(135deg, #14213d, #172b48);
     border-bottom: 1px solid var(--border);
 }
@@ -42,22 +42,22 @@ header {
 .container {
     max-width: 1100px;
     margin: auto;
-    padding: 25px 20px;
+    padding: 12px 20px;
 }
 
 h1 {
-    margin: 0 0 10px;
-    font-size: 30px;
+    margin: 0 0 3px;
+    font-size: 25px;
 }
 
 h2 {
     color: var(--green);
-    margin-top: 40px;
+    margin-top: 30px;
 }
 
 h3 {
     color: var(--blue);
-    margin-top: 25px;
+    margin-top: 22px;
 }
 
 h4 {
@@ -141,12 +141,23 @@ li {
     margin: 6px 0;
 }
 
+/* Video section */
+
 .video-section {
-    margin: 25px 0;
-    padding: 20px;
+    margin: 5px 0 18px;
+    padding: 12px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
+}
+
+.video-section h2 {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.video-section p {
+    margin: 5px 0;
 }
 
 .video-toggle {
@@ -154,10 +165,11 @@ li {
     color: white;
     border: none;
     border-radius: 6px;
-    padding: 12px 20px;
+    padding: 8px 14px;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: bold;
+    margin: 5px 0;
 }
 
 .video-toggle:hover {
@@ -165,11 +177,12 @@ li {
 }
 
 .video-container {
-    display: none;
+    display: block;
     position: relative;
     width: 100%;
+    max-width: 850px;
     aspect-ratio: 16 / 9;
-    margin-top: 18px;
+    margin-top: 10px;
 }
 
 .video-container iframe {
@@ -183,18 +196,18 @@ li {
 
 footer {
     text-align: center;
-    padding: 25px;
+    padding: 20px;
     color: var(--muted);
     border-top: 1px solid var(--border);
 }
 
 @media(max-width: 600px) {
     h1 {
-        font-size: 24px;
+        font-size: 22px;
     }
 
     .container {
-        padding: 18px 12px;
+        padding: 12px;
     }
 
     table {
@@ -203,6 +216,10 @@ footer {
 
     th, td {
         padding: 8px;
+    }
+
+    pre {
+        font-size: 12px;
     }
 }
 </style>
@@ -221,29 +238,27 @@ footer {
 
 <!-- VIDEO SECTION -->
 <section class="video-section">
-    <h2 style="margin-top:0">Video Tutorial</h2>
-    <p>Watch the video tutorial to understand Linux user management.</p>
 
     <button
         type="button"
         class="video-toggle"
         id="videoToggle"
-        aria-expanded="false"
+        aria-expanded="true"
         aria-controls="videoContainer">
-        ▶ Watch Video
+        ✕ Hide Video
     </button>
 
     <div class="video-container" id="videoContainer">
         <iframe
             id="tutorialVideo"
-            src="about:blank"
-            data-src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
             title="Linux User Management Tutorial"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerpolicy="strict-origin-when-cross-origin"
             allowfullscreen>
         </iframe>
     </div>
+
 </section>
 
 <!-- INTRODUCTION -->
@@ -728,8 +743,7 @@ user-specific data.
 
 <p>
 The <code>-m</code> option tells useradd to create the home directory.
-It also initializes the directory using files from the configured
-skeleton directory.
+It also initializes the directory using files from the skeleton directory.
 </p>
 
 <h3>7.2 Verify the home directory</h3>
@@ -1692,19 +1706,15 @@ userdel -r david</code></pre>
     const container = document.getElementById("videoContainer");
     const iframe = document.getElementById("tutorialVideo");
 
-    const videoUrl = iframe.dataset.src;
-
     button.addEventListener("click", function () {
-        const isOpen = container.style.display === "block";
+        const isOpen = container.style.display !== "none";
 
         if (isOpen) {
             container.style.display = "none";
-            iframe.src = "about:blank";
             button.textContent = "▶ Watch Video";
             button.setAttribute("aria-expanded", "false");
         } else {
             container.style.display = "block";
-            iframe.src = videoUrl;
             button.textContent = "✕ Hide Video";
             button.setAttribute("aria-expanded", "true");
         }
@@ -1714,4 +1724,3 @@ userdel -r david</code></pre>
 
 </body>
 </html>
-
