@@ -1,229 +1,391 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Copy Module</title>
-    <style>
-      :root {
-        color-scheme: dark;
-        --bg: #0b1020;
-        --surface: #121b2e;
-        --border: #2a3954;
-        --text: #edf3ff;
-        --muted: #94a6c1;
-        --blue: #78a7ff;
-        --green: #42d6a0;
-      }
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible Command Module</title>
 
-      * {
-        box-sizing: border-box;
-      }
+<style>
+* { box-sizing: border-box; }
 
-      body {
-        margin: 0;
-        padding: 24px;
-        background: var(--surface);
-        color: var(--text);
-        font-family: "Segoe UI", Arial, sans-serif;
-        font-size: 13px;
-        line-height: 1.75;
-      }
+body {
+    margin: 0;
+    padding: 14px;
+    background: #111827;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
 
-      h1 {
-        margin: 0 0 24px;
-        padding-bottom: 14px;
-        border-bottom: 1px solid var(--border);
-        color: #fff;
-        font-size: 26px;
-      }
+h1, h2, h3 { color: #60a5fa; }
 
-      h2 {
-        margin: 28px 0 10px;
-        color: var(--blue);
-        font-size: 19px;
-      }
+h1 { margin-top: 0; }
 
-      p {
-        margin: 10px 0;
-        color: #dce6f6;
-      }
+h2 {
+    margin-top: 25px;
+    border-bottom: 1px solid #374151;
+    padding-bottom: 6px;
+}
 
-      .code-box {
-        margin: 12px 0 20px;
-        overflow-x: auto;
-        border: 1px solid var(--border);
-        border-left: 4px solid var(--blue);
-        border-radius: 7px;
-        background: #080d18;
-      }
+p { color: #d1d5db; }
 
-      .code-label {
-        padding: 7px 12px;
-        border-bottom: 1px solid var(--border);
-        background: #121b2e;
-        color: var(--muted);
-        font-size: 11px;
-      }
+pre {
+    background: #020617;
+    color: #86efac;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.6;
+}
 
-      pre {
-        margin: 0;
-        padding: 14px;
-        overflow-x: auto;
-        color: var(--green);
-        font-family: Consolas, "Courier New", monospace;
-        font-size: 12px;
-        line-height: 1.7;
-        white-space: pre;
-      }
+code { color: #86efac; }
 
-      code {
-        font-family: Consolas, "Courier New", monospace;
-      }
+.video-button {
+    background: #16a34a;
+    color: white;
+    border: 0;
+    padding: 9px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 10px 0;
+}
 
-      p code {
-        padding: 2px 5px;
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        background: #25344d;
-        color: var(--blue);
-      }
+.video-button:hover { background: #15803d; }
 
-      .important {
-        margin-top: 28px;
-        padding: 14px 16px;
-        border-left: 4px solid var(--green);
-        border-radius: 5px;
-        background: #102c29;
-      }
+.video-container {
+    max-width: 850px;
+    margin: 10px 0 20px;
+}
 
-      .important h2 {
-        margin: 0 0 8px;
-        color: var(--green);
-      }
+.video-container[hidden] { display: none; }
 
-      .important p {
-        margin-bottom: 0;
-      }
-    </style>
-  </head>
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 8px;
+    display: block;
+}
 
-  <body>
-    <h1>Copy Module</h1>
+.note, .project {
+    padding: 12px;
+    margin: 14px 0;
+    border-radius: 5px;
+}
 
-    <h2>1. Create a source file on the controller</h2>
-    <p>
-      Create a file on the Ansible controller that will be copied to the managed
-      host.
-    </p>
+.note {
+    background: #1e293b;
+    border-left: 4px solid #3b82f6;
+}
 
-    <div class="code-box">
-      <div class="code-label">BASH — Command</div>
-      <pre><code>echo "Welcome to Ansible learning" > message.txt</code></pre>
-    </div>
+.project {
+    background: #172554;
+    border-left: 4px solid #60a5fa;
+}
 
-    <h2>2. Copy a file using the Ansible copy module</h2>
-    <p>Run the following ad hoc command on the Ansible controller:</p>
+li { margin-bottom: 6px; }
+</style>
+</head>
 
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -m ansible.builtin.copy -a "src=message.txt dest=/tmp/message.txt"</code></pre>
-    </div>
+<body>
 
-    <p>
-      The <code>src</code> parameter specifies the source file on the
-      controller, and <code>dest</code> specifies the destination path on the
-      managed host.
-    </p>
+<h1>Ansible Command Module</h1>
 
-    <p>Expected output on the first successful copy:</p>
+<p>
+Learn how to execute Linux commands on managed hosts using Ansible.
+</p>
 
-    <div class="code-box">
-      <div class="code-label">OUTPUT — Expected result</div>
-      <pre><code>ansible-client | CHANGED =&gt; {
-    "changed": true,
-    "dest": "/tmp/message.txt"
-}</code></pre>
-    </div>
+<button type="button" class="video-button" id="videoButton">
+✕ Hide Video
+</button>
 
-    <h2>3. Verify the copied file</h2>
-    <p>Run this command to read the file on the managed host:</p>
+<div class="video-container" id="videoContainer">
+    <iframe
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Command Module Tutorial"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+    </iframe>
+</div>
 
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -m ansible.builtin.command -a "cat /tmp/message.txt"</code></pre>
-    </div>
+<h2>1. What Is the Command Module?</h2>
 
-    <p>Expected output:</p>
+<p>
+The <code>ansible.builtin.command</code> module executes commands on managed hosts without using a shell.
+</p>
 
-    <div class="code-box">
-      <div class="code-label">OUTPUT — Expected result</div>
-      <pre><code>Welcome to Ansible learning</code></pre>
-    </div>
+<p>
+It is useful for simple commands such as checking the hostname, uptime and directory contents.
+</p>
 
-    <h2>4. Create a YAML playbook</h2>
-    <p>Create a file named <code>copy.yml</code> on the Ansible controller.</p>
+<h2>2. Execute a Command</h2>
 
-    <div class="code-box">
-      <div class="code-label">BASH — Create the YAML file</div>
-      <pre><code>cat > copy.yml <<'EOF'
+<p>Check how long the managed host has been running:</p>
+
+<pre>
+ansible ansible-client -m ansible.builtin.command -a 'uptime'
+</pre>
+
+<p>
+Here, <code>-m</code> specifies the module and <code>-a</code> provides the command to execute.
+</p>
+
+<h2>3. Check the Hostname</h2>
+
+<p>Find the hostname of the managed host:</p>
+
+<pre>
+ansible ansible-client -m ansible.builtin.command -a 'hostname'
+</pre>
+
+<p>This helps verify which host Ansible is managing.</p>
+
+<h2>4. List Directory Contents</h2>
+
+<p>List files and directories inside <code>/tmp</code>:</p>
+
+<pre>
+ansible ansible-client -m ansible.builtin.command -a 'ls -la /tmp'
+</pre>
+
+<p>
+The command module executes the command directly. It does not process shell features such as pipes, redirection or wildcard expansion.
+</p>
+
+<h2>5. Create Your First Playbook</h2>
+
+<p>Create a playbook on the Ansible controller:</p>
+
+<pre>vi command-playbook.yml</pre>
+
+<p>Press <code>i</code> and add:</p>
+
+<pre>
 ---
-- name: Copy a file to managed hosts
-  hosts: clients
-  become: true
+- name: Command module example
+  hosts: ansible-client
 
   tasks:
-    - name: Copy message file
-      ansible.builtin.copy:
-        src: message.txt
-        dest: /tmp/message.txt
-        owner: root
-        group: root
-        mode: '0644'
-EOF</code></pre>
-    </div>
+    - name: Check hostname
+      ansible.builtin.command:
+        cmd: hostname
+      register: hostname_output
+      changed_when: false
 
-    <h2>5. Run the YAML playbook</h2>
-    <p>Execute the playbook:</p>
+    - name: Display hostname
+      ansible.builtin.debug:
+        var: hostname_output.stdout
+</pre>
 
-    <div class="code-box">
-      <div class="code-label">BASH — Command</div>
-      <pre><code>ansible-playbook copy.yml</code></pre>
-    </div>
+<p>
+The command task executes <code>hostname</code>. The <code>register</code> keyword saves its result, and the debug task displays the hostname.
+</p>
 
-    <p>Expected output summary:</p>
+<p>Save the file:</p>
 
-    <div class="code-box">
-      <div class="code-label">OUTPUT — Expected result</div>
-      <pre><code>PLAY RECAP
-ansible-client : ok=2 changed=1 unreachable=0 failed=0</code></pre>
-    </div>
+<pre>Esc
+:wq</pre>
 
-    <h2>6. Verify the file permissions</h2>
-    <p>
-      Run the following command to check the file's permissions and ownership:
-    </p>
+<h2>6. Execute the Playbook</h2>
 
-    <div class="code-box">
-      <div class="code-label">BASH — Ad hoc command</div>
-      <pre><code>ansible clients -b -m ansible.builtin.command -a "stat -c '%a %U %G %n' /tmp/message.txt"</code></pre>
-    </div>
+<p>Run the playbook:</p>
 
-    <p>Expected output:</p>
+<pre>
+ansible-playbook command-playbook.yml
+</pre>
 
-    <div class="code-box">
-      <div class="code-label">OUTPUT — Expected result</div>
-      <pre><code>644 root root /tmp/message.txt</code></pre>
-    </div>
+<p>
+Ansible executes the command on <code>ansible-client</code> and displays the hostname.
+</p>
 
-    <div class="important">
-      <h2>Important</h2>
-      <p>
-        The <code>ansible.builtin.copy</code> module copies files from the
-        controller to managed hosts by default. It is idempotent, so it does not
-        report a change when the destination already matches the desired content
-        and attributes.
-      </p>
-    </div>
-  </body>
+<h2>7. Use the chdir Parameter</h2>
+
+<p>
+The <code>chdir</code> parameter changes the working directory before executing a command.
+</p>
+
+<p>Add this task under the existing <code>tasks</code> section:</p>
+
+<pre>
+    - name: List files in /tmp
+      ansible.builtin.command:
+        cmd: ls -la
+        chdir: /tmp
+      changed_when: false
+</pre>
+
+<p>Execute the playbook again:</p>
+
+<pre>ansible-playbook command-playbook.yml</pre>
+
+<h2>8. Use the creates Parameter</h2>
+
+<p>
+The <code>creates</code> parameter skips a command when the specified file already exists.
+</p>
+
+<p>Add this task to your playbook:</p>
+
+<pre>
+    - name: Create a marker file
+      ansible.builtin.command:
+        cmd: touch /tmp/ansible-marker
+        creates: /tmp/ansible-marker
+</pre>
+
+<p>Run the playbook:</p>
+
+<pre>ansible-playbook command-playbook.yml</pre>
+
+<p>
+The first run creates the file. Subsequent runs skip the command because the file already exists.
+</p>
+
+<h2>9. Validate Your Playbook</h2>
+
+<p>Check the playbook for syntax errors:</p>
+
+<pre>
+ansible-playbook --syntax-check command-playbook.yml
+</pre>
+
+<p>Execute it:</p>
+
+<pre>
+ansible-playbook command-playbook.yml
+</pre>
+
+<h2>10. Real-Time Project: Managed Host Health Report</h2>
+
+<div class="project">
+<strong>Project objective</strong>
+
+<p>
+Create an Ansible playbook that collects basic system information from a managed host and displays a health report.
+</p>
+</div>
+
+<h3>Step 1: Create the project playbook</h3>
+
+<pre>vi health-report.yml</pre>
+
+<p>Press <code>i</code> and add the following:</p>
+
+<pre>
+---
+- name: Managed Host Health Report
+  hosts: ansible-client
+
+  tasks:
+    - name: Collect hostname
+      ansible.builtin.command:
+        cmd: hostname
+      register: host_name
+      changed_when: false
+
+    - name: Collect system uptime
+      ansible.builtin.command:
+        cmd: uptime
+      register: system_uptime
+      changed_when: false
+
+    - name: Check disk usage
+      ansible.builtin.command:
+        cmd: df -h /
+      register: disk_usage
+      changed_when: false
+
+    - name: Check memory usage
+      ansible.builtin.command:
+        cmd: free -h
+      register: memory_usage
+      changed_when: false
+
+    - name: Display health report
+      ansible.builtin.debug:
+        msg:
+          - "Hostname: {{ host_name.stdout }}"
+          - "Uptime: {{ system_uptime.stdout }}"
+          - "Disk Usage:"
+          - "{{ disk_usage.stdout }}"
+          - "Memory Usage:"
+          - "{{ memory_usage.stdout }}"
+</pre>
+
+<p>Save the file:</p>
+
+<pre>
+Esc
+:wq
+</pre>
+
+<h3>Step 2: Validate the playbook</h3>
+
+<pre>
+ansible-playbook --syntax-check health-report.yml
+</pre>
+
+<h3>Step 3: Execute the project</h3>
+
+<pre>
+ansible-playbook health-report.yml
+</pre>
+
+<h3>Step 4: Review the report</h3>
+
+<p>
+The output displays:
+</p>
+
+<ul>
+<li>Managed host hostname.</li>
+<li>System uptime.</li>
+<li>Root filesystem disk usage.</li>
+<li>Memory usage.</li>
+</ul>
+
+<p>
+You can run this playbook whenever you need a quick health report from the managed host.
+</p>
+
+<h2>11. What This Lab Covers</h2>
+
+<ul>
+<li>Understanding the Ansible Command module.</li>
+<li>Executing ad hoc commands.</li>
+<li>Creating and running Ansible playbooks.</li>
+<li>Capturing command output using register.</li>
+<li>Displaying output using debug.</li>
+<li>Using chdir and creates.</li>
+<li>Validating playbook syntax.</li>
+<li>Building a managed host health report.</li>
+</ul>
+
+<p>
+<strong>Final outcome:</strong> Execute Linux commands remotely and build a basic system health report using Ansible.
+</p>
+
+<div class="note">
+<strong>Remember:</strong> Use the Command module for simple commands. Use the Shell module when you need shell features such as pipes, redirection or variable expansion.
+</div>
+
+<script>
+(() => {
+    const button = document.getElementById("videoButton");
+    const video = document.getElementById("videoContainer");
+
+    button.addEventListener("click", () => {
+        const isVisible = !video.hidden;
+
+        video.hidden = isVisible;
+        button.textContent = isVisible
+            ? "▶ Watch Video"
+            : "✕ Hide Video";
+    });
+})();
+</script>
+
+</body>
 </html>
