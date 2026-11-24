@@ -1,0 +1,414 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible include_tasks Module</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note { background: #172554; border-left: 4px solid #3b82f6; padding:14px; border-radius:6px; margin:18px 0; }
+.warning { background: #451a03; border-left: 4px solid #f59e0b; padding:14px; border-radius:6px; margin:18px 0; }
+table { width:100%; border-collapse:collapse; margin:18px 0; }
+th,td { border:1px solid #334155; padding:10px; text-align:left; }
+th { background:#1e293b; color:#93c5fd; }
+td { color:#cbd5e1; }
+.video-container { margin:24px 0; }
+.video-container iframe { width:100%; aspect-ratio:16 / 9; border:0; border-radius:10px; display:block; }
+.video-button { display:block; background:#16a34a; color:white; border:0; border-radius:6px; padding:10px 16px; cursor:pointer; font-size:14px; margin-bottom:12px; }
+.project { background:#172033; border:1px solid #334155; border-radius:8px; padding:18px; margin-top:20px; }
+.why { background:#451f0b; border:1px solid #92400e; border-radius:10px; padding:24px; margin-top:40px; }
+.why h2 { color:#fbbf24; margin-top:0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible include_tasks Module</h1>
+
+<p>
+The <code>include_tasks</code> module allows you to include tasks from another YAML file inside your playbook. Instead of writing every task in one large playbook, you can separate tasks into smaller reusable files.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. Why Do We Need include_tasks?</h2>
+
+<p>Consider a playbook that performs several operations on an Ubuntu server:</p>
+
+<ul>
+    <li>Create directories.</li>
+    <li>Create users.</li>
+    <li>Install packages.</li>
+    <li>Create configuration files.</li>
+    <li>Set file permissions.</li>
+</ul>
+
+<p>If all these tasks are written in one playbook, the file can become difficult to maintain.</p>
+
+<p>We can divide the tasks into separate files and include them in the main playbook whenever required.</p>
+
+<h2>2. Basic Syntax</h2>
+
+<pre><code>---
+- name: Main playbook
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Include additional tasks
+      ansible.builtin.include_tasks: tasks.yml</code></pre>
+
+<p>In this example, Ansible loads and executes the tasks defined in <code>tasks.yml</code>.</p>
+
+<h2>3. Understanding the Syntax</h2>
+
+<table>
+<tr>
+    <th>Component</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td>include_tasks</td>
+    <td>Includes tasks from another YAML file.</td>
+</tr>
+<tr>
+    <td>tasks.yml</td>
+    <td>The file containing the additional tasks.</td>
+</tr>
+<tr>
+    <td>ansible.builtin</td>
+    <td>The built-in Ansible collection containing the module.</td>
+</tr>
+<tr>
+    <td>tasks</td>
+    <td>The main playbook section where tasks are defined.</td>
+</tr>
+</table>
+
+<div class="note">
+<strong>Important:</strong> The included task file contains a list of tasks. It does not need its own <code>hosts</code>, <code>become</code>, or <code>tasks</code> sections.
+</div>
+
+<h2>4. Create a Separate Task File</h2>
+
+<p>First, create a file named <code>setup_tasks.yml</code> in the same directory as your main playbook.</p>
+
+<p><strong>setup_tasks.yml</strong></p>
+
+<pre><code>---
+- name: Create application directory
+  ansible.builtin.file:
+    path: /opt/myapp
+    state: directory
+    mode: '0755'
+
+- name: Create log directory
+  ansible.builtin.file:
+    path: /opt/myapp/logs
+    state: directory
+    mode: '0755'
+
+- name: Create application information file
+  ansible.builtin.copy:
+    dest: /opt/myapp/info.txt
+    content: "Application configured using Ansible\n"
+    mode: '0644'</code></pre>
+
+<p>This file contains three tasks. It does not contain a play definition.</p>
+
+<h2>5. Include the Task File in the Main Playbook</h2>
+
+<p>Create another file named <code>main.yml</code>.</p>
+
+<p><strong>main.yml</strong></p>
+
+<pre><code>---
+- name: Configure application directories
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Run application setup tasks
+      ansible.builtin.include_tasks: setup_tasks.yml</code></pre>
+
+<p>When the main playbook runs, Ansible includes and executes all three tasks from <code>setup_tasks.yml</code> on the target host.</p>
+
+<h2>6. Execute the Playbook</h2>
+
+<p>Run the playbook from your Ansible controller:</p>
+
+<pre><code>ansible-playbook main.yml</code></pre>
+
+<p>To check the result, create another playbook named <code>verify.yml</code>.</p>
+
+<pre><code>---
+- name: Verify application setup
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Check application directory
+      ansible.builtin.command: test -d /opt/myapp
+      changed_when: false
+
+    - name: Check log directory
+      ansible.builtin.command: test -d /opt/myapp/logs
+      changed_when: false
+
+    - name: Read application information
+      ansible.builtin.command: cat /opt/myapp/info.txt
+      register: app_info
+      changed_when: false
+
+    - name: Display application information
+      ansible.builtin.debug:
+        var: app_info.stdout</code></pre>
+
+<p>Execute the verification playbook:</p>
+
+<pre><code>ansible-playbook verify.yml</code></pre>
+
+<h2>7. Include Multiple Task Files</h2>
+
+<p>You can include multiple task files in the same playbook. Each file can represent a separate configuration area.</p>
+
+<p>Example directory structure:</p>
+
+<pre><code>ansible-project/
+├── main.yml
+├── users.yml
+├── directories.yml
+└── packages.yml</code></pre>
+
+<p><strong>main.yml</strong></p>
+
+<pre><code>---
+- name: Configure Ubuntu server
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Configure users
+      ansible.builtin.include_tasks: users.yml
+
+    - name: Configure directories
+      ansible.builtin.include_tasks: directories.yml
+
+    - name: Install packages
+      ansible.builtin.include_tasks: packages.yml</code></pre>
+
+<p>Each included file contains its own list of tasks. Ansible executes the included task lists in the order they are included.</p>
+
+<h2>8. Using include_tasks with Conditions</h2>
+
+<p>You can use the <code>when</code> condition with <code>include_tasks</code> to decide whether a task file should be included.</p>
+
+<pre><code>---
+- name: Conditional task inclusion
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Include Ubuntu configuration tasks
+      ansible.builtin.include_tasks: ubuntu_tasks.yml
+      when: ansible_facts['distribution'] == "Ubuntu"</code></pre>
+
+<p>In this example, Ansible includes <code>ubuntu_tasks.yml</code> only when the target host's distribution is Ubuntu.</p>
+
+<div class="note">
+<strong>Remember:</strong> <code>include_tasks</code> is dynamic inclusion. The include is processed during playbook execution, so conditions and variables can determine whether the task file is included.
+</div>
+
+<h2>9. Important Points</h2>
+
+<table>
+<tr>
+    <th>Point</th>
+    <th>Details</th>
+</tr>
+<tr>
+    <td>File format</td>
+    <td>Included task files are normally YAML files.</td>
+</tr>
+<tr>
+    <td>Task structure</td>
+    <td>The included file contains a list of tasks, not a complete play.</td>
+</tr>
+<tr>
+    <td>Execution</td>
+    <td>Tasks execute on the hosts selected by the main play.</td>
+</tr>
+<tr>
+    <td>Privilege escalation</td>
+    <td>The main play's <code>become: true</code> applies to included tasks unless overridden.</td>
+</tr>
+<tr>
+    <td>Dynamic inclusion</td>
+    <td>The task file is included during playbook execution.</td>
+</tr>
+<tr>
+    <td>Reusability</td>
+    <td>The same task file can be included from multiple playbooks.</td>
+</tr>
+</table>
+
+<div class="warning">
+<strong>Common mistake:</strong> Do not place <code>hosts:</code> or <code>tasks:</code> inside the included task file. Those belong to a playbook. An included task file should contain task definitions directly.
+</div>
+
+<h2>10. Practical Project: Application Setup Using Separate Task Files</h2>
+
+<div class="project">
+<h3>Objective</h3>
+
+<p>Configure an application directory structure on the Ubuntu client using separate task files.</p>
+
+<p><strong>Directory structure:</strong></p>
+
+<pre><code>application-project/
+├── main.yml
+├── directories.yml
+├── files.yml
+└── permissions.yml</code></pre>
+
+<p><strong>directories.yml</strong></p>
+
+<pre><code>---
+- name: Create application directory
+  ansible.builtin.file:
+    path: /opt/webapp
+    state: directory
+
+- name: Create configuration directory
+  ansible.builtin.file:
+    path: /opt/webapp/config
+    state: directory</code></pre>
+
+<p><strong>files.yml</strong></p>
+
+<pre><code>---
+- name: Create application configuration
+  ansible.builtin.copy:
+    dest: /opt/webapp/config/app.conf
+    content: |
+      APP_NAME=LearningLabs
+      APP_ENV=development
+    mode: '0644'</code></pre>
+
+<p><strong>permissions.yml</strong></p>
+
+<pre><code>---
+- name: Set application directory permissions
+  ansible.builtin.file:
+    path: /opt/webapp
+    state: directory
+    mode: '0755'
+    recurse: true</code></pre>
+
+<p><strong>main.yml</strong></p>
+
+<pre><code>---
+- name: Configure web application
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create application directories
+      ansible.builtin.include_tasks: directories.yml
+
+    - name: Create application files
+      ansible.builtin.include_tasks: files.yml
+
+    - name: Configure permissions
+      ansible.builtin.include_tasks: permissions.yml</code></pre>
+
+<p><strong>Execute:</strong></p>
+
+<pre><code>ansible-playbook main.yml</code></pre>
+
+<h3>Expected Result</h3>
+
+<p>The target Ubuntu container should contain:</p>
+
+<pre><code>/opt/webapp/
+└── config/
+    └── app.conf</code></pre>
+
+<p>The configuration file should contain the application name and environment values defined in <code>files.yml</code>.</p>
+</div>
+
+<h2>11. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the purpose of <code>include_tasks</code>.</li>
+    <li>Creating separate task files.</li>
+    <li>Including task files in a main playbook.</li>
+    <li>Including multiple task files.</li>
+    <li>Using conditions with task inclusion.</li>
+    <li>Building a modular Ansible project.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use Ansible include_tasks?</h2>
+
+<p>We use <code>include_tasks</code> to divide large playbooks into smaller, manageable task files.</p>
+
+<p>In real-world automation, a server configuration may involve user management, package installation, directory creation, application configuration, and permission management.</p>
+
+<p>Keeping every operation in one playbook makes maintenance difficult. With <code>include_tasks</code>, we can organize these operations into separate files and include them when required.</p>
+
+<p>For example, an application deployment playbook can include separate task files for installing dependencies, configuring the application, and preparing directories.</p>
+
+<p>This improves code organization, maintainability, and reusability across Ansible projects.</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
