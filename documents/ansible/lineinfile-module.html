@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ansible Lineinfile Module</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 18px;
+            background: #0b1120;
+            color: #e5e7eb;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1, h2, h3 {
+            color: #60a5fa;
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 25px;
+            margin-top: 38px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 9px;
+        }
+
+        h3 {
+            font-size: 19px;
+            margin-top: 25px;
+        }
+
+        p {
+            color: #cbd5e1;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        .intro {
+            color: #94a3b8;
+            font-size: 17px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            margin: 25px 0 12px;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-button {
+            display: inline-block;
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .video-button:hover {
+            background: #15803d;
+        }
+
+        .info-box {
+            background: #172554;
+            border-left: 4px solid #3b82f6;
+            padding: 16px 20px;
+            border-radius: 7px;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            background: #422006;
+            border-left: 4px solid #f59e0b;
+            padding: 16px 20px;
+            border-radius: 7px;
+            margin: 20px 0;
+        }
+
+        .why-box {
+            background: #451a03;
+            border: 1px solid #92400e;
+            border-left: 6px solid #d97706;
+            padding: 24px;
+            border-radius: 10px;
+            margin-top: 45px;
+        }
+
+        .why-box h2 {
+            color: #fbbf24;
+            border-bottom-color: #92400e;
+            margin-top: 0;
+        }
+
+        .why-box p,
+        .why-box li {
+            color: #fde68a;
+        }
+
+        pre {
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 18px;
+            overflow-x: auto;
+            color: #d1d5db;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: Consolas, Monaco, monospace;
+            color: #86efac;
+        }
+
+        pre code {
+            color: #d1d5db;
+        }
+
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            display: block;
+            overflow-x: auto;
+        }
+
+        .parameter-table th,
+        .parameter-table td {
+            border: 1px solid #334155;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .parameter-table th {
+            background: #1e293b;
+            color: #93c5fd;
+        }
+
+        .parameter-table td {
+            color: #cbd5e1;
+        }
+
+        .step {
+            background: #111c30;
+            border: 1px solid #263449;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 18px 0;
+        }
+
+        .step h3 {
+            margin-top: 0;
+        }
+
+        .success {
+            color: #86efac;
+        }
+
+        .footer {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px 12px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            pre {
+                font-size: 12px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Ansible Lineinfile Module</h1>
+
+    <p class="intro">
+        Learn how to add, modify, replace, and remove individual lines
+        inside configuration files using Ansible playbooks.
+    </p>
+
+    <div id="videoContainer" class="video-container">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible Lineinfile Module Tutorial"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <button id="videoToggle" class="video-button" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <h2>1. What Is the Lineinfile Module?</h2>
+
+    <p>
+        The <code>ansible.builtin.lineinfile</code> module manages individual
+        lines inside files. It can add a new line, modify an existing line,
+        remove a line, or insert a line at a specific position.
+    </p>
+
+    <p>
+        In Linux administration, configuration files contain settings that
+        control how applications and services behave. Administrators
+        frequently need to update these settings.
+    </p>
+
+    <p>
+        Instead of manually opening a file and editing it, Ansible can
+        perform these changes consistently through a playbook.
+    </p>
+
+    <div class="info-box">
+        <strong>Important:</strong>
+        The lineinfile module is designed to manage individual lines.
+        For managing larger multiline sections, use the
+        <code>blockinfile</code> module.
+    </div>
+
+    <h2>2. How Does It Work?</h2>
+
+    <p>Consider the following application configuration file:</p>
+
+    <pre><code># Application Configuration
+APP_NAME=learning-labs
+APP_PORT=5000
+APP_ENV=development</code></pre>
+
+    <p>Suppose you want to change the application port from 5000 to 8080.</p>
+
+    <p>Using lineinfile, Ansible can find the line containing APP_PORT and
+       replace it with the required value.</p>
+
+    <pre><code>APP_NAME=learning-labs
+APP_PORT=8080
+APP_ENV=development</code></pre>
+
+    <p>
+        Ansible checks the file before making changes. If the desired
+        configuration already exists, it does not unnecessarily modify
+        the file again.
+    </p>
+
+    <h2>3. Basic Playbook Structure</h2>
+
+    <pre><code>---
+- name: Manage configuration file
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Add application configuration
+      ansible.builtin.lineinfile:
+        path: /tmp/app.conf
+        line: "APP_PORT=8080"
+        state: present</code></pre>
+
+    <p>Important fields:</p>
+
+    <ul>
+        <li><code>hosts</code>: Specifies the target host.</li>
+        <li><code>connection</code>: Uses a local connection.</li>
+        <li><code>become</code>: Enables privilege escalation.</li>
+        <li><code>path</code>: Specifies the file to modify.</li>
+        <li><code>line</code>: Specifies the line to add or replace.</li>
+        <li><code>state</code>: Specifies whether the line should exist.</li>
+    </ul>
+
+    <h2>4. Important Parameters</h2>
+
+    <table class="parameter-table">
+        <thead>
+        <tr>
+            <th>Parameter</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><code>path</code></td>
+            <td>Absolute path of the file to modify. Required.</td>
+        </tr>
+        <tr>
+            <td><code>line</code></td>
+            <td>The exact line to add or use as replacement content.</td>
+        </tr>
+        <tr>
+            <td><code>regexp</code></td>
+            <td>Regular expression used to find an existing line.</td>
+        </tr>
+        <tr>
+            <td><code>state</code></td>
+            <td><code>present</code> ensures the line exists. <code>absent</code> removes matching lines.</td>
+        </tr>
+        <tr>
+            <td><code>create</code></td>
+            <td>Creates the file if it does not exist. Default is false.</td>
+        </tr>
+        <tr>
+            <td><code>backup</code></td>
+            <td>Creates a backup of the original file before modification.</td>
+        </tr>
+        <tr>
+            <td><code>insertafter</code></td>
+            <td>Inserts the line after a matching expression or at EOF.</td>
+        </tr>
+        <tr>
+            <td><code>insertbefore</code></td>
+            <td>Inserts the line before a matching expression or at BOF.</td>
+        </tr>
+        <tr>
+            <td><code>firstmatch</code></td>
+            <td>Uses the first matching insertion location instead of the last.</td>
+        </tr>
+        <tr>
+            <td><code>backrefs</code></td>
+            <td>Uses captured groups from regexp inside the replacement line.</td>
+        </tr>
+        <tr>
+            <td><code>mode</code></td>
+            <td>Sets file permissions when the file is created or modified.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>5. Adding a New Line</h2>
+
+    <p>
+        The simplest use case is adding a configuration line to a file.
+        If the line already exists, Ansible will not add another identical
+        line.
+    </p>
+
+    <p>Create <code>add-line.yml</code>:</p>
+
+    <pre><code>---
+- name: Add a configuration line
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Add application port
+      ansible.builtin.lineinfile:
+        path: /tmp/ansible-lineinfile-lab/app.conf
+        line: "APP_PORT=8080"
+        state: present
+        create: true</code></pre>
+
+    <p>
+        If the file does not exist, <code>create: true</code> creates it.
+        The parent directory must already exist.
+    </p>
+
+    <h2>6. Replacing an Existing Line Using Regexp</h2>
+
+    <p>
+        The <code>regexp</code> parameter searches for an existing line.
+        When a match is found, Ansible replaces that line with the
+        content specified by <code>line</code>.
+    </p>
+
+    <p>Suppose the file contains:</p>
+
+    <pre><code>APP_NAME=learning-labs
+APP_PORT=5000
+APP_ENV=development</code></pre>
+
+    <p>Playbook:</p>
+
+    <pre><code>---
+- name: Update application port
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Change application port
+      ansible.builtin.lineinfile:
+        path: /tmp/ansible-lineinfile-lab/app.conf
+        regexp: '^APP_PORT='
+        line: "APP_PORT=8080"
+        state: present</code></pre>
+
+    <p>Result:</p>
+
+    <pre><code>APP_NAME=learning-labs
+APP_PORT=8080
+APP_ENV=development</code></pre>
+
+    <div class="info-box">
+        <strong>Remember:</strong>
+        If the regular expression does not match any existing line and
+        <code>state: present</code> is used, Ansible adds the specified
+        line to the file.
+    </div>
+
+    <h2>7. Removing a Line</h2>
+
+    <p>
+        Use <code>state: absent</code> to remove lines matching the
+        specified regular expression.
+    </p>
+
+    <pre><code>---
+- name: Remove development configuration
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Remove development environment setting
+      ansible.builtin.lineinfile:
+        path: /tmp/ansible-lineinfile-lab/app.conf
+        regexp: '^APP_ENV='
+        state: absent</code></pre>
+
+    <p>
+        Every line matching the regular expression is removed.
+    </p>
+
+    <h2>8. Inserting a Line at a Specific Position</h2>
+
+    <p>
+        Sometimes a configuration line must be placed before or after
+        another line. The <code>insertbefore</code> and
+        <code>insertafter</code> parameters control its position.
+    </p>
+
+    <h3>Using insertafter</h3>
+
+    <pre><code>---
+- name: Insert configuration after application name
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Add application owner
+      ansible.builtin.lineinfile:
+        path: /tmp/ansible-lineinfile-lab/app.conf
+        line: "APP_OWNER=admin"
+        insertafter: '^APP_NAME='
+        state: present</code></pre>
+
+    <h3>Using insertbefore</h3>
+
+    <pre><code>---
+- name: Insert configuration before application port
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Add application version
+      ansible.builtin.lineinfile:
+        path: /tmp/ansible-lineinfile-lab/app.conf
+        line: "APP_VERSION=1.0"
+        insertbefore: '^APP_PORT='
+        state: present</code></pre>
+
+    <h3>Special insertion positions</h3>
+
+    <ul>
+        <li><code>EOF</code>: End of the file.</li>
+        <li><code>BOF</code>: Beginning of the file.</li>
+    </ul>
+
+    <h2>9. Creating a Backup Before Modification</h2>
+
+    <p>
+        Configuration changes can affect application behavior. You can
+        create a backup before modifying the original file.
+    </p>
+
+    <pre><code>---
+- name: Update configuration with backup
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Update application environment
+      ansible.builtin.lineinfile:
+        path: /tmp/ansible-lineinfile-lab/app.conf
+        regexp: '^APP_ENV='
+        line: "APP_ENV=production"
+        state: present
+        backup: true</code></pre>
+
+    <p>
+        When Ansible modifies the file, it creates a backup containing
+        the previous file content.
+    </p>
+
+    <h2>10. Using Backreferences</h2>
+
+    <p>
+        The <code>backrefs</code> parameter allows you to capture part of
+        an existing line using regular expression groups and reuse that
+        captured content in the replacement line.
+    </p>
+
+    <p>Suppose the configuration contains:</p>
+
+    <pre><code>APP_PORT=5000</code></pre>
+
+    <p>Playbook:</p>
+
+    <pre><code>---
+- name: Update configuration using backreferences
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Update application port
+      ansible.builtin.lineinfile:
+        path: /tmp/ansible-lineinfile-lab/app.conf
+        regexp: '^(APP_PORT=).*'
+        line: '\g&lt;1&gt;8080'
+        backrefs: true</code></pre>
+
+    <p>Result:</p>
+
+    <pre><code>APP_PORT=8080</code></pre>
+
+    <div class="warning-box">
+        <strong>Important:</strong>
+        When <code>backrefs: true</code> is enabled, the replacement
+        happens only if the regular expression matches. If no match is
+        found, Ansible does not insert a new line.
+    </div>
+
+    <h2>11. Understanding Idempotency</h2>
+
+    <p>
+        Idempotency means that running the same playbook multiple times
+        produces the same desired result without making unnecessary
+        changes.
+    </p>
+
+    <p>Consider this task:</p>
+
+    <pre><code>- name: Ensure application port
+  ansible.builtin.lineinfile:
+    path: /tmp/ansible-lineinfile-lab/app.conf
+    regexp: '^APP_PORT='
+    line: "APP_PORT=8080"
+    state: present</code></pre>
+
+    <ul>
+        <li>First run: Ansible adds or updates the configuration.</li>
+        <li>Second run: No change is required if the desired line exists.</li>
+        <li>Third run: The configuration remains unchanged.</li>
+    </ul>
+
+    <p>
+        This behavior is important when automating configuration
+        management across multiple servers.
+    </p>
+
+    <h2>12. Practical Project: Manage an Application Configuration File</h2>
+
+    <p>
+        In this project, you will create and manage an application
+        configuration file using the lineinfile module.
+    </p>
+
+    <h3>Project Requirements</h3>
+
+    <ul>
+        <li>Create an application configuration file.</li>
+        <li>Configure the application name.</li>
+        <li>Set the application port to 8080.</li>
+        <li>Set the environment to production.</li>
+        <li>Add an application owner.</li>
+        <li>Remove an unwanted debug setting.</li>
+        <li>Create a backup before modifying the configuration.</li>
+        <li>Ensure the playbook is idempotent.</li>
+    </ul>
+
+    <h3>Step 1: Create the Project Directory</h3>
+
+    <p>Create a playbook named <code>application-config.yml</code>.</p>
+
+    <h3>Step 2: Write the Complete Playbook</h3>
+
+    <pre><code>---
+- name: Manage application configuration
+  hosts: localhost
+  connection: local
+  become: true
+
+  vars:
+    config_dir: /tmp/ansible-lineinfile-lab
+    config_file: /tmp/ansible-lineinfile-lab/app.conf
+
+  tasks:
+
+    - name: Create configuration directory
+      ansible.builtin.file:
+        path: "{{ config_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create initial configuration file
+      ansible.builtin.copy:
+        dest: "{{ config_file }}"
+        content: |
+          APP_NAME=learning-labs
+          APP_PORT=5000
+          APP_ENV=development
+          APP_DEBUG=true
+        force: false
+        mode: '0644'
+
+    - name: Ensure application name
+      ansible.builtin.lineinfile:
+        path: "{{ config_file }}"
+        regexp: '^APP_NAME='
+        line: "APP_NAME=learning-labs"
+        state: present
+        backup: true
+
+    - name: Update application port
+      ansible.builtin.lineinfile:
+        path: "{{ config_file }}"
+        regexp: '^APP_PORT='
+        line: "APP_PORT=8080"
+        state: present
+        backup: true
+
+    - name: Update environment
+      ansible.builtin.lineinfile:
+        path: "{{ config_file }}"
+        regexp: '^APP_ENV='
+        line: "APP_ENV=production"
+        state: present
+
+    - name: Add application owner
+      ansible.builtin.lineinfile:
+        path: "{{ config_file }}"
+        regexp: '^APP_OWNER='
+        line: "APP_OWNER=admin"
+        state: present
+
+    - name: Remove debug setting
+      ansible.builtin.lineinfile:
+        path: "{{ config_file }}"
+        regexp: '^APP_DEBUG='
+        state: absent
+
+    - name: Display final configuration
+      ansible.builtin.debug:
+        msg: "Application configuration has been updated successfully."</code></pre>
+
+    <h3>Step 3: Expected Configuration</h3>
+
+    <pre><code>APP_NAME=learning-labs
+APP_PORT=8080
+APP_ENV=production
+APP_OWNER=admin</code></pre>
+
+    <h3>Step 4: Verify the Result</h3>
+
+    <p>
+        Create a second playbook named
+        <code>verify-config.yml</code>.
+    </p>
+
+    <pre><code>---
+- name: Verify application configuration
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Read application configuration
+      ansible.builtin.command:
+        argv:
+          - cat
+          - /tmp/ansible-lineinfile-lab/app.conf
+      register: config_output
+      changed_when: false
+
+    - name: Display configuration
+      ansible.builtin.debug:
+        var: config_output.stdout</code></pre>
+
+    <h3>Step 5: Test Idempotency</h3>
+
+    <p>
+        Run the project playbook more than once and observe the task
+        results. After the configuration reaches the desired state,
+        the lineinfile tasks should report no further changes.
+    </p>
+
+    <div class="info-box">
+        <strong>Project outcome:</strong>
+        You have automated application configuration management,
+        including adding, replacing, and removing configuration lines
+        without manually editing the file.
+    </div>
+
+    <h2>13. What This Lab Covers</h2>
+
+    <ul>
+        <li>Understanding the Ansible lineinfile module.</li>
+        <li>Adding individual lines to configuration files.</li>
+        <li>Replacing existing lines using regular expressions.</li>
+        <li>Removing unwanted configuration lines.</li>
+        <li>Using insertafter and insertbefore.</li>
+        <li>Creating configuration backups.</li>
+        <li>Using backreferences.</li>
+        <li>Understanding idempotency.</li>
+        <li>Building a practical configuration-management playbook.</li>
+    </ul>
+
+    <div class="why-box">
+        <h2>Why Do We Use the Ansible Lineinfile Module?</h2>
+
+        <p>
+            Linux servers depend on configuration files to control
+            applications, services, networking, security settings,
+            authentication, and system behavior. These files frequently
+            require updates during application deployments and routine
+            server administration.
+        </p>
+
+        <p>
+            Traditionally, an administrator might connect to every server,
+            open the required configuration file, locate a particular
+            setting, modify it, and save the file. When the same change
+            must be performed on several servers, this approach becomes
+            repetitive and increases the possibility of human error.
+        </p>
+
+        <p>
+            The Ansible lineinfile module automates these individual
+            configuration changes. An administrator can define the
+            desired configuration once in a playbook and apply it
+            consistently across the required systems.
+        </p>
+
+        <h3>Practical Reasons to Use It</h3>
+
+        <ul>
+            <li>
+                <strong>Automated configuration changes:</strong>
+                Update application settings without manually opening
+                configuration files.
+            </li>
+            <li>
+                <strong>Consistent configurations:</strong>
+                Maintain the same required configuration across multiple
+                managed servers.
+            </li>
+            <li>
+                <strong>Idempotent execution:</strong>
+                Avoid repeatedly adding duplicate configuration lines.
+            </li>
+            <li>
+                <strong>Configuration cleanup:</strong>
+                Remove unwanted settings such as obsolete debug entries.
+            </li>
+            <li>
+                <strong>Deployment automation:</strong>
+                Update application ports, environment variables stored
+                in configuration files, and other individual settings
+                during deployments.
+            </li>
+            <li>
+                <strong>Backup support:</strong>
+                Preserve the previous file before making changes.
+            </li>
+            <li>
+                <strong>Reduced manual effort:</strong>
+                Apply configuration changes to many systems through
+                a single automation workflow.
+            </li>
+        </ul>
+
+        <h3>Real-World DevOps Example</h3>
+
+        <p>
+            Imagine an organization managing 50 Ubuntu application
+            servers. A new application release requires changing the
+            application port from 5000 to 8080 on every server.
+        </p>
+
+        <p>
+            Instead of logging in to all 50 servers individually,
+            an administrator can write an Ansible playbook using
+            lineinfile and execute it against the managed inventory.
+        </p>
+
+        <p>
+            Ansible checks each server, updates the required line,
+            and leaves systems that already have the correct setting
+            unchanged.
+        </p>
+
+        <p>
+            This is why lineinfile is useful in configuration management,
+            infrastructure automation, and repeatable DevOps workflows.
+        </p>
+
+        <p>
+            <strong>Remember:</strong> Use lineinfile when you need to
+            manage individual lines. For managing complete files,
+            consider the copy or template modules. For managing
+            multiline sections, use blockinfile.
+        </p>
+    </div>
+
+    <div class="footer">
+        Ansible Learning Labs
+    </div>
+
+</div>
+
+<script>
+    function toggleVideo() {
+        const video = document.getElementById("videoContainer");
+        const button = document.getElementById("videoToggle");
+
+        if (video.style.display === "none") {
+            video.style.display = "block";
+            button.textContent = "✕ Hide Video";
+        } else {
+            video.style.display = "none";
+            button.textContent = "▶ Watch Video";
+        }
+    }
+</script>
+
+</body>
+</html>
