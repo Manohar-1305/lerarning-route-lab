@@ -1,0 +1,417 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible Galaxy</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note { background: #172554; border-left: 4px solid #3b82f6; padding:14px; border-radius:6px; margin:18px 0; }
+.warning { background: #451a03; border-left: 4px solid #f59e0b; padding:14px; border-radius:6px; margin:18px 0; }
+table { width:100%; border-collapse:collapse; margin:18px 0; }
+th,td { border:1px solid #334155; padding:10px; text-align:left; }
+th { background:#1e293b; color:#93c5fd; }
+td { color:#cbd5e1; }
+.video-container { margin:24px 0; }
+.video-container iframe { width:100%; aspect-ratio:16 / 9; border:0; border-radius:10px; display:block; }
+.video-button { display:block; background:#16a34a; color:white; border:0; border-radius:6px; padding:10px 16px; cursor:pointer; font-size:14px; margin-bottom:12px; }
+.project { background:#172033; border:1px solid #334155; border-radius:8px; padding:18px; margin-top:20px; }
+.why { background:#451f0b; border:1px solid #92400e; border-radius:10px; padding:24px; margin-top:40px; }
+.why h2 { color:#fbbf24; margin-top:0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible Galaxy</h1>
+
+<p>
+Ansible Galaxy is a platform and command-line tool for finding, sharing, installing, and managing reusable Ansible content such as roles and collections.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. What Is Ansible Galaxy?</h2>
+
+<p>Imagine you need to configure Nginx on multiple servers. You could write all the automation tasks yourself, or you could find an existing reusable role created by another Ansible developer.</p>
+
+<p>Ansible Galaxy provides a central place to discover and share this type of automation content.</p>
+
+<p>It also provides the <code>ansible-galaxy</code> command, which you can use from your Ansible controller to manage roles and collections.</p>
+
+<h2>2. Understanding Roles and Collections</h2>
+
+<table>
+<tr>
+    <th>Content</th>
+    <th>Description</th>
+</tr>
+<tr>
+    <td>Role</td>
+    <td>A reusable directory structure containing tasks, handlers, variables, templates, and files.</td>
+</tr>
+<tr>
+    <td>Collection</td>
+    <td>A packaged distribution of Ansible content that can include roles, modules, plugins, and playbooks.</td>
+</tr>
+</table>
+
+<div class="note">
+<strong>Important:</strong> Roles and collections are different types of Ansible content. A collection can contain multiple roles and plugins.
+</div>
+
+<h2>3. Check Ansible Galaxy Command</h2>
+
+<p>Run this command on your Ansible controller:</p>
+
+<pre><code>ansible-galaxy --version</code></pre>
+
+<p>To view the available command options:</p>
+
+<pre><code>ansible-galaxy --help</code></pre>
+
+<h2>4. Search for Roles</h2>
+
+<p>You can search Ansible Galaxy for reusable roles.</p>
+
+<p>Example:</p>
+
+<pre><code>ansible-galaxy search nginx</code></pre>
+
+<p>You can also search for roles related to Docker:</p>
+
+<pre><code>ansible-galaxy search docker</code></pre>
+
+<p>The search results help you identify roles available for installation.</p>
+
+<div class="warning">
+<strong>Note:</strong> Search results, role names, and available versions depend on the Galaxy service and its current content. Review a role's documentation, supported platforms, dependencies, and source repository before using it.
+</div>
+
+<h2>5. Install a Role from Ansible Galaxy</h2>
+
+<p>You can install a role by specifying its Galaxy namespace and role name.</p>
+
+<p>Example:</p>
+
+<pre><code>ansible-galaxy role install geerlingguy.nginx</code></pre>
+
+<p>By default, Ansible installs the role into its configured roles path.</p>
+
+<p>To install a role into a specific directory:</p>
+
+<pre><code>ansible-galaxy role install geerlingguy.nginx \
+  -p ./roles</code></pre>
+
+<p>The project directory may look like this:</p>
+
+<pre><code>ansible-project/
+├── main.yml
+└── roles/
+    └── geerlingguy.nginx/
+        ├── defaults/
+        ├── handlers/
+        ├── tasks/
+        ├── templates/
+        └── vars/</code></pre>
+
+<h2>6. List Installed Roles</h2>
+
+<p>To view the roles installed in the configured roles paths:</p>
+
+<pre><code>ansible-galaxy role list</code></pre>
+
+<p>To list roles from a specific directory:</p>
+
+<pre><code>ansible-galaxy role list -p ./roles</code></pre>
+
+<h2>7. Use an Installed Role in a Playbook</h2>
+
+<p>After installing a role, you can reference it from your playbook.</p>
+
+<p><strong>main.yml</strong></p>
+
+<pre><code>---
+- name: Configure webserver
+  hosts: ansible-client
+  become: true
+
+  roles:
+    - geerlingguy.nginx</code></pre>
+
+<p>Ansible looks for the role in its configured role search paths.</p>
+
+<div class="warning">
+<strong>Container limitation:</strong> The example Nginx role may require a service manager or other operating-system capabilities that are not available in your Ubuntu container. Installing a role does not guarantee that every task in it can run successfully inside a container.
+</div>
+
+<h2>8. Install Roles Using requirements.yml</h2>
+
+<p>In real projects, you may need multiple roles. Instead of installing them individually, you can define them in a requirements file.</p>
+
+<p>Create a file named <code>requirements.yml</code>.</p>
+
+<pre><code>---
+roles:
+  - name: geerlingguy.nginx
+    version: "3.2.0"</code></pre>
+
+<p>Install the roles defined in the requirements file:</p>
+
+<pre><code>ansible-galaxy role install -r requirements.yml -p ./roles</code></pre>
+
+<p>This downloads the specified role into the local <code>roles/</code> directory.</p>
+
+<h2>9. Install Ansible Collections</h2>
+
+<p>Ansible Galaxy also distributes collections. Collections can contain modules, plugins, roles, and other Ansible content.</p>
+
+<p>For example, install the community general collection:</p>
+
+<pre><code>ansible-galaxy collection install community.general</code></pre>
+
+<p>To install a collection into a specific project directory:</p>
+
+<pre><code>ansible-galaxy collection install community.general \
+  -p ./collections</code></pre>
+
+<p>List installed collections:</p>
+
+<pre><code>ansible-galaxy collection list</code></pre>
+
+<p>Use a module from the collection in a playbook by specifying its fully qualified collection name.</p>
+
+<pre><code>---
+- name: Collection example
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display a message
+      ansible.builtin.debug:
+        msg: "Ansible collection example"</code></pre>
+
+<p>The example uses a built-in module. A collection module would use its own namespace, collection name, and module name.</p>
+
+<h2>10. Install Collections Using requirements.yml</h2>
+
+<p>You can also define collections in a requirements file.</p>
+
+<pre><code>---
+collections:
+  - name: community.general
+    version: "10.0.0"</code></pre>
+
+<p>Install the specified collections:</p>
+
+<pre><code>ansible-galaxy collection install -r requirements.yml</code></pre>
+
+<p>You can define both roles and collections in the same requirements file:</p>
+
+<pre><code>---
+roles:
+  - name: geerlingguy.nginx
+    version: "3.2.0"
+
+collections:
+  - name: community.general
+    version: "10.0.0"</code></pre>
+
+<p>Install both types of content:</p>
+
+<pre><code>ansible-galaxy install -r requirements.yml</code></pre>
+
+<h2>11. Remove an Installed Role</h2>
+
+<p>To remove an installed role:</p>
+
+<pre><code>ansible-galaxy role remove geerlingguy.nginx</code></pre>
+
+<p>To remove an installed collection:</p>
+
+<pre><code>ansible-galaxy collection remove community.general</code></pre>
+
+<p>Removing a role or collection affects the installed content in the relevant Ansible paths.</p>
+
+<h2>12. Important Ansible Galaxy Commands</h2>
+
+<table>
+<tr>
+    <th>Command</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td><code>ansible-galaxy --version</code></td>
+    <td>Display command version information.</td>
+</tr>
+<tr>
+    <td><code>ansible-galaxy search nginx</code></td>
+    <td>Search for roles.</td>
+</tr>
+<tr>
+    <td><code>ansible-galaxy role init myrole</code></td>
+    <td>Create a new role structure.</td>
+</tr>
+<tr>
+    <td><code>ansible-galaxy role install role_name</code></td>
+    <td>Install a role.</td>
+</tr>
+<tr>
+    <td><code>ansible-galaxy role list</code></td>
+    <td>List installed roles.</td>
+</tr>
+<tr>
+    <td><code>ansible-galaxy role remove role_name</code></td>
+    <td>Remove an installed role.</td>
+</tr>
+<tr>
+    <td><code>ansible-galaxy collection install namespace.collection</code></td>
+    <td>Install a collection.</td>
+</tr>
+<tr>
+    <td><code>ansible-galaxy collection list</code></td>
+    <td>List installed collections.</td>
+</tr>
+<tr>
+    <td><code>ansible-galaxy collection remove namespace.collection</code></td>
+    <td>Remove an installed collection.</td>
+</tr>
+</table>
+
+<h2>13. Practical Project: Manage Project Dependencies</h2>
+
+<div class="project">
+<h3>Objective</h3>
+
+<p>Create a project that uses a requirements file to manage external Ansible roles and collections.</p>
+
+<p><strong>Project structure:</strong></p>
+
+<pre><code>galaxy-project/
+├── requirements.yml
+├── main.yml
+├── inventory
+├── roles/
+└── collections/</code></pre>
+
+<p><strong>Step 1: Create requirements.yml</strong></p>
+
+<pre><code>---
+roles:
+  - name: geerlingguy.nginx
+    version: "3.2.0"
+
+collections:
+  - name: community.general
+    version: "10.0.0"</code></pre>
+
+<p><strong>Step 2: Install the dependencies</strong></p>
+
+<pre><code>ansible-galaxy install -r requirements.yml</code></pre>
+
+<p><strong>Step 3: List installed roles</strong></p>
+
+<pre><code>ansible-galaxy role list</code></pre>
+
+<p><strong>Step 4: List installed collections</strong></p>
+
+<pre><code>ansible-galaxy collection list</code></pre>
+
+<p><strong>Step 5: Create a main playbook</strong></p>
+
+<pre><code>---
+- name: Test Ansible project
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Verify Ansible execution
+      ansible.builtin.debug:
+        msg: "Ansible Galaxy dependencies are ready"</code></pre>
+
+<p><strong>Step 6: Execute the playbook</strong></p>
+
+<pre><code>ansible-playbook main.yml</code></pre>
+
+<h3>Expected Result</h3>
+
+<p>The project should have its external roles and collections installed, and the test playbook should execute successfully against the Ubuntu client.</p>
+</div>
+
+<h2>14. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding Ansible Galaxy.</li>
+    <li>Understanding roles and collections.</li>
+    <li>Searching for reusable roles.</li>
+    <li>Installing and listing roles.</li>
+    <li>Using installed roles in playbooks.</li>
+    <li>Managing dependencies with requirements.yml.</li>
+    <li>Installing and listing collections.</li>
+    <li>Removing roles and collections.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use Ansible Galaxy?</h2>
+
+<p>We use Ansible Galaxy to discover, share, and reuse automation content instead of creating every component from scratch.</p>
+
+<p>In enterprise DevOps environments, teams often need common automation for web servers, databases, cloud platforms, monitoring, and security configuration.</p>
+
+<p>Rather than repeatedly developing the same automation, teams can use existing roles and collections, review them, pin specific versions, and manage dependencies through requirements files.</p>
+
+<p>This improves consistency across environments and makes automation projects easier to maintain and distribute.</p>
+
+<p>However, external roles and collections should always be reviewed for security, compatibility, supported versions, and maintenance status before being used in production.</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
