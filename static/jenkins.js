@@ -762,6 +762,8 @@ async function refreshStatus() {
     const dot = button?.querySelector(".host-dot");
 
     const running = item.state === "running";
+    button?.classList.toggle("running", running);
+    button?.classList.toggle("stopped", !running);
 
     if (statusElement) {
       statusElement.textContent = running
