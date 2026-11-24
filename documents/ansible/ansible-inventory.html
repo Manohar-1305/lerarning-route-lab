@@ -1,0 +1,507 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible Inventory</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note { background: #172554; border-left: 4px solid #3b82f6; padding:14px; border-radius:6px; margin:18px 0; }
+.warning { background: #451a03; border-left: 4px solid #f59e0b; padding:14px; border-radius:6px; margin:18px 0; }
+table { width:100%; border-collapse:collapse; margin:18px 0; }
+th,td { border:1px solid #334155; padding:10px; text-align:left; }
+th { background:#1e293b; color:#93c5fd; }
+td { color:#cbd5e1; }
+.video-container { margin:24px 0; }
+.video-container iframe { width:100%; aspect-ratio:16 / 9; border:0; border-radius:10px; display:block; }
+.video-button { display:block; background:#16a34a; color:white; border:0; border-radius:6px; padding:10px 16px; cursor:pointer; font-size:14px; margin-bottom:12px; }
+.project { background:#172033; border:1px solid #334155; border-radius:8px; padding:18px; margin-top:20px; }
+.why { background:#451f0b; border:1px solid #92400e; border-radius:10px; padding:24px; margin-top:40px; }
+.why h2 { color:#fbbf24; margin-top:0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible Inventory</h1>
+
+<p>
+Ansible Inventory defines the managed hosts and groups of hosts that Ansible can connect to and configure. It tells Ansible which systems are available for automation.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. Why Do We Need an Inventory?</h2>
+
+<p>Your current lab has two containers:</p>
+
+<ul>
+    <li><strong>ansible-controller:</strong> Runs Ansible playbooks.</li>
+    <li><strong>ansible-client:</strong> The managed Ubuntu container.</li>
+</ul>
+
+<p>Ansible needs to know which host it should connect to when executing a playbook.</p>
+
+<p>The inventory provides this information. Instead of writing the target hostname directly into every command, you define it once and reference it through a group.</p>
+
+<h2>2. What Is an Ansible Inventory?</h2>
+
+<p>An inventory is a file or external data source containing information about managed hosts.</p>
+
+<p>Ansible supports two main inventory approaches:</p>
+
+<table>
+<tr>
+    <th>Inventory Type</th>
+    <th>Description</th>
+</tr>
+<tr>
+    <td>Static Inventory</td>
+    <td>Hosts are manually defined in a file.</td>
+</tr>
+<tr>
+    <td>Dynamic Inventory</td>
+    <td>Hosts are discovered from external sources such as cloud platforms or infrastructure systems.</td>
+</tr>
+</table>
+
+<p>We will use a static inventory for this lab.</p>
+
+<h2>3. Create a Basic Inventory File</h2>
+
+<p>On your Ansible controller, create a project directory:</p>
+
+<pre><code>mkdir -p inventory-lab
+cd inventory-lab</code></pre>
+
+<p>Create the inventory file using the vi editor:</p>
+
+<pre><code>vi inventory</code></pre>
+
+<p>Press <code>i</code> to enter INSERT mode and add the following configuration:</p>
+
+<pre><code>[lab]
+ansible-client ansible_user=root
+
+[ubuntu]
+ansible-client
+
+[all:vars]
+ansible_connection=ssh
+ansible_port=22</code></pre>
+
+<p>Press <code>Esc</code>, type <code>:wq</code>, and press Enter to save and exit.</p>
+
+<p><strong>Understanding the inventory:</strong></p>
+
+<table>
+<tr>
+    <th>Entry</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td>[lab]</td>
+    <td>Defines a group named lab.</td>
+</tr>
+<tr>
+    <td>ansible-client</td>
+    <td>Your existing managed Ubuntu container.</td>
+</tr>
+<tr>
+    <td>ansible_user=root</td>
+    <td>Specifies the SSH username.</td>
+</tr>
+<tr>
+    <td>[ubuntu]</td>
+    <td>Defines another group containing the same client.</td>
+</tr>
+<tr>
+    <td>[all:vars]</td>
+    <td>Defines connection variables inherited by all inventory hosts.</td>
+</tr>
+<tr>
+    <td>ansible_connection=ssh</td>
+    <td>Uses SSH for connecting to the managed host.</td>
+</tr>
+<tr>
+    <td>ansible_port=22</td>
+    <td>Specifies the SSH port.</td>
+</tr>
+</table>
+
+<div class="note">
+<strong>Important:</strong> Both groups reference the same <code>ansible-client</code> container. They do not create additional hosts or containers.
+</div>
+
+<h2>4. Understand Inventory Groups</h2>
+
+<p>Groups allow you to organize hosts by purpose or environment.</p>
+
+<p>Your inventory contains two groups:</p>
+
+<pre><code>[lab]
+ansible-client
+
+[ubuntu]
+ansible-client</code></pre>
+
+<p>The same host can belong to multiple groups. This does not create duplicate machines.</p>
+
+<p>You can target either group in a playbook:</p>
+
+<pre><code>hosts: lab</code></pre>
+
+<p>Or:</p>
+
+<pre><code>hosts: ubuntu</code></pre>
+
+<h2>5. Define Host Connection Variables</h2>
+
+<p>You can define connection variables directly beside the host entry.</p>
+
+<pre><code>[lab]
+ansible-client ansible_user=root ansible_port=22</code></pre>
+
+<p>Common inventory variables include:</p>
+
+<table>
+<tr>
+    <th>Variable</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td>ansible_host</td>
+    <td>IP address or hostname used for the connection.</td>
+</tr>
+<tr>
+    <td>ansible_user</td>
+    <td>SSH username.</td>
+</tr>
+<tr>
+    <td>ansible_port</td>
+    <td>SSH port. Default is 22.</td>
+</tr>
+<tr>
+    <td>ansible_ssh_private_key_file</td>
+    <td>Path to the SSH private key.</td>
+</tr>
+<tr>
+    <td>ansible_connection</td>
+    <td>Connection type used by Ansible.</td>
+</tr>
+</table>
+
+<div class="warning">
+<strong>Security:</strong> Do not store private key contents or plaintext passwords in an inventory file. Protect private keys with appropriate filesystem permissions and use Ansible Vault or another secrets-management solution for sensitive variables.
+</div>
+
+<h2>6. Validate the Inventory</h2>
+
+<p>Display all inventory hosts:</p>
+
+<pre><code>ansible-inventory -i inventory --list</code></pre>
+
+<p>Display the inventory group structure:</p>
+
+<pre><code>ansible-inventory -i inventory --graph</code></pre>
+
+<p>Display variables for the managed host:</p>
+
+<pre><code>ansible-inventory -i inventory --host ansible-client</code></pre>
+
+<p>Check the inventory structure. You should see both <code>lab</code> and <code>ubuntu</code> groups containing <code>ansible-client</code>.</p>
+
+<h2>7. Test Connectivity to the Client</h2>
+
+<p>Run the Ansible ping module against the lab group:</p>
+
+<pre><code>ansible lab -i inventory -m ansible.builtin.ping</code></pre>
+
+<p>You can also test the same client through the ubuntu group:</p>
+
+<pre><code>ansible ubuntu -i inventory -m ansible.builtin.ping</code></pre>
+
+<div class="note">
+<strong>Remember:</strong> The Ansible ping module tests Ansible connectivity over the configured connection. It is not an ICMP network ping.
+</div>
+
+<h2>8. Use the Inventory in a Playbook</h2>
+
+<p>Create a file named <code>main.yml</code> in the same directory.</p>
+
+<pre><code>vi main.yml</code></pre>
+
+<p>Press <code>i</code> and add:</p>
+
+<pre><code>---
+- name: Test Ansible inventory
+  hosts: lab
+  become: true
+
+  tasks:
+    - name: Display managed hostname
+      ansible.builtin.command: hostname
+      register: host_output
+      changed_when: false
+
+    - name: Display hostname result
+      ansible.builtin.debug:
+        var: host_output.stdout</code></pre>
+
+<p>Press <code>Esc</code>, type <code>:wq</code>, and press Enter.</p>
+
+<p>Execute the playbook:</p>
+
+<pre><code>ansible-playbook -i inventory main.yml</code></pre>
+
+<p>The <code>-i</code> option tells Ansible which inventory file to use.</p>
+
+<h2>9. Understand Inventory Host Aliases</h2>
+
+<p>An inventory hostname can be the actual hostname or a logical alias mapped to an address.</p>
+
+<p>Your current inventory uses the actual hostname:</p>
+
+<pre><code>[lab]
+ansible-client</code></pre>
+
+<p>If your environment requires connecting through an IP address, you can use:</p>
+
+<pre><code>[lab]
+ansible-client ansible_host=ACTUAL_CLIENT_IP</code></pre>
+
+<div class="warning">
+<strong>Important:</strong> <code>ACTUAL_CLIENT_IP</code> is a placeholder, not a working address. Keep your existing hostname-based configuration unless you have verified that an IP address is required.
+</div>
+
+<h2>10. Practical Project: Manage Your Ubuntu Client Through Inventory</h2>
+
+<div class="project">
+<h3>Objective</h3>
+
+<p>Create an inventory file for your existing Ubuntu container lab and execute a playbook against the single managed client.</p>
+
+<p><strong>Project structure:</strong></p>
+
+<pre><code>inventory-project/
+├── inventory
+└── main.yml</code></pre>
+
+<p><strong>Step 1: Create the project directory</strong></p>
+
+<pre><code>mkdir -p inventory-project
+cd inventory-project</code></pre>
+
+<p><strong>Step 2: Create the inventory file</strong></p>
+
+<pre><code>vi inventory</code></pre>
+
+<p>Press <code>i</code> and add:</p>
+
+<pre><code>[lab]
+ansible-client ansible_user=root
+
+[ubuntu]
+ansible-client
+
+[all:vars]
+ansible_connection=ssh
+ansible_port=22</code></pre>
+
+<p>Press <code>Esc</code>, type <code>:wq</code>, and press Enter.</p>
+
+<p><strong>Step 3: Validate the inventory</strong></p>
+
+<pre><code>ansible-inventory -i inventory --graph</code></pre>
+
+<p><strong>Step 4: Test connectivity</strong></p>
+
+<pre><code>ansible lab -i inventory -m ansible.builtin.ping</code></pre>
+
+<p><strong>Step 5: Create main.yml</strong></p>
+
+<pre><code>vi main.yml</code></pre>
+
+<p>Press <code>i</code> and add:</p>
+
+<pre><code>---
+- name: Configure Ubuntu lab client
+  hosts: lab
+  become: true
+
+  tasks:
+    - name: Create lab directory
+      ansible.builtin.file:
+        path: /opt/ansible-inventory-lab
+        state: directory
+        mode: '0755'
+
+    - name: Create inventory information file
+      ansible.builtin.copy:
+        dest: /opt/ansible-inventory-lab/info.txt
+        content: |
+          Managed by Ansible Inventory
+          Host: {{ inventory_hostname }}
+        mode: '0644'
+
+    - name: Read inventory information
+      ansible.builtin.command: cat /opt/ansible-inventory-lab/info.txt
+      register: inventory_info
+      changed_when: false
+
+    - name: Display inventory information
+      ansible.builtin.debug:
+        var: inventory_info.stdout</code></pre>
+
+<p>Press <code>Esc</code>, type <code>:wq</code>, and press Enter.</p>
+
+<p><strong>Step 6: Execute the playbook</strong></p>
+
+<pre><code>ansible-playbook -i inventory main.yml</code></pre>
+
+<p><strong>Step 7: Verify the result</strong></p>
+
+<p>Create <code>verify.yml</code>:</p>
+
+<pre><code>vi verify.yml</code></pre>
+
+<p>Press <code>i</code> and add:</p>
+
+<pre><code>---
+- name: Verify inventory configuration
+  hosts: lab
+  become: true
+
+  tasks:
+    - name: Read inventory information
+      ansible.builtin.command: cat /opt/ansible-inventory-lab/info.txt
+      register: inventory_info
+      changed_when: false
+
+    - name: Display inventory information
+      ansible.builtin.debug:
+        var: inventory_info.stdout</code></pre>
+
+<p>Save the file and execute:</p>
+
+<pre><code>ansible-playbook -i inventory verify.yml</code></pre>
+
+<h3>Expected Result</h3>
+
+<p>Your existing <code>ansible-client</code> container should contain:</p>
+
+<pre><code>/opt/ansible-inventory-lab/
+└── info.txt</code></pre>
+
+<p>The information file should contain:</p>
+
+<pre><code>Managed by Ansible Inventory
+Host: ansible-client</code></pre>
+</div>
+
+<h2>11. Important Inventory Commands</h2>
+
+<table>
+<tr>
+    <th>Command</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td><code>ansible-inventory -i inventory --list</code></td>
+    <td>Display inventory data.</td>
+</tr>
+<tr>
+    <td><code>ansible-inventory -i inventory --graph</code></td>
+    <td>Display inventory groups and hosts.</td>
+</tr>
+<tr>
+    <td><code>ansible-inventory -i inventory --host ansible-client</code></td>
+    <td>Display host variables.</td>
+</tr>
+<tr>
+    <td><code>ansible lab -i inventory -m ansible.builtin.ping</code></td>
+    <td>Test connectivity to the lab group.</td>
+</tr>
+<tr>
+    <td><code>ansible-playbook -i inventory main.yml</code></td>
+    <td>Execute a playbook with the specified inventory.</td>
+</tr>
+</table>
+
+<h2>12. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding Ansible Inventory.</li>
+    <li>Creating a static INI inventory using vi.</li>
+    <li>Defining the existing ansible-client host.</li>
+    <li>Creating multiple groups containing the same host.</li>
+    <li>Defining host and group variables.</li>
+    <li>Using inventory groups in playbooks.</li>
+    <li>Validating inventory data.</li>
+    <li>Testing connectivity to the managed client.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use Ansible Inventory?</h2>
+
+<p>We use Ansible Inventory to centrally define and organize the systems that Ansible manages.</p>
+
+<p>In enterprise DevOps environments, infrastructure may contain many servers distributed across development, testing, staging, and production environments.</p>
+
+<p>Inventory allows us to group these systems logically and target specific hosts without hardcoding server addresses into every playbook.</p>
+
+<p>For example, a playbook can target a particular inventory group, allowing the same automation to be reused against different environments by selecting the appropriate inventory.</p>
+
+<p>This makes infrastructure automation easier to organize, scale, and maintain.</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
