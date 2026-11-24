@@ -1,0 +1,563 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible Handlers</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+.warning {
+    background: #451a03;
+    border-left: 4px solid #f59e0b;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+th, td { border: 1px solid #334155; padding: 10px; text-align: left; }
+th { background: #1e293b; color: #93c5fd; }
+td { color: #cbd5e1; }
+.video-container { margin: 24px 0; }
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+    display: block;
+}
+.video-button {
+    display: block;
+    background: #16a34a;
+    color: white;
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+.project {
+    background: #172033;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    margin-top: 20px;
+}
+.why {
+    background: #451f0b;
+    border: 1px solid #92400e;
+    border-radius: 10px;
+    padding: 24px;
+    margin-top: 40px;
+}
+.why h2 { color: #fbbf24; margin-top: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible Handlers</h1>
+
+<p>
+Ansible handlers are special tasks that execute only when another task
+notifies them. They are commonly used for operations such as restarting
+a service, reloading an application, or applying configuration changes.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. What Are Handlers?</h2>
+
+<p>
+Normally, Ansible executes tasks sequentially. A handler behaves
+differently: it runs only when a task explicitly notifies it and
+that task reports a change.
+</p>
+
+<p>
+For example, imagine that you update an Nginx configuration file.
+There is no need to restart Nginx if the configuration file has
+not changed. You can notify a handler to restart or reload the
+service only when Ansible detects a change.
+</p>
+
+<h2>2. Basic Handler Syntax</h2>
+
+<pre>
+---
+- name: Demonstrate handlers
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Update application configuration
+      ansible.builtin.copy:
+        content: "application_port=8080\n"
+        dest: /tmp/application.conf
+        mode: '0644'
+      notify: Reload application
+
+  handlers:
+    - name: Reload application
+      ansible.builtin.debug:
+        msg: "Application reload handler executed"
+</pre>
+
+<p>
+This playbook contains two main sections:
+</p>
+
+<ul>
+    <li><code>tasks</code>: Contains normal tasks.</li>
+    <li><code>handlers</code>: Contains special tasks that can be triggered by notifications.</li>
+</ul>
+
+<p>
+The task copies configuration content to a file. If the file is
+created or its content changes, Ansible notifies the handler.
+</p>
+
+<p>
+The handler executes at the end of the play, provided the play
+reaches the handler execution stage.
+</p>
+
+<h2>3. Understanding notify</h2>
+
+<p>
+The <code>notify</code> keyword connects a normal task to a handler.
+The value of <code>notify</code> must match the handler name.
+</p>
+
+<pre>
+tasks:
+  - name: Update configuration
+    ansible.builtin.copy:
+      content: "port=8080\n"
+      dest: /tmp/app.conf
+    notify: Restart application
+
+handlers:
+  - name: Restart application
+    ansible.builtin.debug:
+      msg: "Restart handler triggered"
+</pre>
+
+<p>
+In this example:
+</p>
+
+<ol>
+    <li>Ansible executes the configuration task.</li>
+    <li>If the file changes, the task reports changed.</li>
+    <li>The task notifies the handler.</li>
+    <li>Ansible executes the handler later in the play.</li>
+</ol>
+
+<div class="note">
+<strong>Important:</strong> A handler is not executed simply because
+a task contains <code>notify</code>. The notifying task must report
+a change.
+</div>
+
+<h2>4. When Does a Handler Execute?</h2>
+
+<p>
+Handlers normally execute at the end of the current play, after
+the regular tasks have completed.
+</p>
+
+<pre>
+---
+- name: Handler execution order
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Update configuration
+      ansible.builtin.copy:
+        content: "environment=production\n"
+        dest: /tmp/environment.conf
+        mode: '0644'
+      notify: Apply configuration
+
+    - name: Execute another task
+      ansible.builtin.debug:
+        msg: "Normal task executed"
+
+    - name: Execute final normal task
+      ansible.builtin.debug:
+        msg: "Another normal task executed"
+
+  handlers:
+    - name: Apply configuration
+      ansible.builtin.debug:
+        msg: "Handler executed after normal tasks"
+</pre>
+
+<p>
+The execution order is:
+</p>
+
+<table>
+<tr>
+    <th>Order</th>
+    <th>Execution</th>
+</tr>
+<tr>
+    <td>1</td>
+    <td>Update configuration</td>
+</tr>
+<tr>
+    <td>2</td>
+    <td>Execute another task</td>
+</tr>
+<tr>
+    <td>3</td>
+    <td>Execute final normal task</td>
+</tr>
+<tr>
+    <td>4</td>
+    <td>Execute handler</td>
+</tr>
+</table>
+
+<h2>5. Handler Executes Only When a Change Occurs</h2>
+
+<p>
+Ansible uses the task's changed status to determine whether the
+handler should be triggered.
+</p>
+
+<p>
+Consider this example:
+</p>
+
+<pre>
+---
+- name: Demonstrate handler change detection
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Ensure configuration exists
+      ansible.builtin.copy:
+        content: "application=learning-labs\n"
+        dest: /tmp/learning-labs.conf
+        mode: '0644'
+      notify: Reload application
+
+  handlers:
+    - name: Reload application
+      ansible.builtin.debug:
+        msg: "Configuration changed. Reload required."
+</pre>
+
+<p>
+Run this playbook for the first time. Ansible creates the file
+and reports the task as changed. The handler executes.
+</p>
+
+<p>
+Run the same playbook again without modifying the content.
+Ansible reports the copy task as OK because the file already
+contains the expected content. The handler does not execute.
+</p>
+
+<table>
+<tr>
+    <th>Execution</th>
+    <th>Copy task</th>
+    <th>Handler</th>
+</tr>
+<tr>
+    <td>First run</td>
+    <td>Changed</td>
+    <td>Executed</td>
+</tr>
+<tr>
+    <td>Second run</td>
+    <td>OK</td>
+    <td>Not executed</td>
+</tr>
+<tr>
+    <td>Content modified</td>
+    <td>Changed</td>
+    <td>Executed</td>
+</tr>
+</table>
+
+<h2>6. Multiple Tasks Can Notify the Same Handler</h2>
+
+<p>
+You can notify the same handler from multiple tasks. If several tasks
+notify the same handler during one play, Ansible normally executes
+that handler only once per host.
+</p>
+
+<pre>
+---
+- name: Multiple notifications
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Update frontend configuration
+      ansible.builtin.copy:
+        content: "frontend_port=3000\n"
+        dest: /tmp/frontend.conf
+      notify: Reload application
+
+    - name: Update backend configuration
+      ansible.builtin.copy:
+        content: "backend_port=8080\n"
+        dest: /tmp/backend.conf
+      notify: Reload application
+
+  handlers:
+    - name: Reload application
+      ansible.builtin.debug:
+        msg: "Application reload executed once"
+</pre>
+
+<p>
+If both files change, both tasks notify the same handler.
+However, the handler is normally executed only once after the
+regular tasks complete.
+</p>
+
+<div class="note">
+<strong>Remember:</strong> Handler notifications are deduplicated.
+Multiple notifications for the same handler do not normally cause
+multiple executions during the same handler execution cycle.
+</div>
+
+<h2>7. Real-World Example: Restarting a Service</h2>
+
+<p>
+One of the most common uses of handlers is restarting or reloading
+services after configuration changes.
+</p>
+
+<p>
+For example, on a server running Nginx with systemd:
+</p>
+
+<pre>
+---
+- name: Configure Nginx
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Update Nginx configuration
+      ansible.builtin.copy:
+        src: nginx.conf
+        dest: /etc/nginx/nginx.conf
+        mode: '0644'
+      notify: Restart Nginx
+
+  handlers:
+    - name: Restart Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+</pre>
+
+<p>
+When the configuration changes, Ansible notifies the handler.
+The handler restarts Nginx after the normal tasks finish.
+</p>
+
+<div class="warning">
+<strong>Container lab note:</strong> The example above assumes Nginx
+and a service manager are available on the target. Your Ubuntu
+container may not run systemd. Use the following lab examples for
+your current container environment.
+</div>
+
+<h2>8. Important Rules About Handlers</h2>
+
+<ul>
+    <li>Handlers are defined under the <code>handlers</code> section of a play.</li>
+    <li>A task triggers a handler using <code>notify</code>.</li>
+    <li>The notification name must match the handler name.</li>
+    <li>A handler runs only when it has been notified by a changed task.</li>
+    <li>Handlers normally execute at the end of the play.</li>
+    <li>Multiple notifications for the same handler are normally combined into one execution per host.</li>
+    <li>Handlers are useful for service restarts, application reloads, and configuration activation.</li>
+</ul>
+
+<h2>9. Practical Lab: Application Configuration and Handler</h2>
+
+<div class="project">
+<h3>Scenario</h3>
+
+<p>
+You are managing an application configuration file on
+<code>ansible-client</code>. Whenever the configuration changes,
+you want Ansible to execute a handler.
+</p>
+
+<p><strong>Create this playbook:</strong></p>
+
+<pre>
+---
+- name: Application configuration management
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create application configuration
+      ansible.builtin.copy:
+        content: |
+          APPLICATION_NAME=learning-labs
+          APPLICATION_PORT=8080
+          APPLICATION_ENV=production
+        dest: /tmp/learning-labs.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Apply application configuration
+
+    - name: Display normal task message
+      ansible.builtin.debug:
+        msg: "Application configuration task completed"
+
+    - name: Display another task message
+      ansible.builtin.debug:
+        msg: "Waiting for handler execution"
+
+  handlers:
+    - name: Apply application configuration
+      ansible.builtin.command:
+        cmd: /usr/bin/printf "Application configuration reload triggered\n"
+      changed_when: false
+</pre>
+
+<p><strong>Run from ansible-controller:</strong></p>
+
+<pre>
+ansible-playbook application-handler.yml
+</pre>
+
+<p><strong>Test the behavior:</strong></p>
+
+<ol>
+    <li>Run the playbook for the first time.</li>
+    <li>Observe that the configuration file is created.</li>
+    <li>Observe that the handler executes after the normal tasks.</li>
+    <li>Run the playbook again without changing the content.</li>
+    <li>Observe that the handler does not execute again.</li>
+    <li>Change <code>APPLICATION_PORT</code> from 8080 to 9090 in the playbook.</li>
+    <li>Run the playbook again and observe that the handler executes.</li>
+</ol>
+
+<p>
+The command in this lab simulates an application reload. It does not
+restart a real application service.
+</p>
+</div>
+
+<h2>10. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding Ansible handlers.</li>
+    <li>Defining handlers inside a playbook.</li>
+    <li>Triggering handlers using <code>notify</code>.</li>
+    <li>Understanding handler execution order.</li>
+    <li>Running handlers only when a task reports a change.</li>
+    <li>Using multiple notifications for the same handler.</li>
+    <li>Applying handlers to configuration management and service operations.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use Ansible Handlers?</h2>
+
+<p>
+In real DevOps environments, configuration changes often require
+additional actions. Updating an Nginx configuration may require
+a reload. Changing an application configuration may require a
+restart. Updating a service configuration may require reloading
+the service.
+</p>
+
+<p>
+Running these operations after every task is inefficient.
+For example, if a playbook updates five configuration files,
+restarting the application after every individual file update
+could cause unnecessary service interruptions.
+</p>
+
+<p>
+Ansible handlers solve this problem by allowing tasks to notify
+a handler only when they report a change. The handler normally
+executes once after the regular tasks have completed, even if
+multiple tasks notified it.
+</p>
+
+<p>
+This improves automation efficiency, reduces unnecessary service
+restarts, and helps maintain application availability during
+configuration management.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+</body>
+</html>
