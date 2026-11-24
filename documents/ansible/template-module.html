@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ansible Template Module</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 18px;
+            background: #0b1120;
+            color: #e5e7eb;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1, h2, h3 {
+            color: #60a5fa;
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 25px;
+            margin-top: 38px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 9px;
+        }
+
+        h3 {
+            font-size: 19px;
+            margin-top: 25px;
+        }
+
+        p {
+            color: #cbd5e1;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        .intro {
+            color: #94a3b8;
+            font-size: 17px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            margin: 25px 0 12px;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-button {
+            display: inline-block;
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .video-button:hover {
+            background: #15803d;
+        }
+
+        .info-box {
+            background: #172554;
+            border-left: 4px solid #3b82f6;
+            padding: 16px 20px;
+            border-radius: 7px;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            background: #422006;
+            border-left: 4px solid #f59e0b;
+            padding: 16px 20px;
+            border-radius: 7px;
+            margin: 20px 0;
+        }
+
+        .why-box {
+            background: #451a03;
+            border: 1px solid #92400e;
+            border-left: 6px solid #d97706;
+            padding: 24px;
+            border-radius: 10px;
+            margin-top: 45px;
+        }
+
+        .why-box h2 {
+            color: #fbbf24;
+            border-bottom-color: #92400e;
+            margin-top: 0;
+        }
+
+        .why-box p,
+        .why-box li {
+            color: #fde68a;
+        }
+
+        pre {
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 18px;
+            overflow-x: auto;
+            color: #d1d5db;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: Consolas, Monaco, monospace;
+            color: #86efac;
+        }
+
+        pre code {
+            color: #d1d5db;
+        }
+
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            display: block;
+            overflow-x: auto;
+        }
+
+        .parameter-table th,
+        .parameter-table td {
+            border: 1px solid #334155;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .parameter-table th {
+            background: #1e293b;
+            color: #93c5fd;
+        }
+
+        .parameter-table td {
+            color: #cbd5e1;
+        }
+
+        .footer {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px 12px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            pre {
+                font-size: 12px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Ansible Template Module</h1>
+
+    <p class="intro">
+        Learn how to generate dynamic configuration files using Jinja2
+        templates and deploy them to managed Ubuntu systems.
+    </p>
+
+    <div id="videoContainer" class="video-container">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible Template Module Tutorial"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <button id="videoToggle" class="video-button" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <h2>1. What Is the Template Module?</h2>
+
+    <p>
+        The <code>ansible.builtin.template</code> module generates
+        configuration files dynamically using Jinja2 templates.
+        It processes variables and expressions on the Ansible controller
+        and deploys the rendered file to the managed host.
+    </p>
+
+    <p>
+        For example, suppose you need to configure the same application
+        on multiple Ubuntu servers. Each server requires a different
+        hostname, port, or database address.
+    </p>
+
+    <p>
+        Instead of maintaining separate configuration files for every
+        server, you can create one template and supply different values
+        through Ansible variables.
+    </p>
+
+    <div class="info-box">
+        <strong>Important:</strong>
+        The template source file is stored on the Ansible controller.
+        Ansible renders the template on the controller and transfers
+        the generated configuration file to the target host.
+    </div>
+
+    <h2>2. Understanding Jinja2 Templates</h2>
+
+    <p>
+        Jinja2 is a templating language used by Ansible to generate
+        dynamic content.
+    </p>
+
+    <p>There are three commonly used Jinja2 syntax types:</p>
+
+    <table class="parameter-table">
+        <thead>
+        <tr>
+            <th>Syntax</th>
+            <th>Purpose</th>
+            <th>Example</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><code>{{ }}</code></td>
+            <td>Displays variable values or expressions.</td>
+            <td><code>{{ app_port }}</code></td>
+        </tr>
+        <tr>
+            <td><code>{% %}</code></td>
+            <td>Executes template statements such as loops and conditions.</td>
+            <td><code>{% if enabled %}</code></td>
+        </tr>
+        <tr>
+            <td><code>{# #}</code></td>
+            <td>Adds comments that are not included in the rendered output.</td>
+            <td><code>{# Application settings #}</code></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>3. Understanding the Template Workflow</h2>
+
+    <p>The template deployment process has four stages:</p>
+
+    <ol>
+        <li>Create a Jinja2 template on the Ansible controller.</li>
+        <li>Define variables in the playbook or inventory.</li>
+        <li>Ansible renders the template using the supplied variables.</li>
+        <li>The generated file is deployed to ansible-client.</li>
+    </ol>
+
+    <pre><code>Ansible Controller
+       |
+       |-- templates/app.conf.j2
+       |
+       |-- application.yml
+       |
+       |-- Variables
+       |
+       v
+Jinja2 Template Rendering
+       |
+       v
+Generated Configuration File
+       |
+       v
+ansible-client
+       |
+       v
+/tmp/ansible-template-lab/app.conf</code></pre>
+
+    <h2>4. Basic Template Example</h2>
+
+    <p>
+        First, create a directory named <code>templates</code>
+        inside your Ansible project on the controller.
+    </p>
+
+    <pre><code>ansible-project/
+├── application.yml
+└── templates/
+    └── app.conf.j2</code></pre>
+
+    <h3>Step 1: Create the Template File</h3>
+
+    <p>Create <code>templates/app.conf.j2</code>:</p>
+
+    <pre><code>APP_NAME={{ app_name }}
+APP_PORT={{ app_port }}
+APP_ENV={{ app_environment }}</code></pre>
+
+    <h3>Step 2: Create the Playbook</h3>
+
+    <p>Create <code>application.yml</code>:</p>
+
+    <pre><code>---
+- name: Deploy application configuration
+  hosts: ansible-client
+  become: true
+
+  vars:
+    app_name: learning-labs
+    app_port: 8080
+    app_environment: production
+
+  tasks:
+    - name: Create configuration directory
+      ansible.builtin.file:
+        path: /tmp/ansible-template-lab
+        state: directory
+        mode: '0755'
+
+    - name: Deploy application configuration
+      ansible.builtin.template:
+        src: templates/app.conf.j2
+        dest: /tmp/ansible-template-lab/app.conf
+        mode: '0644'</code></pre>
+
+    <h3>Step 3: Expected Output</h3>
+
+    <p>
+        Ansible replaces the Jinja2 variables with their values and
+        creates the following file on ansible-client:
+    </p>
+
+    <pre><code>APP_NAME=learning-labs
+APP_PORT=8080
+APP_ENV=production</code></pre>
+
+    <h2>5. Important Template Module Parameters</h2>
+
+    <table class="parameter-table">
+        <thead>
+        <tr>
+            <th>Parameter</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><code>src</code></td>
+            <td>Path to the Jinja2 template on the controller.</td>
+        </tr>
+        <tr>
+            <td><code>dest</code></td>
+            <td>Destination path on the managed host.</td>
+        </tr>
+        <tr>
+            <td><code>owner</code></td>
+            <td>Sets the owner of the generated file.</td>
+        </tr>
+        <tr>
+            <td><code>group</code></td>
+            <td>Sets the group ownership of the generated file.</td>
+        </tr>
+        <tr>
+            <td><code>mode</code></td>
+            <td>Sets file permissions.</td>
+        </tr>
+        <tr>
+            <td><code>backup</code></td>
+            <td>Creates a backup before replacing an existing destination file.</td>
+        </tr>
+        <tr>
+            <td><code>force</code></td>
+            <td>Controls whether the destination file is replaced when it already exists. Default is true.</td>
+        </tr>
+        <tr>
+            <td><code>validate</code></td>
+            <td>Validates the rendered temporary file before replacing the destination.</td>
+        </tr>
+        <tr>
+            <td><code>newline_sequence</code></td>
+            <td>Controls the newline character sequence in the rendered file.</td>
+        </tr>
+        <tr>
+            <td><code>variable_start_string</code></td>
+            <td>Changes the default Jinja2 variable opening delimiter.</td>
+        </tr>
+        <tr>
+            <td><code>variable_end_string</code></td>
+            <td>Changes the default Jinja2 variable closing delimiter.</td>
+        </tr>
+        <tr>
+            <td><code>trim_blocks</code></td>
+            <td>Controls removal of the first newline after a Jinja2 block.</td>
+        </tr>
+        <tr>
+            <td><code>lstrip_blocks</code></td>
+            <td>Removes leading spaces and tabs before Jinja2 block tags.</td>
+        </tr>
+    </tbody>
+    </table>
+
+    <h2>6. Using Variables in Templates</h2>
+
+    <p>
+        Variables allow you to reuse the same template with different
+        configuration values.
+    </p>
+
+    <p>Template: <code>templates/server.conf.j2</code></p>
+
+    <pre><code>SERVER_NAME={{ server_name }}
+SERVER_IP={{ server_ip }}
+SERVER_PORT={{ server_port }}
+ENVIRONMENT={{ environment }}</code></pre>
+
+    <p>Playbook:</p>
+
+    <pre><code>---
+- name: Configure server settings
+  hosts: ansible-client
+  become: true
+
+  vars:
+    server_name: app-server
+    server_ip: 192.168.1.20
+    server_port: 8080
+    environment: production
+
+  tasks:
+    - name: Deploy server configuration
+      ansible.builtin.template:
+        src: templates/server.conf.j2
+        dest: /tmp/ansible-template-lab/server.conf
+        mode: '0644'</code></pre>
+
+    <p>Generated file:</p>
+
+    <pre><code>SERVER_NAME=app-server
+SERVER_IP=192.168.1.20
+SERVER_PORT=8080
+ENVIRONMENT=production</code></pre>
+
+    <h2>7. Using Conditional Statements</h2>
+
+    <p>
+        Jinja2 supports conditional statements. You can generate
+        different configuration content depending on variable values.
+    </p>
+
+    <p>Template: <code>templates/app.conf.j2</code></p>
+
+    <pre><code>APP_NAME={{ app_name }}
+APP_PORT={{ app_port }}
+
+{% if environment == "production" %}
+APP_DEBUG=false
+LOG_LEVEL=WARNING
+{% else %}
+APP_DEBUG=true
+LOG_LEVEL=DEBUG
+{% endif %}</code></pre>
+
+    <p>Playbook:</p>
+
+    <pre><code>---
+- name: Generate environment-specific configuration
+  hosts: ansible-client
+  become: true
+
+  vars:
+    app_name: learning-labs
+    app_port: 8080
+    environment: production
+
+  tasks:
+    - name: Deploy configuration
+      ansible.builtin.template:
+        src: templates/app.conf.j2
+        dest: /tmp/ansible-template-lab/app.conf
+        mode: '0644'</code></pre>
+
+    <p>
+        When the environment is production, the generated file
+        contains production-specific settings.
+    </p>
+
+    <h2>8. Using Loops Inside Templates</h2>
+
+    <p>
+        Jinja2 supports loops. You can generate repeated configuration
+        entries from a list of variables.
+    </p>
+
+    <p>Template: <code>templates/servers.conf.j2</code></p>
+
+    <pre><code>{% for server in servers %}
+SERVER={{ server.name }}
+IP={{ server.ip }}
+PORT={{ server.port }}
+
+{% endfor %}</code></pre>
+
+    <p>Playbook:</p>
+
+    <pre><code>---
+- name: Generate server configuration
+  hosts: ansible-client
+  become: true
+
+  vars:
+    servers:
+      - name: web01
+        ip: 192.168.1.10
+        port: 8080
+
+      - name: web02
+        ip: 192.168.1.11
+        port: 8081
+
+      - name: web03
+        ip: 192.168.1.12
+        port: 8082
+
+  tasks:
+    - name: Deploy server list
+      ansible.builtin.template:
+        src: templates/servers.conf.j2
+        dest: /tmp/ansible-template-lab/servers.conf
+        mode: '0644'</code></pre>
+
+    <p>Generated file:</p>
+
+    <pre><code>SERVER=web01
+IP=192.168.1.10
+PORT=8080
+
+SERVER=web02
+IP=192.168.1.11
+PORT=8081
+
+SERVER=web03
+IP=192.168.1.12
+PORT=8082</code></pre>
+
+    <h2>9. Using Ansible Facts in Templates</h2>
+
+    <p>
+        Ansible facts provide information collected from managed hosts.
+        These facts can be referenced directly inside Jinja2 templates.
+    </p>
+
+    <p>Template: <code>templates/system-info.conf.j2</code></p>
+
+    <pre><code>HOSTNAME={{ ansible_hostname }}
+OPERATING_SYSTEM={{ ansible_distribution }}
+OS_VERSION={{ ansible_distribution_version }}
+ARCHITECTURE={{ ansible_architecture }}
+IP_ADDRESS={{ ansible_default_ipv4.address }}</code></pre>
+
+    <p>Playbook:</p>
+
+    <pre><code>---
+- name: Generate system information
+  hosts: ansible-client
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Deploy system information
+      ansible.builtin.template:
+        src: templates/system-info.conf.j2
+        dest: /tmp/ansible-template-lab/system-info.conf
+        mode: '0644'</code></pre>
+
+    <div class="info-box">
+        <strong>Note:</strong>
+        The facts shown above depend on the target system and available
+        network configuration. The default IPv4 address fact may not
+        exist on a host without a suitable default network interface.
+    </div>
+
+    <h2>10. Creating Backups Before Replacing Files</h2>
+
+    <p>
+        Use <code>backup: true</code> when you want to preserve the
+        previous destination file before deploying a new rendered file.
+    </p>
+
+    <pre><code>---
+- name: Deploy configuration with backup
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Deploy updated application configuration
+      ansible.builtin.template:
+        src: templates/app.conf.j2
+        dest: /tmp/ansible-template-lab/app.conf
+        backup: true
+        mode: '0644'</code></pre>
+
+    <h2>11. Validating a Rendered Template</h2>
+
+    <p>
+        The <code>validate</code> parameter checks the rendered temporary
+        file before Ansible replaces the destination file.
+    </p>
+
+    <pre><code>---
+- name: Validate generated configuration
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Deploy validated configuration
+      ansible.builtin.template:
+        src: templates/app.conf.j2
+        dest: /tmp/ansible-template-lab/app.conf
+        validate: '/usr/bin/test -s %s'
+        mode: '0644'</code></pre>
+
+    <p>
+        This example checks that the rendered file is not empty.
+        In production, use the application's actual configuration
+        validation command where available.
+    </p>
+
+    <h2>12. Understanding Idempotency</h2>
+
+    <p>
+        The template module is idempotent. It compares the rendered
+        content with the destination file and updates the file when
+        the content differs.
+    </p>
+
+    <ul>
+        <li>First execution: The destination file is created.</li>
+        <li>Second execution: No change occurs if the rendered content is identical.</li>
+        <li>Variable change: The template is rendered again and the destination is updated if necessary.</li>
+    </ul>
+
+    <div class="warning-box">
+        <strong>Important:</strong>
+        Avoid using timestamps or other changing values in templates
+        unless you intend to update the destination on every run.
+    </div>
+
+    <h2>13. Practical Project: Dynamic Application Configuration</h2>
+
+    <p>
+        In this project, you will create a reusable Jinja2 template
+        and deploy an application configuration file to
+        ansible-client.
+    </p>
+
+    <h3>Project Requirements</h3>
+
+    <ul>
+        <li>Create a Jinja2 template on the controller.</li>
+        <li>Use variables for application settings.</li>
+        <li>Use conditions for production and development environments.</li>
+        <li>Generate multiple server entries using a loop.</li>
+        <li>Include system information from Ansible facts.</li>
+        <li>Deploy the rendered configuration to ansible-client.</li>
+        <li>Create a backup before replacing the destination file.</li>
+    </ul>
+
+    <h3>Step 1: Create the Project Structure</h3>
+
+    <pre><code>ansible-template-project/
+├── application.yml
+└── templates/
+    └── application.conf.j2</code></pre>
+
+    <h3>Step 2: Create the Jinja2 Template</h3>
+
+    <p>Create <code>templates/application.conf.j2</code>:</p>
+
+    <pre><code># Application Configuration
+
+APP_NAME={{ app_name }}
+APP_PORT={{ app_port }}
+APP_ENVIRONMENT={{ app_environment }}
+
+{% if app_environment == "production" %}
+APP_DEBUG=false
+LOG_LEVEL=WARNING
+{% else %}
+APP_DEBUG=true
+LOG_LEVEL=DEBUG
+{% endif %}
+
+# Backend Servers
+
+{% for server in backend_servers %}
+SERVER_NAME={{ server.name }}
+SERVER_IP={{ server.ip }}
+SERVER_PORT={{ server.port }}
+
+{% endfor %}
+
+# Managed Host Information
+
+HOSTNAME={{ ansible_hostname }}
+OS={{ ansible_distribution }}
+OS_VERSION={{ ansible_distribution_version }}</code></pre>
+
+    <h3>Step 3: Create the Playbook</h3>
+
+    <p>Create <code>application.yml</code>:</p>
+
+    <pre><code>---
+- name: Deploy dynamic application configuration
+  hosts: ansible-client
+  become: true
+  gather_facts: true
+
+  vars:
+    app_name: learning-labs
+    app_port: 8080
+    app_environment: production
+
+    backend_servers:
+      - name: backend01
+        ip: 192.168.1.10
+        port: 8081
+
+      - name: backend02
+        ip: 192.168.1.11
+        port: 8082
+
+      - name: backend03
+        ip: 192.168.1.12
+        port: 8083
+
+  tasks:
+
+    - name: Create application configuration directory
+      ansible.builtin.file:
+        path: /tmp/ansible-template-project
+        state: directory
+        mode: '0755'
+
+    - name: Deploy application configuration
+      ansible.builtin.template:
+        src: templates/application.conf.j2
+        dest: /tmp/ansible-template-project/application.conf
+        owner: root
+        group: root
+        mode: '0644'
+        backup: true
+
+    - name: Display deployment result
+      ansible.builtin.debug:
+        msg: "Application configuration deployed successfully."</code></pre>
+
+    <h3>Step 4: Expected Output</h3>
+
+    <p>
+        The generated file on ansible-client will contain the
+        rendered application settings, backend server entries,
+        and target system information.
+    </p>
+
+    <pre><code># Application Configuration
+
+APP_NAME=learning-labs
+APP_PORT=8080
+APP_ENVIRONMENT=production
+
+APP_DEBUG=false
+LOG_LEVEL=WARNING
+
+# Backend Servers
+
+SERVER_NAME=backend01
+SERVER_IP=192.168.1.10
+SERVER_PORT=8081
+
+SERVER_NAME=backend02
+SERVER_IP=192.168.1.11
+SERVER_PORT=8082
+
+SERVER_NAME=backend03
+SERVER_IP=192.168.1.12
+SERVER_PORT=8083
+
+# Managed Host Information
+
+HOSTNAME=ansible-client
+OS=Ubuntu
+OS_VERSION=24.04</code></pre>
+
+    <p>
+        The actual hostname and operating system values depend on
+        the target Ubuntu environment.
+    </p>
+
+    <h3>Step 5: Verify the Generated File</h3>
+
+    <p>Create <code>verify-application.yml</code>:</p>
+
+    <pre><code>---
+- name: Verify generated application configuration
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Read generated configuration
+      ansible.builtin.slurp:
+        src: /tmp/ansible-template-project/application.conf
+      register: generated_config
+
+    - name: Display generated configuration
+      ansible.builtin.debug:
+        msg: "{{ generated_config.content | b64decode }}"</code></pre>
+
+    <h3>Step 6: Test Idempotency</h3>
+
+    <p>
+        Execute the deployment playbook again without changing
+        the template or variables. The template task should report
+        no change when the rendered content is identical.
+    </p>
+
+    <div class="info-box">
+        <strong>Project outcome:</strong>
+        You have created a reusable Jinja2 template that generates
+        dynamic application configuration and deploys it to the
+        ansible-client Ubuntu host.
+    </div>
+
+    <h2>14. What This Lab Covers</h2>
+
+    <ul>
+        <li>Understanding the Ansible template module.</li>
+        <li>Understanding Jinja2 template syntax.</li>
+        <li>Using variables inside templates.</li>
+        <li>Using conditional statements.</li>
+        <li>Using loops to generate repeated configuration entries.</li>
+        <li>Using Ansible facts inside templates.</li>
+        <li>Deploying rendered files to managed hosts.</li>
+        <li>Setting file ownership and permissions.</li>
+        <li>Creating backups and validating rendered files.</li>
+        <li>Understanding template idempotency.</li>
+        <li>Building reusable configuration-management workflows.</li>
+    </ul>
+
+    <div class="why-box">
+        <h2>Why Do We Use the Ansible Template Module?</h2>
+
+        <p>
+            In infrastructure environments, applications often require
+            configuration files containing values that differ between
+            development, testing, staging, and production systems.
+            Maintaining separate static configuration files for every
+            environment creates duplication and increases maintenance
+            effort.
+        </p>
+
+        <p>
+            The Ansible template module solves this problem by allowing
+            administrators to maintain one reusable Jinja2 template.
+            Variables, conditions, loops, and Ansible facts can be used
+            to generate different configuration files for different
+            managed systems.
+        </p>
+
+        <p>
+            The template is processed on the Ansible controller.
+            The generated content is then deployed to the destination
+            path on the managed host.
+        </p>
+
+        <h3>Practical Reasons to Use It</h3>
+
+        <ul>
+            <li>
+                <strong>Reusable configuration:</strong>
+                Maintain one template instead of separate static
+                configuration files for every environment.
+            </li>
+            <li>
+                <strong>Dynamic values:</strong>
+                Generate configuration files using variables from
+                playbooks, inventories, and host facts.
+            </li>
+            <li>
+                <strong>Environment-specific configuration:</strong>
+                Generate different settings for development,
+                testing, and production.
+            </li>
+            <li>
+                <strong>Automated application deployment:</strong>
+                Generate application configuration files as part
+                of deployment workflows.
+            </li>
+            <li>
+                <strong>Reduced duplication:</strong>
+                Reuse the same template across multiple managed hosts.
+            </li>
+            <li>
+                <strong>Consistent configuration:</strong>
+                Standardize configuration generation across an
+                infrastructure environment.
+            </li>
+            <li>
+                <strong>Idempotent management:</strong>
+                Update destination files only when the rendered
+                content differs.
+            </li>
+        </ul>
+
+        <h3>Real-World DevOps Example</h3>
+
+        <p>
+            Imagine an organization deploying an application across
+            development, staging, and production environments.
+            Each environment has a different database address,
+            application port, and logging configuration.
+        </p>
+
+        <p>
+            Instead of maintaining three separate configuration files,
+            the DevOps engineer creates one Jinja2 template and supplies
+            the environment-specific values through Ansible variables.
+        </p>
+
+        <p>
+            Ansible renders the appropriate configuration for each
+            managed host and deploys the generated file.
+        </p>
+
+        <p>
+            This makes the template module particularly useful for
+            application deployment, configuration management, and
+            infrastructure automation.
+        </p>
+
+        <p>
+            <strong>Remember:</strong>
+            Use template when you need to generate a complete file
+            dynamically. Use copy for static files, lineinfile for
+            individual lines, blockinfile for multiline sections,
+            and replace for pattern-based text replacement.
+        </p>
+    </div>
+
+    <div class="footer">
+        Ansible Learning Labs
+    </div>
+
+</div>
+
+<script>
+    function toggleVideo() {
+        const video = document.getElementById("videoContainer");
+        const button = document.getElementById("videoToggle");
+
+        if (video.style.display === "none") {
+            video.style.display = "block";
+            button.textContent = "✕ Hide Video";
+        } else {
+            video.style.display = "none";
+            button.textContent = "▶ Watch Video";
+        }
+    }
+</script>
+
+</body>
+</html>
