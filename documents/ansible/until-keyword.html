@@ -1,0 +1,529 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible until Keyword</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+.warning {
+    background: #451a03;
+    border-left: 4px solid #f59e0b;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+th, td { border: 1px solid #334155; padding: 10px; text-align: left; }
+th { background: #1e293b; color: #93c5fd; }
+td { color: #cbd5e1; }
+.video-container { margin: 24px 0; }
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+    display: block;
+}
+.video-button {
+    display: block;
+    background: #16a34a;
+    color: white;
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+.project {
+    background: #172033;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    margin-top: 20px;
+}
+.why {
+    background: #451f0b;
+    border: 1px solid #92400e;
+    border-radius: 10px;
+    padding: 24px;
+    margin-top: 40px;
+}
+.why h2 { color: #fbbf24; margin-top: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible until Keyword</h1>
+
+<p>
+The <strong>until</strong> keyword allows Ansible to retry a task
+repeatedly until a specified condition becomes true.
+It is useful when an operation may not succeed immediately, such as
+waiting for an application endpoint or service to become available.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. Why Do We Need until?</h2>
+
+<p>
+Consider a deployment scenario where you start an application.
+The application process may start immediately, but its API endpoint
+may take several seconds to become available.
+</p>
+
+<p>
+If you check the endpoint only once, the task may fail because the
+application is still initializing.
+</p>
+
+<p>
+Instead of checking manually or writing repeated tasks, you can use
+<code>until</code>. Ansible repeats the task until the condition is
+satisfied or the retry limit is reached.
+</p>
+
+<h2>2. Basic Syntax</h2>
+
+<pre>
+- name: Wait until condition is satisfied
+  ansible.builtin.command:
+    cmd: your-command
+  register: result
+  until: result.rc == 0
+  retries: 5
+  delay: 3
+</pre>
+
+<p>The main options are:</p>
+
+<table>
+<tr>
+    <th>Keyword</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td><code>until</code></td>
+    <td>Condition that must become true.</td>
+</tr>
+<tr>
+    <td><code>retries</code></td>
+    <td>Maximum number of attempts after the initial attempt.</td>
+</tr>
+<tr>
+    <td><code>delay</code></td>
+    <td>Seconds to wait between attempts.</td>
+</tr>
+<tr>
+    <td><code>register</code></td>
+    <td>Stores the result of the latest attempt.</td>
+</tr>
+</table>
+
+<div class="note">
+<strong>Important:</strong> Ansible performs the initial attempt and
+then retries according to the configured retry limit. For example,
+<code>retries: 5</code> allows up to six total attempts.
+</div>
+
+<h2>3. Example: Retry Until a Command Succeeds</h2>
+
+<p>
+The following example checks whether a file exists. If the file is
+not present, the command returns a non-zero exit code and Ansible
+retries the task.
+</p>
+
+<pre>
+---
+- name: Wait for a file
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Check whether application file exists
+      ansible.builtin.command:
+        cmd: test -f /tmp/application.ready
+      register: file_check
+      changed_when: false
+      until: file_check.rc == 0
+      retries: 5
+      delay: 3
+
+    - name: Display success message
+      ansible.builtin.debug:
+        msg: "Application ready file detected"
+</pre>
+
+<p>
+Ansible checks the file, waits three seconds between unsuccessful
+attempts, and retries until the file exists or the retry limit
+is reached.
+</p>
+
+<h2>4. Example: Wait for an HTTP Endpoint</h2>
+
+<p>
+A common DevOps use case is waiting for an application API to respond.
+You can use the URI module to check an HTTP endpoint.
+</p>
+
+<pre>
+---
+- name: Wait for application API
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Check application health endpoint
+      ansible.builtin.uri:
+        url: http://127.0.0.1:8080/health
+        method: GET
+        status_code: 200
+      register: api_response
+      until: api_response.status == 200
+      retries: 10
+      delay: 5
+</pre>
+
+<p>
+This task checks the health endpoint repeatedly. It completes when
+the endpoint returns HTTP status code 200.
+</p>
+
+<p>
+If the endpoint does not return the expected status within the
+configured attempts, the task fails.
+</p>
+
+<div class="warning">
+<strong>Note:</strong> This example assumes an application is listening
+on port 8080 on the target container. The endpoint must exist for the
+check to succeed.
+</div>
+
+<h2>5. Example: Retry Until Command Output Matches</h2>
+
+<p>
+You can also use command output as the condition.
+</p>
+
+<pre>
+---
+- name: Wait for expected application output
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Check application status
+      ansible.builtin.command:
+        cmd: /usr/bin/printf "STARTING"
+      register: app_status
+      changed_when: false
+      until: "'RUNNING' in app_status.stdout"
+      retries: 5
+      delay: 2
+</pre>
+
+<p>
+The command always returns <code>STARTING</code>, so the condition
+never becomes true. Ansible retries and eventually marks the task
+as failed after exhausting its attempts.
+</p>
+
+<p>
+This demonstrates how the output of a task can control retry behavior.
+</p>
+
+<h2>6. Understanding Retry Execution</h2>
+
+<p>
+Consider this configuration:
+</p>
+
+<pre>
+retries: 4
+delay: 5
+until: result.rc == 0
+</pre>
+
+<p>
+The execution behaves as follows:
+</p>
+
+<table>
+<tr>
+    <th>Attempt</th>
+    <th>Result</th>
+    <th>Action</th>
+</tr>
+<tr>
+    <td>1</td>
+    <td>Failure</td>
+    <td>Wait 5 seconds and retry</td>
+</tr>
+<tr>
+    <td>2</td>
+    <td>Failure</td>
+    <td>Wait 5 seconds and retry</td>
+</tr>
+<tr>
+    <td>3</td>
+    <td>Failure</td>
+    <td>Wait 5 seconds and retry</td>
+</tr>
+<tr>
+    <td>4</td>
+    <td>Failure</td>
+    <td>Wait 5 seconds and retry</td>
+</tr>
+<tr>
+    <td>5</td>
+    <td>Success</td>
+    <td>Stop retrying</td>
+</tr>
+</table>
+
+<p>
+The table illustrates a successful fifth attempt. If all five attempts
+fail, the task is marked as failed.
+</p>
+
+<h2>7. Difference Between loop and until</h2>
+
+<table>
+<tr>
+    <th>Keyword</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td><code>loop</code></td>
+    <td>Executes a task for each item in a list.</td>
+</tr>
+<tr>
+    <td><code>until</code></td>
+    <td>Repeats a task until a condition becomes true.</td>
+</tr>
+</table>
+
+<p>
+Example using <code>loop</code>:
+</p>
+
+<pre>
+- name: Display application names
+  ansible.builtin.debug:
+    msg: "{{ item }}"
+  loop:
+    - frontend
+    - backend
+    - database
+</pre>
+
+<p>
+Example using <code>until</code>:
+</p>
+
+<pre>
+- name: Wait for application
+  ansible.builtin.command:
+    cmd: test -f /tmp/application.ready
+  register: result
+  changed_when: false
+  until: result.rc == 0
+  retries: 5
+  delay: 3
+</pre>
+
+<p>
+A loop processes multiple values. An until condition repeats an
+operation until its result satisfies a condition.
+</p>
+
+<h2>8. Practical Lab: Wait for an Application Ready File</h2>
+
+<div class="project">
+<h3>Scenario</h3>
+
+<p>
+You are deploying an application. Another process will create a
+readiness file at <code>/tmp/application.ready</code>.
+Your playbook must wait until that file exists.
+</p>
+
+<p><strong>Create this playbook:</strong></p>
+
+<pre>
+---
+- name: Application readiness check
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Wait until readiness file exists
+      ansible.builtin.command:
+        cmd: test -f /tmp/application.ready
+      register: readiness_result
+      changed_when: false
+      until: readiness_result.rc == 0
+      retries: 10
+      delay: 3
+
+    - name: Display readiness confirmation
+      ansible.builtin.debug:
+        msg: "Application is ready"
+
+    - name: Verify readiness file
+      ansible.builtin.command:
+        cmd: cat /tmp/application.ready
+      changed_when: false
+</pre>
+
+<p><strong>Run from ansible-controller:</strong></p>
+
+<pre>
+ansible-playbook application-readiness.yml
+</pre>
+
+<p><strong>Prepare the lab:</strong></p>
+
+<p>
+Before running the playbook, create the readiness file on
+ansible-client through a separate test process or another playbook.
+For example, the file can contain:
+</p>
+
+<pre>
+Application is ready
+</pre>
+
+<p><strong>Expected behavior:</strong></p>
+<ul>
+    <li>Ansible checks whether the readiness file exists.</li>
+    <li>If absent, Ansible waits three seconds before retrying.</li>
+    <li>When the file exists, the condition becomes true.</li>
+    <li>The readiness confirmation task executes.</li>
+    <li>The file content is displayed.</li>
+</ul>
+
+</div>
+
+<h2>9. Important Points About until</h2>
+
+<ul>
+    <li><code>until</code> requires a condition that evaluates to true or false.</li>
+    <li><code>register</code> is commonly used to capture the task result.</li>
+    <li><code>retries</code> controls the retry limit.</li>
+    <li><code>delay</code> controls the wait between attempts.</li>
+    <li>Ansible stops retrying when the condition becomes true.</li>
+    <li>If the condition never becomes true, the task eventually fails.</li>
+    <li>The registered result contains the result of the final attempt.</li>
+</ul>
+
+<h2>10. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the <code>until</code> keyword.</li>
+    <li>Retrying tasks based on a condition.</li>
+    <li>Using <code>retries</code> and <code>delay</code>.</li>
+    <li>Checking files and command results.</li>
+    <li>Waiting for HTTP application endpoints.</li>
+    <li>Understanding the difference between <code>loop</code> and <code>until</code>.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use the Ansible until Keyword?</h2>
+
+<p>
+In real DevOps environments, applications and infrastructure
+components do not always become ready immediately. A service may
+need time to initialize, an API may take several seconds to respond,
+or a deployment process may create a readiness file only after
+completing its work.
+</p>
+
+<p>
+If automation checks these resources only once, it may report
+a failure even though the resource would become available shortly.
+</p>
+
+<p>
+The <code>until</code> keyword solves this problem by allowing Ansible
+to retry a task until a defined condition becomes true. You can
+configure the maximum number of attempts and the delay between them.
+</p>
+
+<p>
+This is particularly useful for application health checks,
+deployment readiness validation, service availability checks,
+and infrastructure initialization.
+</p>
+
+<p>
+It makes automation more reliable by accounting for operations
+that require time to complete instead of assuming that every
+resource is immediately available.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+</body>
+</html>
