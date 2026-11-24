@@ -1,0 +1,872 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible Package Module</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 25px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+h1, h2, h3 {
+    color: #f8fafc;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+h2 {
+    margin-top: 35px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #334155;
+}
+
+h3 {
+    margin-top: 25px;
+    color: #93c5fd;
+}
+
+p, li {
+    color: #cbd5e1;
+}
+
+code {
+    color: #86efac;
+    background: #1e293b;
+    padding: 3px 6px;
+    border-radius: 4px;
+}
+
+pre {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    color: #86efac;
+    line-height: 1.6;
+}
+
+pre code {
+    padding: 0;
+    background: transparent;
+    color: inherit;
+}
+
+.note {
+    background: #1e293b;
+    border-left: 4px solid #38bdf8;
+    padding: 12px 16px;
+    margin: 18px 0;
+    border-radius: 4px;
+}
+
+.warning {
+    background: #292524;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 16px;
+    margin: 18px 0;
+    border-radius: 4px;
+}
+
+.video-container {
+    margin: 25px 0;
+}
+
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 8px;
+}
+
+.video-toggle {
+    margin-bottom: 12px;
+    padding: 9px 16px;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.video-toggle:hover {
+    background: #15803d;
+}
+
+.hidden {
+    display: none;
+}
+
+.task {
+    margin: 20px 0;
+    padding: 15px;
+    background: #172033;
+    border: 1px solid #334155;
+    border-radius: 8px;
+}
+
+.task h3 {
+    margin-top: 0;
+}
+
+/* Detailed explanation box */
+
+.why-module-box {
+    background: #3b2b1f;
+    border: 1px solid #8b5e3c;
+    border-left: 5px solid #c08457;
+    border-radius: 8px;
+    padding: 22px;
+    margin-top: 35px;
+}
+
+.why-module-box h2 {
+    color: #f0c49b;
+    border-bottom: 1px solid #795237;
+    margin-top: 0;
+}
+
+.why-module-box h3 {
+    color: #e8b98f;
+    margin-top: 22px;
+}
+
+.why-module-box p,
+.why-module-box li {
+    color: #f1dfce;
+}
+
+.why-module-box code {
+    background: #523a29;
+    color: #ffd3a8;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Ansible Package Module</h1>
+
+<p>
+    In this lab, you will learn how to use the Ansible Package module
+    to manage software packages. You will create playbooks to install,
+    remove and update packages, and understand how package management
+    can be automated across multiple managed systems.
+</p>
+
+<div class="video-container">
+    <button class="video-toggle" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <div id="videoWrapper">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible Package Module"
+            allowfullscreen>
+        </iframe>
+    </div>
+</div>
+
+<h2>1. What Is the Package Module?</h2>
+
+<p>
+    Ansible provides the <code>ansible.builtin.package</code> module
+    to manage software packages on different Linux distributions.
+</p>
+
+<p>
+    Linux distributions do not all use the same package manager.
+    Ubuntu and Debian use APT, while Red Hat-based distributions
+    use DNF or YUM.
+</p>
+
+<p>
+    Normally, you would need to use a distribution-specific package
+    management module. The Package module provides a common interface
+    for basic package operations.
+</p>
+
+<p>
+    Ansible identifies the appropriate package manager on the managed
+    system and uses it to perform the requested operation.
+</p>
+
+<div class="note">
+    <strong>Important:</strong>
+    The Package module is a generic interface. On Ubuntu, it uses
+    the underlying APT package management system. It does not replace
+    APT or provide every APT-specific parameter.
+</div>
+
+<h2>2. Package Module Syntax</h2>
+
+<p>
+    The basic structure of the Package module looks like this:
+</p>
+
+<pre><code>- name: Install a package
+  ansible.builtin.package:
+    name: curl
+    state: present</code></pre>
+
+<p>
+    <code>ansible.builtin.package</code> identifies the module.
+    The <code>name</code> parameter specifies the package, and
+    <code>state</code> defines the required package state.
+</p>
+
+<h2>3. Important Package Module Parameters</h2>
+
+<h3>name</h3>
+
+<p>
+    Specifies the package that Ansible should manage.
+    You can specify one package or a list of packages.
+</p>
+
+<p>Example with a single package:</p>
+
+<pre><code>name: curl</code></pre>
+
+<p>Example with multiple packages:</p>
+
+<pre><code>name:
+  - curl
+  - wget
+  - unzip</code></pre>
+
+<p>
+    When a list is provided, Ansible applies the requested state
+    to each package in the list.
+</p>
+
+<h3>state</h3>
+
+<p>
+    Specifies the desired state of the package.
+    Ansible checks the current package state and performs the
+    required operation.
+</p>
+
+<p><strong>Common state values:</strong></p>
+
+<ul>
+    <li><code>present</code> – Ensures that the package is installed.</li>
+    <li><code>absent</code> – Ensures that the package is removed.</li>
+    <li><code>latest</code> – Ensures that the latest available version is installed.</li>
+</ul>
+
+<p>
+    For example, <code>state: present</code> does not necessarily
+    upgrade an already installed package. It ensures that the package
+    exists on the system.
+</p>
+
+<h3>use</h3>
+
+<p>
+    The <code>use</code> parameter can specify which package manager
+    Ansible should use instead of relying on automatic detection.
+</p>
+
+<p>
+    This parameter is useful when you need to explicitly select
+    a supported package manager.
+</p>
+
+<pre><code>- name: Install curl using APT
+  ansible.builtin.package:
+    name: curl
+    state: present
+    use: apt</code></pre>
+
+<p>
+    Since this lab uses Ubuntu, <code>apt</code> selects the APT
+    package manager.
+</p>
+
+<div class="warning">
+    The Package module supports only the common package management
+    interface. Parameters such as <code>update_cache</code>,
+    <code>cache_valid_time</code> and <code>upgrade</code> belong
+    to package-manager-specific modules such as
+    <code>ansible.builtin.apt</code>.
+</div>
+
+<h2>4. Install a Single Package</h2>
+
+<p>
+    Create a playbook named <code>install-package.yml</code>.
+    In this example, you will install curl using the generic
+    Package module.
+</p>
+
+<pre><code>---
+- name: Install Curl
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Ensure curl is installed
+      ansible.builtin.package:
+        name: curl
+        state: present</code></pre>
+
+<h3>Understanding the Playbook</h3>
+
+<p>
+    <code>hosts: all</code> targets all managed hosts defined
+    in the inventory.
+</p>
+
+<p>
+    <code>become: true</code> enables privilege escalation.
+    Package installation normally requires administrative permissions.
+</p>
+
+<p>
+    <code>ansible.builtin.package</code> calls the generic
+    package management module.
+</p>
+
+<p>
+    <code>name: curl</code> specifies the package to install.
+</p>
+
+<p>
+    <code>state: present</code> ensures that curl is installed.
+    If it is already installed, Ansible does not reinstall it.
+</p>
+
+<h2>5. Install Multiple Packages</h2>
+
+<p>
+    You can install several packages using a single Package module
+    task. This is useful when configuring a new server that requires
+    multiple software dependencies.
+</p>
+
+<p>
+    Create <code>install-multiple-packages.yml</code>.
+</p>
+
+<pre><code>---
+- name: Install Multiple Packages
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install administration tools
+      ansible.builtin.package:
+        name:
+          - curl
+          - wget
+          - unzip
+          - tree
+          - htop
+        state: present</code></pre>
+
+<h3>Understanding the Playbook</h3>
+
+<p>
+    The <code>name</code> parameter contains five package names.
+    Ansible processes the list using the package manager available
+    on the managed system.
+</p>
+
+<p>
+    <code>state: present</code> ensures that every listed package
+    is installed.
+</p>
+
+<p>
+    If one or more packages are missing, Ansible installs the
+    missing packages. Packages that are already installed remain
+    unchanged.
+</p>
+
+<h2>6. Remove a Package</h2>
+
+<p>
+    The Package module can also remove software.
+    Create <code>remove-package.yml</code>.
+</p>
+
+<pre><code>---
+- name: Remove Package
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Remove curl
+      ansible.builtin.package:
+        name: curl
+        state: absent</code></pre>
+
+<h3>Understanding the Playbook</h3>
+
+<p>
+    <code>name: curl</code> identifies the package that must be removed.
+</p>
+
+<p>
+    <code>state: absent</code> ensures that curl is not installed
+    on the managed system.
+</p>
+
+<p>
+    If curl is already absent, Ansible does not need to remove it again.
+</p>
+
+<h2>7. Ensure the Latest Package Version Is Installed</h2>
+
+<p>
+    The Package module also supports <code>state: latest</code>.
+    This ensures that the latest version available through the
+    configured package repositories is installed.
+</p>
+
+<p>
+    Create <code>latest-package.yml</code>.
+</p>
+
+<pre><code>---
+- name: Install Latest Curl Version
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Ensure curl is at the latest available version
+      ansible.builtin.package:
+        name: curl
+        state: latest</code></pre>
+
+<h3>Understanding the Playbook</h3>
+
+<p>
+    <code>state: latest</code> checks the available package version
+    and upgrades the package when a newer version is available.
+</p>
+
+<p>
+    If the installed version is already the latest available version,
+    no upgrade is required.
+</p>
+
+<div class="warning">
+    The latest version depends on the configured package repositories.
+    This task does not guarantee that the package is the newest version
+    released by the software vendor.
+</div>
+
+<h2>8. Idempotency in the Package Module</h2>
+
+<p>
+    Idempotency means that repeatedly executing the same playbook
+    should not make unnecessary changes when the system already
+    matches the desired configuration.
+</p>
+
+<p>Consider this task:</p>
+
+<pre><code>- name: Ensure curl is installed
+  ansible.builtin.package:
+    name: curl
+    state: present</code></pre>
+
+<p>
+    When curl is not installed, Ansible installs it and reports
+    <code>changed</code>.
+</p>
+
+<p>
+    When curl is already installed, Ansible leaves it unchanged
+    and normally reports <code>ok</code>.
+</p>
+
+<p>
+    This makes the Package module useful for repeatable server
+    configuration and automation.
+</p>
+
+<h2>9. Package Module vs APT Module</h2>
+
+<p>
+    Both modules can install and remove packages on Ubuntu.
+    However, they are designed for different levels of package
+    management control.
+</p>
+
+<h3>Package Module</h3>
+
+<pre><code>- name: Install curl
+  ansible.builtin.package:
+    name: curl
+    state: present</code></pre>
+
+<p>
+    The Package module provides a generic interface. It is useful
+    when you want a playbook to work across different Linux
+    distributions without changing basic package installation tasks.
+</p>
+
+<h3>APT Module</h3>
+
+<pre><code>- name: Install curl and refresh package cache
+  ansible.builtin.apt:
+    name: curl
+    state: present
+    update_cache: true
+    cache_valid_time: 3600</code></pre>
+
+<p>
+    The APT module is designed specifically for Debian-based
+    distributions. It provides additional APT-specific parameters
+    for cache management, upgrades and package operations.
+</p>
+
+<div class="note">
+    <strong>When should you use each module?</strong>
+    <ul>
+        <li>Use <code>package</code> for basic package operations when you want a generic interface.</li>
+        <li>Use <code>apt</code> when you need Ubuntu-specific APT functionality.</li>
+    </ul>
+</div>
+
+<h2>10. Practical Project: Ubuntu Server Base Software Setup</h2>
+
+<p>
+    In this project, you will automate the installation of standard
+    software packages required on an Ubuntu server.
+</p>
+
+<p>
+    The goal is to maintain a consistent set of administration tools
+    across all managed servers using the generic Package module.
+</p>
+
+<h3>Project Requirements</h3>
+
+<ul>
+    <li>Use an Ansible inventory to identify the target servers.</li>
+    <li>Install curl for HTTP requests.</li>
+    <li>Install wget for downloading files.</li>
+    <li>Install unzip for extracting archives.</li>
+    <li>Install tree for directory structure visualization.</li>
+    <li>Install htop for process monitoring.</li>
+    <li>Install git for source code management.</li>
+    <li>Install vim for text editing.</li>
+    <li>Ensure the required packages remain installed.</li>
+</ul>
+
+<h3>Step 1: Create the Project Directory</h3>
+
+<pre><code>mkdir -p ubuntu-base-setup
+cd ubuntu-base-setup</code></pre>
+
+<h3>Step 2: Create the Inventory File</h3>
+
+<p>
+    Create a file named <code>inventory.ini</code>.
+</p>
+
+<pre><code>[ubuntu_servers]
+192.168.1.101 ansible_user=ubuntu
+192.168.1.102 ansible_user=ubuntu</code></pre>
+
+<p>
+    Replace the example IP addresses and username with the
+    connection details of your managed Ubuntu servers.
+</p>
+
+<h3>Step 3: Create the Main Playbook</h3>
+
+<p>
+    Create a file named <code>ubuntu-base-setup.yml</code>.
+</p>
+
+<pre><code>---
+- name: Configure Ubuntu Base Software
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Install standard administration packages
+      ansible.builtin.package:
+        name:
+          - curl
+          - wget
+          - unzip
+          - tree
+          - htop
+          - git
+          - vim
+        state: present</code></pre>
+
+<h3>Step 4: Understand the Project Playbook</h3>
+
+<p>
+    The playbook contains one package installation task.
+    It defines seven required software packages in a YAML list.
+</p>
+
+<p>
+    <code>ansible.builtin.package</code> manages the package
+    installation using the package manager available on the
+    managed system.
+</p>
+
+<p>
+    <code>state: present</code> ensures that all seven packages
+    are installed.
+</p>
+
+<p>
+    <code>become: true</code> allows Ansible to perform the
+    installation with administrative permissions.
+</p>
+
+<p>
+    The playbook can be executed repeatedly. Packages that are
+    already installed do not need to be installed again.
+</p>
+
+<h3>Step 5: Validate the Playbook</h3>
+
+<p>
+    Check the playbook syntax before executing it.
+</p>
+
+<pre><code>ansible-playbook -i inventory.ini ubuntu-base-setup.yml --syntax-check</code></pre>
+
+<p>
+    If the YAML syntax and playbook structure are valid,
+    Ansible displays a syntax OK message.
+</p>
+
+<h3>Step 6: Execute the Playbook</h3>
+
+<pre><code>ansible-playbook -i inventory.ini ubuntu-base-setup.yml</code></pre>
+
+<p>
+    Ansible connects to the managed servers and ensures that
+    all seven packages are installed.
+</p>
+
+<h3>Step 7: Execute the Playbook Again</h3>
+
+<p>
+    Run the same playbook again:
+</p>
+
+<pre><code>ansible-playbook -i inventory.ini ubuntu-base-setup.yml</code></pre>
+
+<p>
+    Since the packages are already installed, the installation
+    task should report <code>ok</code> instead of
+    <code>changed</code>, provided the package state has not changed.
+</p>
+
+<div class="note">
+    <strong>Project completed:</strong>
+    You have automated the installation of standard Ubuntu
+    administration packages using the Ansible Package module.
+</div>
+
+<h2>What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the Ansible Package module.</li>
+    <li>Understanding the difference between Package and APT modules.</li>
+    <li>Understanding the Package module parameters.</li>
+    <li>Installing a single package.</li>
+    <li>Installing multiple packages.</li>
+    <li>Removing packages.</li>
+    <li>Installing the latest available package version.</li>
+    <li>Understanding idempotency.</li>
+    <li>Creating and executing an Ubuntu base software setup project.</li>
+</ul>
+
+<!-- Detailed explanation box -->
+
+<div class="why-module-box">
+
+    <h2>Why Do We Use the Ansible Package Module?</h2>
+
+    <p>
+        Linux distributions use different package management systems.
+        Ubuntu uses APT, while Red Hat-based distributions use DNF
+        or YUM. This creates a challenge when administrators manage
+        servers running different Linux distributions.
+    </p>
+
+    <p>
+        The Ansible Package module provides a common interface for
+        basic package management operations. Instead of writing
+        different package installation tasks for each supported
+        package manager, you can use the same module structure.
+    </p>
+
+    <h3>1. Distribution-Independent Package Management</h3>
+
+    <p>
+        Consider an organization that manages Ubuntu and Red Hat
+        servers. Both environments require curl to be installed.
+    </p>
+
+    <p>
+        Without the generic Package module, you would typically
+        write an APT task for Ubuntu and a DNF task for Red Hat.
+        The Package module allows you to write one basic package
+        installation task that Ansible can use with the appropriate
+        package manager.
+    </p>
+
+    <p>
+        This reduces distribution-specific differences in basic
+        package management playbooks.
+    </p>
+
+    <h3>2. Reusable Playbooks</h3>
+
+    <p>
+        Reusability is important in automation. A playbook that
+        installs basic packages can be reused across different
+        environments without rewriting the package management task
+        for each supported Linux distribution.
+    </p>
+
+    <p>
+        For example, a standard server configuration playbook may
+        require curl, wget, unzip and Git. These package requirements
+        can be defined once and reused across supported systems.
+    </p>
+
+    <h3>3. Consistent Software Installation</h3>
+
+    <p>
+        Organizations often require the same administration tools
+        on every server. Missing packages can interrupt deployment
+        scripts, monitoring tools and maintenance activities.
+    </p>
+
+    <p>
+        The Package module allows administrators to define the
+        required package list and ensure that every selected server
+        has the expected software installed.
+    </p>
+
+    <h3>4. Automated Package Removal</h3>
+
+    <p>
+        Package management is not limited to installation.
+        Administrators also need to remove unnecessary or unwanted
+        software from servers.
+    </p>
+
+    <p>
+        Using <code>state: absent</code>, the Package module can
+        ensure that a package is not installed. This is useful
+        when standardizing server software and removing packages
+        that are no longer required.
+    </p>
+
+    <h3>5. Idempotent Automation</h3>
+
+    <p>
+        Repeated execution is common in configuration management.
+        A playbook may run during initial server provisioning
+        and again during later maintenance.
+    </p>
+
+    <p>
+        The Package module checks whether the requested package
+        state is already satisfied. With <code>state: present</code>,
+        it installs a missing package but does not unnecessarily
+        reinstall an existing package.
+    </p>
+
+    <p>
+        This makes package management predictable and reduces
+        unnecessary changes during repeated playbook executions.
+    </p>
+
+    <h3>6. When Should You Use the Package Module Instead of APT?</h3>
+
+    <p>
+        Use the Package module when you need basic package operations
+        and want the same playbook structure to work across multiple
+        supported Linux distributions.
+    </p>
+
+    <p>
+        Use the APT module when you specifically need APT functionality,
+        such as refreshing the package cache, controlling cache
+        validity, managing repository configuration or performing
+        APT-specific upgrade operations.
+    </p>
+
+    <h3>7. Why Is This Important for a DevOps Engineer?</h3>
+
+    <p>
+        DevOps engineers frequently work with different Linux
+        distributions across development, testing and production
+        environments.
+    </p>
+
+    <p>
+        A generic package management interface helps create
+        reusable automation, standardize software installations
+        and reduce distribution-specific playbook changes.
+    </p>
+
+    <p>
+        Understanding the Package module also helps you decide
+        when a generic Ansible module is sufficient and when
+        a distribution-specific module is required.
+    </p>
+
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const wrapper = document.getElementById("videoWrapper");
+    const button = document.getElementById("videoToggle");
+
+    if (wrapper.classList.contains("hidden")) {
+        wrapper.classList.remove("hidden");
+        button.textContent = "✕ Hide Video";
+    } else {
+        wrapper.classList.add("hidden");
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
