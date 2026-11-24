@@ -1,0 +1,651 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible Debug Module</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.7;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+h1, h2, h3 { color: #f8fafc; }
+h1 { font-size: 32px; }
+
+h2 {
+    margin-top: 38px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 9px;
+}
+
+h3 {
+    margin-top: 25px;
+    color: #93c5fd;
+}
+
+p, li { color: #cbd5e1; }
+
+code {
+    color: #86efac;
+    background: #1e293b;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+pre {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    color: #d1d5db;
+    line-height: 1.6;
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+    color: #d1d5db;
+}
+
+.video-container { margin: 25px 0; }
+
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+}
+
+.video-button {
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 10px 17px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.info-box, .warning-box, .project-box {
+    padding: 16px;
+    border-radius: 7px;
+    margin: 20px 0;
+}
+
+.info-box {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+}
+
+.warning-box {
+    background: #422006;
+    border-left: 4px solid #f59e0b;
+}
+
+.project-box {
+    background: #132e25;
+    border-left: 4px solid #22c55e;
+}
+
+.why-box {
+    background: #713f12;
+    border: 1px solid #a16207;
+    padding: 24px;
+    border-radius: 10px;
+    margin-top: 45px;
+}
+
+.why-box h2 {
+    border: none;
+    margin-top: 0;
+    color: #fef3c7;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #334155;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+td { color: #cbd5e1; }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Ansible Debug Module</h1>
+
+<p>
+The Ansible Debug module displays messages, variable values and task
+results during playbook execution. It is commonly used for troubleshooting,
+verifying variables and understanding what is happening inside a playbook.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <div id="videoWrapper">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible Debug Module Tutorial"
+            allowfullscreen>
+        </iframe>
+    </div>
+</div>
+
+<h2>1. What Is the Debug Module?</h2>
+
+<p>
+The <code>ansible.builtin.debug</code> module prints information
+during playbook execution. It does not modify files, install packages
+or change the configuration of a managed host.
+</p>
+
+<p>Common use cases include:</p>
+
+<ul>
+    <li>Displaying variable values.</li>
+    <li>Displaying registered task results.</li>
+    <li>Printing custom messages.</li>
+    <li>Inspecting Ansible facts.</li>
+    <li>Troubleshooting playbook execution.</li>
+    <li>Verifying values before performing subsequent tasks.</li>
+</ul>
+
+<h2>2. How Does the Debug Module Work?</h2>
+
+<pre><code>             Ansible Controller
+             ------------------
+                    |
+                    v
+                Playbook
+                    |
+                    v
+              Execute Task
+                    |
+                    v
+              Debug Module
+                    |
+                    v
+          Display Message or Variable
+                    |
+                    v
+             Ansible Output</code></pre>
+
+<p>
+The Debug module displays information in the Ansible execution output.
+It is executed as part of the playbook on the controller, even though
+the play targets managed hosts.
+</p>
+
+<h2>3. Important Debug Parameters</h2>
+
+<table>
+<thead>
+<tr>
+    <th>Parameter</th>
+    <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td><code>msg</code></td>
+    <td>Displays a custom message. This is the default parameter.</td>
+</tr>
+<tr>
+    <td><code>var</code></td>
+    <td>Displays the value of a variable.</td>
+</tr>
+<tr>
+    <td><code>verbosity</code></td>
+    <td>Controls the minimum Ansible verbosity level required to display the debug task.</td>
+</tr>
+</tbody>
+</table>
+
+<h2>4. Display a Simple Message</h2>
+
+<p>
+Use the <code>msg</code> parameter to print a custom message.
+</p>
+
+<p><strong>Playbook: debug-message.yml</strong></p>
+
+<pre><code>---
+- name: Display a message
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display welcome message
+      ansible.builtin.debug:
+        msg: "Welcome to Ansible automation"</code></pre>
+
+<h2>5. Display Variables Using Debug</h2>
+
+<p>
+You can display variables defined in the playbook using the
+<code>var</code> parameter.
+</p>
+
+<p><strong>Playbook: debug-variable.yml</strong></p>
+
+<pre><code>---
+- name: Display variables
+  hosts: ansible-client
+  become: true
+
+  vars:
+    application_name: learning-labs
+    application_port: 8080
+    environment: production
+
+  tasks:
+    - name: Display application name
+      ansible.builtin.debug:
+        var: application_name
+
+    - name: Display application port
+      ansible.builtin.debug:
+        var: application_port
+
+    - name: Display environment
+      ansible.builtin.debug:
+        var: environment</code></pre>
+
+<div class="info-box">
+<strong>Important:</strong>
+When using <code>var</code>, write the variable name without
+<code>{{ }}</code>. Ansible evaluates it automatically.
+</div>
+
+<h2>6. Display Multiple Variables in One Message</h2>
+
+<p>
+You can use Jinja2 expressions inside <code>msg</code> to display
+multiple variables in a single message.
+</p>
+
+<p><strong>Playbook: debug-multiple.yml</strong></p>
+
+<pre><code>---
+- name: Display application details
+  hosts: ansible-client
+  become: true
+
+  vars:
+    application_name: learning-labs
+    application_port: 8080
+    environment: production
+
+  tasks:
+    - name: Display application information
+      ansible.builtin.debug:
+        msg: |
+          Application: {{ application_name }}
+          Port: {{ application_port }}
+          Environment: {{ environment }}</code></pre>
+
+<h2>7. Display Registered Task Results</h2>
+
+<p>
+The Debug module is frequently used with the
+<code>register</code> keyword to display the output returned
+by another task.
+</p>
+
+<p><strong>Playbook: debug-register.yml</strong></p>
+
+<pre><code>---
+- name: Display registered command output
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Get hostname
+      ansible.builtin.command:
+        cmd: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Display hostname
+      ansible.builtin.debug:
+        var: hostname_result.stdout
+
+    - name: Display command return code
+      ansible.builtin.debug:
+        var: hostname_result.rc</code></pre>
+
+<p>
+The first task captures the command result. The following tasks
+display its standard output and return code.
+</p>
+
+<h2>8. Display Ansible Facts</h2>
+
+<p>
+Ansible gathers system information from managed hosts as facts.
+The Debug module can display these facts.
+</p>
+
+<p><strong>Playbook: debug-facts.yml</strong></p>
+
+<pre><code>---
+- name: Display system facts
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display operating system
+      ansible.builtin.debug:
+        var: ansible_distribution
+
+    - name: Display operating system version
+      ansible.builtin.debug:
+        var: ansible_distribution_version
+
+    - name: Display hostname
+      ansible.builtin.debug:
+        var: ansible_hostname
+
+    - name: Display total memory
+      ansible.builtin.debug:
+        var: ansible_memtotal_mb
+
+    - name: Display processor information
+      ansible.builtin.debug:
+        var: ansible_processor_vcpus</code></pre>
+
+<p>
+These values depend on the managed host and its environment.
+</p>
+
+<h2>9. Display a Complete Registered Result</h2>
+
+<p>
+You can display the entire registered variable instead of accessing
+individual fields.
+</p>
+
+<p><strong>Playbook: debug-full-result.yml</strong></p>
+
+<pre><code>---
+- name: Display complete task result
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Get disk usage
+      ansible.builtin.command:
+        cmd: df -h /
+      register: disk_result
+      changed_when: false
+
+    - name: Display complete result
+      ansible.builtin.debug:
+        var: disk_result</code></pre>
+
+<p>
+This displays the available fields returned by the task, including
+standard output, return code and change status.
+</p>
+
+<h2>10. Control Debug Output with Verbosity</h2>
+
+<p>
+The <code>verbosity</code> parameter controls when a Debug task
+is displayed based on the verbosity level supplied when running
+the playbook.
+</p>
+
+<p><strong>Playbook: debug-verbosity.yml</strong></p>
+
+<pre><code>---
+- name: Debug verbosity example
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Always display this message
+      ansible.builtin.debug:
+        msg: "Normal debug message"
+
+    - name: Display detailed information
+      ansible.builtin.debug:
+        msg: "Detailed troubleshooting information"
+        verbosity: 2</code></pre>
+
+<p>
+The second task requires Ansible verbosity level 2 or higher.
+</p>
+
+<h2>11. Display Lists and Dictionaries</h2>
+
+<p>
+Debug can display structured data such as lists and dictionaries.
+</p>
+
+<p><strong>Playbook: debug-structured-data.yml</strong></p>
+
+<pre><code>---
+- name: Display structured data
+  hosts: ansible-client
+  become: true
+
+  vars:
+    application:
+      name: learning-labs
+      port: 8080
+      environment: production
+      services:
+        - frontend
+        - backend
+        - database
+
+  tasks:
+    - name: Display complete application dictionary
+      ansible.builtin.debug:
+        var: application
+
+    - name: Display application name
+      ansible.builtin.debug:
+        var: application.name
+
+    - name: Display application services
+      ansible.builtin.debug:
+        var: application.services</code></pre>
+
+<h2>12. Display Values Using Jinja2 Expressions</h2>
+
+<p>
+You can use Jinja2 expressions inside <code>msg</code> to format
+values and perform simple calculations.
+</p>
+
+<p><strong>Playbook: debug-jinja.yml</strong></p>
+
+<pre><code>---
+- name: Display formatted values
+  hosts: ansible-client
+  become: true
+
+  vars:
+    memory_mb: 4096
+    application_port: 8080
+
+  tasks:
+    - name: Display memory in GB
+      ansible.builtin.debug:
+        msg: "Memory: {{ memory_mb / 1024 }} GB"
+
+    - name: Display port information
+      ansible.builtin.debug:
+        msg: "Application will use port {{ application_port }}"</code></pre>
+
+<h2>13. Practical Project: Linux Server Diagnostic Report</h2>
+
+<div class="project-box">
+
+<h3>Project Objective</h3>
+
+<p>
+Build a playbook that collects Linux system information and displays
+a readable diagnostic report.
+</p>
+
+<strong>Requirements:</strong>
+
+<ol>
+    <li>Collect the hostname.</li>
+    <li>Collect the operating system and version.</li>
+    <li>Collect the kernel version.</li>
+    <li>Collect total memory.</li>
+    <li>Collect root filesystem usage.</li>
+    <li>Register command output where required.</li>
+    <li>Display all collected information in a structured report.</li>
+</ol>
+
+<strong>Project playbook: linux-diagnostic-report.yml</strong>
+
+<pre><code>---
+- name: Generate Linux diagnostic report
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Collect hostname
+      ansible.builtin.command:
+        cmd: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Collect kernel version
+      ansible.builtin.command:
+        cmd: uname -r
+      register: kernel_result
+      changed_when: false
+
+    - name: Collect root filesystem usage
+      ansible.builtin.command:
+        cmd: df -h /
+      register: disk_result
+      changed_when: false
+
+    - name: Display diagnostic report
+      ansible.builtin.debug:
+        msg:
+          - "LINUX SERVER DIAGNOSTIC REPORT"
+          - "Hostname: {{ hostname_result.stdout }}"
+          - "Operating System: {{ ansible_distribution }}"
+          - "OS Version: {{ ansible_distribution_version }}"
+          - "Kernel: {{ kernel_result.stdout }}"
+          - "Total Memory: {{ ansible_memtotal_mb }} MB"
+          - "Root Filesystem:"
+          - "{{ disk_result.stdout }}"</code></pre>
+
+</div>
+
+<h2>14. Important Considerations</h2>
+
+<ul>
+    <li>Debug is primarily used for displaying information during playbook execution.</li>
+    <li>Use <code>msg</code> for custom messages.</li>
+    <li>Use <code>var</code> to display a variable directly.</li>
+    <li>Do not wrap the variable name in Jinja2 braces when using <code>var</code>.</li>
+    <li>Use Jinja2 expressions inside <code>msg</code> when formatting values.</li>
+    <li>Registered results can be inspected using Debug.</li>
+    <li>Facts must be gathered before displaying fact variables.</li>
+    <li>Debug does not modify the managed host.</li>
+    <li>Be careful when displaying passwords, tokens, private keys or other sensitive information.</li>
+</ul>
+
+<h2>15. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the Ansible Debug module.</li>
+    <li>Displaying custom messages.</li>
+    <li>Displaying individual variables.</li>
+    <li>Displaying multiple variables.</li>
+    <li>Inspecting registered task results.</li>
+    <li>Displaying Ansible facts.</li>
+    <li>Controlling output using verbosity.</li>
+    <li>Displaying lists and dictionaries.</li>
+    <li>Using Jinja2 expressions in debug messages.</li>
+    <li>Building a Linux diagnostic report.</li>
+</ul>
+
+<div class="why-box">
+<h2>Why Do We Use the Ansible Debug Module?</h2>
+
+<p>
+In DevOps environments, playbooks often execute many tasks across
+multiple managed hosts. When something does not behave as expected,
+engineers need to inspect variables, task results and system information.
+</p>
+
+<p>
+The Debug module provides a simple way to display this information
+during playbook execution. It helps engineers understand the values
+being processed and identify unexpected results.
+</p>
+
+<p>
+For example, after retrieving a server's hostname, disk usage or
+application configuration, an engineer can use Debug to inspect
+the returned information before proceeding with additional tasks.
+</p>
+
+<p>
+It is commonly used in troubleshooting, automation development,
+deployment validation and infrastructure diagnostics.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const wrapper = document.getElementById("videoWrapper");
+    const button = document.getElementById("videoToggle");
+
+    if (wrapper.style.display === "none") {
+        wrapper.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        wrapper.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
