@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible Shell Module</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.7;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+h1, h2, h3 { color: #f8fafc; }
+
+h1 { font-size: 32px; }
+
+h2 {
+    margin-top: 38px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 9px;
+}
+
+h3 {
+    margin-top: 25px;
+    color: #93c5fd;
+}
+
+p, li { color: #cbd5e1; }
+
+code {
+    color: #86efac;
+    background: #1e293b;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+pre {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    color: #d1d5db;
+    line-height: 1.6;
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+    color: #d1d5db;
+}
+
+.video-container { margin: 25px 0; }
+
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+}
+
+.video-button {
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 10px 17px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.info-box, .warning-box, .project-box {
+    padding: 16px;
+    border-radius: 7px;
+    margin: 20px 0;
+}
+
+.info-box {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+}
+
+.warning-box {
+    background: #422006;
+    border-left: 4px solid #f59e0b;
+}
+
+.project-box {
+    background: #132e25;
+    border-left: 4px solid #22c55e;
+}
+
+.why-box {
+    background: #713f12;
+    border: 1px solid #a16207;
+    padding: 24px;
+    border-radius: 10px;
+    margin-top: 45px;
+}
+
+.why-box h2 {
+    border: none;
+    margin-top: 0;
+    color: #fef3c7;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #334155;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+td { color: #cbd5e1; }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Ansible Shell Module</h1>
+
+<p>
+The Ansible Shell module executes commands on managed hosts through
+a shell environment. It supports shell features such as pipes,
+redirection, environment-variable expansion and command chaining.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <div id="videoWrapper">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible Shell Module Tutorial"
+            allowfullscreen>
+        </iframe>
+    </div>
+</div>
+
+<h2>1. What Is the Shell Module?</h2>
+
+<p>
+The <code>ansible.builtin.shell</code> module executes commands using
+the managed host's configured shell, normally <code>/bin/sh</code>.
+</p>
+
+<p>Common use cases include:</p>
+
+<ul>
+    <li>Executing commands that require shell features.</li>
+    <li>Using pipes to pass output between commands.</li>
+    <li>Redirecting command output to files.</li>
+    <li>Expanding environment variables.</li>
+    <li>Running command sequences with conditional operators.</li>
+    <li>Executing scripts through a shell.</li>
+</ul>
+
+<div class="info-box">
+<strong>Important distinction:</strong>
+Use the Ansible Command module for ordinary commands that do not
+require shell features. Use the Shell module when you specifically
+need shell functionality.
+</div>
+
+<h2>2. How Does the Shell Module Work?</h2>
+
+<pre><code>             Ansible Controller
+             ------------------
+             Playbook
+                 |
+                 |
+             SSH Connection
+                 |
+                 v
+             Managed Host
+             -------------
+             Shell Environment
+                 |
+                 v
+             Execute Command
+                 |
+                 v
+             Return Output</code></pre>
+
+<p>
+Ansible connects to the managed host, executes the supplied command
+through a shell and returns the command output and execution status.
+</p>
+
+<h2>3. Important Parameters</h2>
+
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cmd</code></td>
+<td>Command or shell command sequence to execute.</td>
+</tr>
+<tr>
+<td><code>chdir</code></td>
+<td>Changes to the specified directory before executing the command.</td>
+</tr>
+<tr>
+<td><code>creates</code></td>
+<td>Skips execution if the specified file already exists.</td>
+</tr>
+<tr>
+<td><code>removes</code></td>
+<td>Executes only when the specified file exists.</td>
+</tr>
+<tr>
+<td><code>executable</code></td>
+<td>Specifies the shell executable, such as <code>/bin/bash</code>.</td>
+</tr>
+<tr>
+<td><code>stdin</code></td>
+<td>Supplies standard input to the command.</td>
+</tr>
+<tr>
+<td><code>stdin_add_newline</code></td>
+<td>Controls whether a newline is appended to standard input.</td>
+</tr>
+</tbody>
+</table>
+
+<h2>4. Execute a Basic Shell Command</h2>
+
+<p>
+The following playbook displays the current date and time on the
+managed host.
+</p>
+
+<p><strong>Playbook: shell-basic.yml</strong></p>
+
+<pre><code>---
+- name: Execute basic shell command
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display current date
+      ansible.builtin.shell:
+        cmd: date</code></pre>
+
+<h2>5. Execute Multiple Commands</h2>
+
+<p>
+You can execute multiple commands in a single task by separating
+them with shell operators.
+</p>
+
+<p><strong>Playbook: shell-multiple.yml</strong></p>
+
+<pre><code>---
+- name: Execute multiple shell commands
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display hostname and current directory
+      ansible.builtin.shell:
+        cmd: |
+          hostname
+          pwd
+          whoami</code></pre>
+
+<h2>6. Use Pipes</h2>
+
+<p>
+A pipe (<code>|</code>) passes the output of one command as input
+to another command.
+</p>
+
+<p><strong>Playbook: shell-pipe.yml</strong></p>
+
+<pre><code>---
+- name: Execute command using pipe
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Count running processes
+      ansible.builtin.shell:
+        cmd: ps aux | wc -l</code></pre>
+
+<h2>7. Redirect Output to a File</h2>
+
+<p>
+Shell redirection allows you to save command output into a file
+on the managed host.
+</p>
+
+<p><strong>Playbook: shell-redirection.yml</strong></p>
+
+<pre><code>---
+- name: Redirect command output
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Save hostname to a file
+      ansible.builtin.shell:
+        cmd: hostname > /tmp/hostname-report.txt</code></pre>
+
+<h2>8. Execute Commands in a Specific Directory</h2>
+
+<p>
+The <code>chdir</code> parameter changes the working directory
+before executing the shell command.
+</p>
+
+<p><strong>Playbook: shell-chdir.yml</strong></p>
+
+<pre><code>---
+- name: Execute command in specific directory
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create a report in the lab directory
+      ansible.builtin.shell:
+        cmd: pwd > working-directory.txt
+        chdir: /tmp</code></pre>
+
+<h2>9. Use the Creates Parameter</h2>
+
+<p>
+The <code>creates</code> parameter prevents a task from executing
+when a specified file already exists.
+</p>
+
+<p><strong>Playbook: shell-creates.yml</strong></p>
+
+<pre><code>---
+- name: Use creates parameter
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Generate report only once
+      ansible.builtin.shell:
+        cmd: date > /tmp/first-run-report.txt
+        creates: /tmp/first-run-report.txt</code></pre>
+
+<p>
+On the first execution, the file is created. On subsequent
+executions, Ansible skips the command because the file exists.
+</p>
+
+<h2>10. Use the Removes Parameter</h2>
+
+<p>
+The <code>removes</code> parameter executes a command only when
+the specified file exists.
+</p>
+
+<p><strong>Playbook: shell-removes.yml</strong></p>
+
+<pre><code>---
+- name: Use removes parameter
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Remove temporary report when it exists
+      ansible.builtin.shell:
+        cmd: rm -f /tmp/temporary-report.txt
+        removes: /tmp/temporary-report.txt</code></pre>
+
+<h2>11. Execute Commands Using Bash</h2>
+
+<p>
+The <code>executable</code> parameter lets you select a specific
+shell instead of using the default shell.
+</p>
+
+<p><strong>Playbook: shell-bash.yml</strong></p>
+
+<pre><code>---
+- name: Execute command using Bash
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display Bash shell information
+      ansible.builtin.shell:
+        cmd: echo "Current shell: $BASH_VERSION"
+        executable: /bin/bash</code></pre>
+
+<h2>12. Capture Command Output</h2>
+
+<p>
+You can register the result of a Shell task in a variable and
+display it using the Debug module.
+</p>
+
+<p><strong>Playbook: shell-register.yml</strong></p>
+
+<pre><code>---
+- name: Capture shell command output
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Get hostname
+      ansible.builtin.shell:
+        cmd: hostname
+      register: hostname_result
+
+    - name: Display hostname
+      ansible.builtin.debug:
+        var: hostname_result.stdout</code></pre>
+
+<div class="info-box">
+<strong>Note:</strong>
+The <code>register</code> keyword is a playbook feature, not a
+Shell module parameter. The Debug module displays the captured
+output.
+</div>
+
+<h2>13. Practical Project: Linux Server Information Collector</h2>
+
+<div class="project-box">
+
+<h3>Project Objective</h3>
+
+<p>
+Create a playbook that collects basic Linux server information,
+saves reports on the managed host and displays selected results.
+</p>
+
+<strong>Requirements:</strong>
+
+<ol>
+    <li>Collect the hostname.</li>
+    <li>Collect the current date and time.</li>
+    <li>Count the running processes.</li>
+    <li>Collect disk usage information.</li>
+    <li>Save the collected information into a report file.</li>
+    <li>Display the report location.</li>
+</ol>
+
+<strong>Project playbook: server-information.yml</strong>
+
+<pre><code>---
+- name: Collect Linux server information
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Collect hostname
+      ansible.builtin.shell:
+        cmd: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Collect date and time
+      ansible.builtin.shell:
+        cmd: date
+      register: date_result
+      changed_when: false
+
+    - name: Count running processes
+      ansible.builtin.shell:
+        cmd: ps aux | wc -l
+      register: process_result
+      changed_when: false
+
+    - name: Collect disk usage
+      ansible.builtin.shell:
+        cmd: df -h /
+      register: disk_result
+      changed_when: false
+
+    - name: Generate server information report
+      ansible.builtin.shell:
+        cmd: |
+          {
+            echo "SERVER INFORMATION REPORT"
+            echo "========================="
+            echo "Hostname: {{ hostname_result.stdout }}"
+            echo "Date: {{ date_result.stdout }}"
+            echo "Process count: {{ process_result.stdout }}"
+            echo ""
+            echo "Disk usage:"
+            df -h /
+          } > /tmp/server-information-report.txt
+
+    - name: Display report location
+      ansible.builtin.debug:
+        msg: "Report created at /tmp/server-information-report.txt"</code></pre>
+
+</div>
+
+<h2>14. Important Considerations</h2>
+
+<ul>
+    <li>Shell commands may behave differently across operating systems.</li>
+    <li>Use <code>become: true</code> when elevated privileges are required.</li>
+    <li>Use <code>changed_when: false</code> for read-only commands when appropriate.</li>
+    <li>Use <code>creates</code> or <code>removes</code> when they accurately represent whether a command needs to run.</li>
+    <li>Shell tasks are not automatically idempotent.</li>
+    <li>Avoid passing untrusted variables directly into shell commands because this can introduce command injection vulnerabilities.</li>
+    <li>Prefer dedicated Ansible modules whenever they can perform the required operation.</li>
+</ul>
+
+<h2>15. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the Ansible Shell module.</li>
+    <li>Executing commands on managed hosts.</li>
+    <li>Executing multiple commands.</li>
+    <li>Using pipes and output redirection.</li>
+    <li>Changing working directories with <code>chdir</code>.</li>
+    <li>Using <code>creates</code> and <code>removes</code>.</li>
+    <li>Selecting Bash using <code>executable</code>.</li>
+    <li>Capturing command output using <code>register</code>.</li>
+    <li>Building a Linux server information collector.</li>
+</ul>
+
+<div class="why-box">
+<h2>Why Do We Use the Ansible Shell Module?</h2>
+
+<p>
+In real-world DevOps environments, administrators sometimes need
+to execute commands that require shell capabilities, such as pipes,
+redirection, variable expansion and command chaining.
+</p>
+
+<p>
+The Ansible Shell module allows these commands to be executed
+remotely through a playbook across multiple managed hosts.
+</p>
+
+<p>
+For example, a DevOps engineer can collect system information,
+generate reports, execute existing shell scripts and automate
+specific operational tasks without manually logging in to every
+server.
+</p>
+
+<p>
+However, shell commands can introduce security and idempotency
+problems when used incorrectly. Whenever a dedicated Ansible module
+exists for an operation, prefer that module over the Shell module.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const wrapper = document.getElementById("videoWrapper");
+    const button = document.getElementById("videoToggle");
+
+    if (wrapper.style.display === "none") {
+        wrapper.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        wrapper.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
