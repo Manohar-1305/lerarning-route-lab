@@ -298,8 +298,7 @@ APP_ENV=development</code></pre>
 
     <pre><code>---
 - name: Manage configuration file
-  hosts: localhost
-  connection: local
+  hosts: ansible-client
   become: true
 
   tasks:
@@ -389,8 +388,7 @@ APP_ENV=development</code></pre>
 
     <pre><code>---
 - name: Add a configuration line
-  hosts: localhost
-  connection: local
+  hosts: ansible-client
   become: true
 
   tasks:
@@ -485,8 +483,7 @@ APP_ENV=development</code></pre>
 
     <pre><code>---
 - name: Insert configuration after application name
-  hosts: localhost
-  connection: local
+  hosts: ansible-client
   become: true
 
   tasks:
@@ -501,8 +498,7 @@ APP_ENV=development</code></pre>
 
     <pre><code>---
 - name: Insert configuration before application port
-  hosts: localhost
-  connection: local
+  hosts: ansible-client
   become: true
 
   tasks:
@@ -529,8 +525,7 @@ APP_ENV=development</code></pre>
 
     <pre><code>---
 - name: Update configuration with backup
-  hosts: localhost
-  connection: local
+  hosts: ansible-client
   become: true
 
   tasks:
@@ -563,8 +558,7 @@ APP_ENV=development</code></pre>
 
     <pre><code>---
 - name: Update configuration using backreferences
-  hosts: localhost
-  connection: local
+  hosts: ansible-client
   become: true
 
   tasks:
@@ -642,8 +636,7 @@ APP_ENV=development</code></pre>
 
     <pre><code>---
 - name: Manage application configuration
-  hosts: localhost
-  connection: local
+  hosts: ansible-client
   become: true
 
   vars:
@@ -725,8 +718,7 @@ APP_OWNER=admin</code></pre>
 
     <pre><code>---
 - name: Verify application configuration
-  hosts: localhost
-  connection: local
+  hosts: ansible-client
   become: true
 
   tasks:
