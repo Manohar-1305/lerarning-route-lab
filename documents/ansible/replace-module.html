@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ansible Replace Module</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 18px;
+            background: #0b1120;
+            color: #e5e7eb;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1, h2, h3 {
+            color: #60a5fa;
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 25px;
+            margin-top: 38px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 9px;
+        }
+
+        h3 {
+            font-size: 19px;
+            margin-top: 25px;
+        }
+
+        p {
+            color: #cbd5e1;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        .intro {
+            color: #94a3b8;
+            font-size: 17px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            margin: 25px 0 12px;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-button {
+            display: inline-block;
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .video-button:hover {
+            background: #15803d;
+        }
+
+        .info-box {
+            background: #172554;
+            border-left: 4px solid #3b82f6;
+            padding: 16px 20px;
+            border-radius: 7px;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            background: #422006;
+            border-left: 4px solid #f59e0b;
+            padding: 16px 20px;
+            border-radius: 7px;
+            margin: 20px 0;
+        }
+
+        .why-box {
+            background: #451a03;
+            border: 1px solid #92400e;
+            border-left: 6px solid #d97706;
+            padding: 24px;
+            border-radius: 10px;
+            margin-top: 45px;
+        }
+
+        .why-box h2 {
+            color: #fbbf24;
+            border-bottom-color: #92400e;
+            margin-top: 0;
+        }
+
+        .why-box p,
+        .why-box li {
+            color: #fde68a;
+        }
+
+        pre {
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 18px;
+            overflow-x: auto;
+            color: #d1d5db;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: Consolas, Monaco, monospace;
+            color: #86efac;
+        }
+
+        pre code {
+            color: #d1d5db;
+        }
+
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            display: block;
+            overflow-x: auto;
+        }
+
+        .parameter-table th,
+        .parameter-table td {
+            border: 1px solid #334155;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .parameter-table th {
+            background: #1e293b;
+            color: #93c5fd;
+        }
+
+        .parameter-table td {
+            color: #cbd5e1;
+        }
+
+        .footer {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px 12px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            pre {
+                font-size: 12px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Ansible Replace Module</h1>
+
+    <p class="intro">
+        Learn how to find and replace text patterns inside files using
+        regular expressions and Ansible playbooks.
+    </p>
+
+    <div id="videoContainer" class="video-container">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible Replace Module Tutorial"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <button id="videoToggle" class="video-button" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <h2>1. What Is the Replace Module?</h2>
+
+    <p>
+        The <code>ansible.builtin.replace</code> module searches for
+        text matching a regular expression and replaces every matching
+        occurrence with the specified replacement text.
+    </p>
+
+    <p>
+        It is useful when you need to update existing values, change
+        configuration entries, replace outdated text, or remove
+        unwanted content from files.
+    </p>
+
+    <p>
+        Unlike lineinfile, which manages individual lines, replace
+        works with regular-expression patterns across the file.
+    </p>
+
+    <div class="info-box">
+        <strong>Important:</strong>
+        The replace module does not require the existing text to occupy
+        an entire line. It can replace matching text within a line or
+        across multiple lines, depending on the regular expression.
+    </div>
+
+    <h2>2. Understanding How Replace Works</h2>
+
+    <p>Consider this configuration file:</p>
+
+    <pre><code>APP_NAME=learning-labs
+APP_PORT=5000
+APP_ENV=development
+APP_DEBUG=true</code></pre>
+
+    <p>
+        Suppose you want to replace the application port from
+        <code>5000</code> to <code>8080</code>.
+    </p>
+
+    <p>The replace module searches for the matching text and updates it.</p>
+
+    <pre><code>APP_NAME=learning-labs
+APP_PORT=8080
+APP_ENV=development
+APP_DEBUG=true</code></pre>
+
+    <p>
+        You can also replace multiple occurrences of the same text
+        throughout a file.
+    </p>
+
+    <h2>3. Basic Playbook Structure</h2>
+
+    <pre><code>---
+- name: Replace configuration values
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Update application port
+      ansible.builtin.replace:
+        path: /tmp/app.conf
+        regexp: 'APP_PORT=5000'
+        replace: 'APP_PORT=8080'</code></pre>
+
+    <p>Important fields:</p>
+
+    <ul>
+        <li><code>hosts</code>: Specifies the target managed host.</li>
+        <li><code>become</code>: Enables privilege escalation.</li>
+        <li><code>path</code>: Specifies the file to modify.</li>
+        <li><code>regexp</code>: Defines the pattern to search for.</li>
+        <li><code>replace</code>: Defines the replacement text.</li>
+    </ul>
+
+    <h2>4. Important Parameters</h2>
+
+    <table class="parameter-table">
+        <thead>
+        <tr>
+            <th>Parameter</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><code>path</code></td>
+            <td>Absolute path of the file to modify. Required.</td>
+        </tr>
+        <tr>
+            <td><code>regexp</code></td>
+            <td>Regular expression used to find matching text. Required.</td>
+        </tr>
+        <tr>
+            <td><code>replace</code></td>
+            <td>Text used to replace matching content. Defaults to an empty string.</td>
+        </tr>
+        <tr>
+            <td><code>backup</code></td>
+            <td>Creates a backup before modifying the file.</td>
+        </tr>
+        <tr>
+            <td><code>before</code></td>
+            <td>Limits the replacement operation to content before a matching expression.</td>
+        </tr>
+        <tr>
+            <td><code>after</code></td>
+            <td>Limits the replacement operation to content after a matching expression.</td>
+        </tr>
+        <tr>
+            <td><code>validate</code></td>
+            <td>Validates the temporary modified file before replacing the original file.</td>
+        </tr>
+        <tr>
+            <td><code>owner</code></td>
+            <td>Sets the file owner.</td>
+        </tr>
+        <tr>
+            <td><code>group</code></td>
+            <td>Sets the file group.</td>
+        </tr>
+        <tr>
+            <td><code>mode</code></td>
+            <td>Sets file permissions.</td>
+        </tr>
+        <tr>
+            <td><code>attributes</code></td>
+            <td>Sets file attributes using the supported file attribute flags.</td>
+        </tr>
+    </tbody>
+    </table>
+
+    <h2>5. Replacing a Specific Configuration Value</h2>
+
+    <p>
+        You can use an exact regular expression to replace a
+        configuration value.
+    </p>
+
+    <p>Create <code>replace-port.yml</code>:</p>
+
+    <pre><code>---
+- name: Update application port
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Replace application port
+      ansible.builtin.replace:
+        path: /tmp/app.conf
+        regexp: 'APP_PORT=5000'
+        replace: 'APP_PORT=8080'</code></pre>
+
+    <p>Before execution:</p>
+
+    <pre><code>APP_PORT=5000</code></pre>
+
+    <p>After execution:</p>
+
+    <pre><code>APP_PORT=8080</code></pre>
+
+    <h2>6. Replacing Values Using Regular Expressions</h2>
+
+    <p>
+        Regular expressions allow you to match patterns instead of
+        searching for one exact value.
+    </p>
+
+    <p>
+        For example, the following expression matches any line that
+        begins with <code>APP_PORT=</code>, regardless of its current
+        port value.
+    </p>
+
+    <pre><code>---
+- name: Update application port dynamically
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Replace application port
+      ansible.builtin.replace:
+        path: /tmp/app.conf
+        regexp: '^APP_PORT=.*$'
+        replace: 'APP_PORT=8080'</code></pre>
+
+    <p>
+        This replaces the complete matching line, whether the existing
+        value is 5000, 5001, or another value.
+    </p>
+
+    <h3>Useful Regular Expression Patterns</h3>
+
+    <table class="parameter-table">
+        <thead>
+        <tr>
+            <th>Pattern</th>
+            <th>Meaning</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><code>^APP_PORT=</code></td>
+            <td>Matches text beginning with APP_PORT=.</td>
+        </tr>
+        <tr>
+            <td><code>.*</code></td>
+            <td>Matches zero or more characters.</td>
+        </tr>
+        <tr>
+            <td><code>^</code></td>
+            <td>Matches the beginning of a line.</td>
+        </tr>
+        <tr>
+            <td><code>$</code></td>
+            <td>Matches the end of a line.</td>
+        </tr>
+        <tr>
+            <td><code>[0-9]+</code></td>
+            <td>Matches one or more digits.</td>
+        </tr>
+        <tr>
+            <td><code>old|new</code></td>
+            <td>Matches either old or new.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>7. Replacing Multiple Occurrences</h2>
+
+    <p>
+        The replace module replaces all occurrences matching its
+        regular expression, not just the first occurrence.
+    </p>
+
+    <p>Suppose the file contains:</p>
+
+    <pre><code>SERVER=old-server
+BACKUP_SERVER=old-server
+MONITOR_SERVER=old-server</code></pre>
+
+    <p>Playbook:</p>
+
+    <pre><code>---
+- name: Update server references
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Replace old server name
+      ansible.builtin.replace:
+        path: /tmp/servers.conf
+        regexp: 'old-server'
+        replace: 'new-server'</code></pre>
+
+    <p>Result:</p>
+
+    <pre><code>SERVER=new-server
+BACKUP_SERVER=new-server
+MONITOR_SERVER=new-server</code></pre>
+
+    <h2>8. Removing Matching Text</h2>
+
+    <p>
+        You can remove matching content by setting the
+        <code>replace</code> parameter to an empty string.
+    </p>
+
+    <p>Suppose the file contains:</p>
+
+    <pre><code>APP_NAME=learning-labs
+APP_DEBUG=true
+APP_PORT=8080</code></pre>
+
+    <p>Playbook:</p>
+
+    <pre><code>---
+- name: Remove debug configuration
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Remove debug setting
+      ansible.builtin.replace:
+        path: /tmp/app.conf
+        regexp: '^APP_DEBUG=.*\n?'
+        replace: ''</code></pre>
+
+    <p>Result:</p>
+
+    <pre><code>APP_NAME=learning-labs
+APP_PORT=8080</code></pre>
+
+    <div class="warning-box">
+        <strong>Important:</strong>
+        Carefully test regular expressions before applying them to
+        important files. A broad expression can remove more content
+        than intended.
+    </div>
+
+    <h2>9. Replacing Text Within a Specific Section</h2>
+
+    <p>
+        The <code>before</code> and <code>after</code> parameters
+        restrict where the replacement operation is performed.
+    </p>
+
+    <p>Consider this file:</p>
+
+    <pre><code>[application]
+PORT=5000
+ENV=development
+
+[database]
+PORT=5432
+HOST=localhost</code></pre>
+
+    <p>
+        Suppose you want to change the application port without changing
+        the database port.
+    </p>
+
+    <pre><code>---
+- name: Update application section
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Replace application port only
+      ansible.builtin.replace:
+        path: /tmp/app.conf
+        regexp: '^PORT=5000$'
+        replace: 'PORT=8080'
+        before: '^\[database\]'</code></pre>
+
+    <p>Result:</p>
+
+    <pre><code>[application]
+PORT=8080
+ENV=development
+
+[database]
+PORT=5432
+HOST=localhost</code></pre>
+
+    <p>
+        The <code>before</code> parameter limits the operation to
+        content before the database section.
+    </p>
+
+    <h2>10. Creating a Backup Before Modification</h2>
+
+    <p>
+        Use <code>backup: true</code> to preserve the original file
+        before replacing its content.
+    </p>
+
+    <pre><code>---
+- name: Update configuration with backup
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Replace application environment
+      ansible.builtin.replace:
+        path: /tmp/app.conf
+        regexp: '^APP_ENV=.*$'
+        replace: 'APP_ENV=production'
+        backup: true</code></pre>
+
+    <h2>11. Validating a File Before Applying Changes</h2>
+
+    <p>
+        The <code>validate</code> parameter runs a validation command
+        against the temporary modified file before Ansible replaces
+        the original file.
+    </p>
+
+    <pre><code>---
+- name: Validate configuration before applying
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Replace application port
+      ansible.builtin.replace:
+        path: /tmp/app.conf
+        regexp: '^APP_PORT=.*$'
+        replace: 'APP_PORT=8080'
+        validate: '/usr/bin/test -s %s'</code></pre>
+
+    <p>
+        This example checks that the temporary file is not empty.
+        For actual application configurations, use the application's
+        own configuration validation command.
+    </p>
+
+    <h2>12. Understanding Idempotency</h2>
+
+    <p>
+        Idempotency means that executing the same playbook repeatedly
+        produces the same desired result without unnecessary changes.
+    </p>
+
+    <pre><code>---
+- name: Ensure application port
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Set application port to 8080
+      ansible.builtin.replace:
+        path: /tmp/app.conf
+        regexp: '^APP_PORT=.*$'
+        replace: 'APP_PORT=8080'</code></pre>
+
+    <ul>
+        <li>First execution: The existing port value is replaced.</li>
+        <li>Second execution: The desired value already exists.</li>
+        <li>Third execution: No further modification is required.</li>
+    </ul>
+
+    <h2>13. Practical Project: Application Configuration Migration</h2>
+
+    <p>
+        In this project, you will migrate an existing application
+        configuration file to a new configuration standard.
+    </p>
+
+    <h3>Project Requirements</h3>
+
+    <ul>
+        <li>Create an application configuration file.</li>
+        <li>Replace the old application port.</li>
+        <li>Change the application environment.</li>
+        <li>Replace an old server hostname everywhere in the file.</li>
+        <li>Remove the debug setting.</li>
+        <li>Update a specific section without changing another section.</li>
+        <li>Create backups before modifications.</li>
+        <li>Verify the final configuration.</li>
+    </ul>
+
+    <h3>Step 1: Create the Complete Playbook</h3>
+
+    <p>Create <code>application-migration.yml</code> on the controller.</p>
+
+    <pre><code>---
+- name: Migrate application configuration
+  hosts: ansible-client
+  become: true
+
+  vars:
+    config_dir: /tmp/ansible-replace-lab
+    config_file: /tmp/ansible-replace-lab/app.conf
+
+  tasks:
+
+    - name: Create configuration directory
+      ansible.builtin.file:
+        path: "{{ config_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create initial application configuration
+      ansible.builtin.copy:
+        dest: "{{ config_file }}"
+        content: |
+          APP_NAME=learning-labs
+          APP_PORT=5000
+          APP_ENV=development
+          APP_DEBUG=true
+          SERVER=old-server
+          BACKUP_SERVER=old-server
+
+          [database]
+          DB_HOST=old-database
+          DB_PORT=5432
+        force: false
+        mode: '0644'
+
+    - name: Update application port
+      ansible.builtin.replace:
+        path: "{{ config_file }}"
+        regexp: '^APP_PORT=.*$'
+        replace: 'APP_PORT=8080'
+        backup: true
+
+    - name: Update application environment
+      ansible.builtin.replace:
+        path: "{{ config_file }}"
+        regexp: '^APP_ENV=.*$'
+        replace: 'APP_ENV=production'
+        backup: true
+
+    - name: Replace old server hostname
+      ansible.builtin.replace:
+        path: "{{ config_file }}"
+        regexp: 'old-server'
+        replace: 'new-server'
+
+    - name: Remove debug configuration
+      ansible.builtin.replace:
+        path: "{{ config_file }}"
+        regexp: '^APP_DEBUG=.*\n?'
+        replace: ''
+
+    - name: Update database hostname
+      ansible.builtin.replace:
+        path: "{{ config_file }}"
+        regexp: '^DB_HOST=.*$'
+        replace: 'DB_HOST=127.0.0.1'
+        backup: true
+
+    - name: Display completion message
+      ansible.builtin.debug:
+        msg: "Application configuration migration completed."</code></pre>
+
+    <h3>Step 2: Expected Configuration</h3>
+
+    <pre><code>APP_NAME=learning-labs
+APP_PORT=8080
+APP_ENV=production
+SERVER=new-server
+BACKUP_SERVER=new-server
+
+[database]
+DB_HOST=127.0.0.1
+DB_PORT=5432</code></pre>
+
+    <h3>Step 3: Verify the Configuration</h3>
+
+    <p>Create <code>verify-config.yml</code> on the controller.</p>
+
+    <pre><code>---
+- name: Verify migrated configuration
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Read application configuration
+      ansible.builtin.slurp:
+        src: /tmp/ansible-replace-lab/app.conf
+      register: config_content
+
+    - name: Display final configuration
+      ansible.builtin.debug:
+        msg: "{{ config_content.content | b64decode }}"</code></pre>
+
+    <h3>Step 4: Test Idempotency</h3>
+
+    <p>
+        Execute the migration playbook again. Once all the required
+        values are present, the replace tasks should report no further
+        changes.
+    </p>
+
+    <div class="info-box">
+        <strong>Project outcome:</strong>
+        You have automated a configuration migration on the
+        ansible-client Ubuntu host using regular expressions and
+        the Ansible replace module.
+    </div>
+
+    <h2>14. What This Lab Covers</h2>
+
+    <ul>
+        <li>Understanding the Ansible replace module.</li>
+        <li>Replacing exact text in files.</li>
+        <li>Using regular expressions.</li>
+        <li>Replacing multiple occurrences.</li>
+        <li>Removing matching content.</li>
+        <li>Restricting replacements with before and after.</li>
+        <li>Creating backups before modifications.</li>
+        <li>Validating modified files.</li>
+        <li>Understanding idempotency.</li>
+        <li>Automating application configuration migrations.</li>
+    </ul>
+
+    <div class="why-box">
+        <h2>Why Do We Use the Ansible Replace Module?</h2>
+
+        <p>
+            Configuration files often contain outdated values,
+            application settings, hostnames, ports, and environment
+            variables that need to be changed during infrastructure
+            maintenance or application deployments.
+        </p>
+
+        <p>
+            When administrators manage multiple servers, manually
+            searching for and replacing these values becomes repetitive.
+            It also increases the risk of modifying the wrong setting
+            or overlooking some occurrences.
+        </p>
+
+        <p>
+            The Ansible replace module automates this process using
+            regular expressions. It searches for matching patterns
+            and replaces all matching occurrences with the required
+            content.
+        </p>
+
+        <h3>Practical Reasons to Use It</h3>
+
+        <ul>
+            <li>
+                <strong>Configuration migration:</strong>
+                Replace old application values with new values during
+                deployment upgrades.
+            </li>
+            <li>
+                <strong>Hostname updates:</strong>
+                Replace outdated server names throughout configuration
+                files.
+            </li>
+            <li>
+                <strong>Port changes:</strong>
+                Update application ports without manually editing files.
+            </li>
+            <li>
+                <strong>Configuration cleanup:</strong>
+                Remove unwanted settings and obsolete configuration text.
+            </li>
+            <li>
+                <strong>Bulk replacements:</strong>
+                Replace multiple matching occurrences in a single task.
+            </li>
+            <li>
+                <strong>Controlled modifications:</strong>
+                Restrict changes to a particular section using before
+                and after expressions.
+            </li>
+            <li>
+                <strong>Backup support:</strong>
+                Preserve the original file before applying changes.
+            </li>
+        </ul>
+
+        <h3>Real-World DevOps Example</h3>
+
+        <p>
+            Imagine an organization migrating its applications from
+            an old server environment to a new infrastructure.
+            Configuration files across 40 Ubuntu servers contain
+            references to an old server hostname.
+        </p>
+
+        <p>
+            Instead of logging in to every server and manually
+            replacing the hostname, an administrator can use the
+            Ansible replace module to update all matching references
+            through a single playbook.
+        </p>
+
+        <p>
+            The same approach can be used to update ports, remove
+            deprecated settings, and migrate configuration values.
+        </p>
+
+        <p>
+            <strong>Remember:</strong> Use replace when you need to
+            search and replace text patterns. Use lineinfile for
+            individual line management, blockinfile for multiline
+            sections, and template when managing an entire file
+            from a template.
+        </p>
+    </div>
+
+    <div class="footer">
+        Ansible Learning Labs
+    </div>
+
+</div>
+
+<script>
+    function toggleVideo() {
+        const video = document.getElementById("videoContainer");
+        const button = document.getElementById("videoToggle");
+
+        if (video.style.display === "none") {
+            video.style.display = "block";
+            button.textContent = "✕ Hide Video";
+        } else {
+            video.style.display = "none";
+            button.textContent = "▶ Watch Video";
+        }
+    }
+</script>
+
+</body>
+</html>
