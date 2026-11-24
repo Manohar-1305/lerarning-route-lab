@@ -1,0 +1,687 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible always Keyword</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+.warning {
+    background: #451a03;
+    border-left: 4px solid #f59e0b;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+th, td { border: 1px solid #334155; padding: 10px; text-align: left; }
+th { background: #1e293b; color: #93c5fd; }
+td { color: #cbd5e1; }
+.video-container { margin: 24px 0; }
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+    display: block;
+}
+.video-button {
+    display: block;
+    background: #16a34a;
+    color: white;
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+.project {
+    background: #172033;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    margin-top: 20px;
+}
+.why {
+    background: #451f0b;
+    border: 1px solid #92400e;
+    border-radius: 10px;
+    padding: 24px;
+    margin-top: 40px;
+}
+.why h2 { color: #fbbf24; margin-top: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible always Keyword</h1>
+
+<p>
+The <strong>always</strong> section allows you to execute tasks after
+the normal block and rescue execution paths. It is commonly used for
+final status messages, cleanup operations, and recording execution
+information.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. What Is always?</h2>
+
+<p>
+In Ansible, <code>always</code> is used with a block to define tasks
+that should execute after the block and its applicable rescue section.
+</p>
+
+<p>
+Unlike normal tasks, which stop executing when a task fails,
+the always section provides a separate execution path for final
+operations.
+</p>
+
+<p>
+For example, an application deployment may involve:
+</p>
+
+<ul>
+    <li>Creating application directories.</li>
+    <li>Copying configuration files.</li>
+    <li>Validating the deployment.</li>
+    <li>Recording the final execution status.</li>
+</ul>
+
+<p>
+Even if an operation fails, you may still want to record information
+about the deployment attempt.
+</p>
+
+<h2>2. Basic Syntax</h2>
+
+<pre>
+---
+- name: Demonstrate always
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application operation
+      block:
+        - name: Execute normal task
+          ansible.builtin.debug:
+            msg: "Normal task executed"
+
+      always:
+        - name: Execute final task
+          ansible.builtin.debug:
+            msg: "Always section executed"
+</pre>
+
+<p>
+The <code>always</code> section is defined at the same indentation
+level as <code>block</code> and <code>rescue</code>.
+</p>
+
+<h2>3. Understanding Execution Flow</h2>
+
+<p>
+Consider a block containing a normal task and an always task.
+</p>
+
+<pre>
+---
+- name: Demonstrate execution flow
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application operation
+      block:
+        - name: First task
+          ansible.builtin.debug:
+            msg: "First task executed"
+
+        - name: Second task
+          ansible.builtin.debug:
+            msg: "Second task executed"
+
+      always:
+        - name: Final task
+          ansible.builtin.debug:
+            msg: "Always task executed"
+</pre>
+
+<p>
+The execution order is:
+</p>
+
+<table>
+<tr>
+    <th>Order</th>
+    <th>Task</th>
+    <th>Result</th>
+</tr>
+<tr>
+    <td>1</td>
+    <td>First task</td>
+    <td>Executed</td>
+</tr>
+<tr>
+    <td>2</td>
+    <td>Second task</td>
+    <td>Executed</td>
+</tr>
+<tr>
+    <td>3</td>
+    <td>Always task</td>
+    <td>Executed</td>
+</tr>
+</table>
+
+<p>
+The always section executes after the normal block tasks complete.
+</p>
+
+<h2>4. Execute always When a Block Fails</h2>
+
+<p>
+One of the most useful features of <code>always</code> is that
+it can execute even when a task inside the block fails.
+</p>
+
+<pre>
+---
+- name: Demonstrate always after failure
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application operation
+      block:
+        - name: First task
+          ansible.builtin.debug:
+            msg: "First task executed"
+
+        - name: Failing task
+          ansible.builtin.command:
+            cmd: /bin/false
+
+        - name: Third task
+          ansible.builtin.debug:
+            msg: "This task will be skipped"
+
+      always:
+        - name: Final execution message
+          ansible.builtin.debug:
+            msg: "Always section executed after failure"
+</pre>
+
+<p>
+The execution flow is:
+</p>
+
+<ol>
+    <li>The first task executes successfully.</li>
+    <li>The second task fails.</li>
+    <li>The third normal task is skipped.</li>
+    <li>The always section executes.</li>
+</ol>
+
+<div class="note">
+<strong>Important:</strong> The always section does not convert
+the original failure into success. The play remains failed unless
+the failure is successfully handled by a rescue section.
+</div>
+
+<h2>5. Execute always After Successful Recovery</h2>
+
+<p>
+You can use <code>always</code> together with
+<code>block</code> and <code>rescue</code>.
+</p>
+
+<p>
+In this arrangement:
+</p>
+
+<ul>
+    <li><code>block</code> contains normal operations.</li>
+    <li><code>rescue</code> contains recovery operations.</li>
+    <li><code>always</code> contains final operations.</li>
+</ul>
+
+<pre>
+---
+- name: Demonstrate block rescue always
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application deployment
+      block:
+        - name: Execute deployment
+          ansible.builtin.command:
+            cmd: /bin/false
+
+      rescue:
+        - name: Handle deployment failure
+          ansible.builtin.debug:
+            msg: "Deployment failure handled"
+
+      always:
+        - name: Record final execution
+          ansible.builtin.debug:
+            msg: "Final execution section completed"
+</pre>
+
+<p>
+The execution order is:
+</p>
+
+<table>
+<tr>
+    <th>Order</th>
+    <th>Section</th>
+    <th>Execution</th>
+</tr>
+<tr>
+    <td>1</td>
+    <td>block</td>
+    <td>Deployment task fails</td>
+</tr>
+<tr>
+    <td>2</td>
+    <td>rescue</td>
+    <td>Recovery task executes</td>
+</tr>
+<tr>
+    <td>3</td>
+    <td>always</td>
+    <td>Final task executes</td>
+</tr>
+</table>
+
+<p>
+Because the rescue task succeeds, Ansible considers the original
+failure handled and can continue with subsequent tasks.
+</p>
+
+<h2>6. Use always for Cleanup Operations</h2>
+
+<p>
+A common use case is removing temporary files created during
+automation.
+</p>
+
+<p>
+For example, a deployment process may create a temporary file.
+You can remove it in the always section.
+</p>
+
+<pre>
+---
+- name: Temporary file cleanup
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application deployment
+      block:
+        - name: Create temporary file
+          ansible.builtin.copy:
+            content: "Temporary deployment data\n"
+            dest: /tmp/deployment-temp.conf
+            mode: '0600'
+
+        - name: Execute deployment validation
+          ansible.builtin.command:
+            cmd: test -f /tmp/deployment-temp.conf
+          changed_when: false
+
+      always:
+        - name: Remove temporary file
+          ansible.builtin.file:
+            path: /tmp/deployment-temp.conf
+            state: absent
+
+        - name: Display cleanup result
+          ansible.builtin.debug:
+            msg: "Temporary file cleanup completed"
+</pre>
+
+<p>
+The temporary file is removed after the block execution, whether
+the normal tasks succeed or an ordinary task failure occurs.
+</p>
+
+<div class="warning">
+<strong>Important:</strong> Always is not an unconditional guarantee
+against every possible failure. Unreachable hosts, invalid task
+definitions, and other execution interruptions can prevent tasks
+from running. Cleanup tasks themselves can also fail.
+</div>
+
+<h2>7. Use always to Record Execution Information</h2>
+
+<p>
+You can use the always section to record when an automation workflow
+reaches its final stage.
+</p>
+
+<pre>
+---
+- name: Record application execution
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application operation
+      block:
+        - name: Create application directory
+          ansible.builtin.file:
+            path: /opt/learning-labs
+            state: directory
+            mode: '0755'
+
+        - name: Validate application directory
+          ansible.builtin.command:
+            cmd: test -d /opt/learning-labs
+          changed_when: false
+
+      always:
+        - name: Record execution timestamp
+          ansible.builtin.command:
+            cmd: date
+          register: execution_time
+          changed_when: false
+
+        - name: Display execution timestamp
+          ansible.builtin.debug:
+            msg: "Execution reached final stage at {{ execution_time.stdout }}"
+</pre>
+
+<p>
+The timestamp command executes in the always section after the
+block's normal execution path.
+</p>
+
+<h2>8. Difference Between block, rescue, and always</h2>
+
+<table>
+<tr>
+    <th>Keyword</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td><code>block</code></td>
+    <td>Groups normal tasks together.</td>
+</tr>
+<tr>
+    <td><code>rescue</code></td>
+    <td>Executes recovery tasks when a block task fails.</td>
+</tr>
+<tr>
+    <td><code>always</code></td>
+    <td>Executes final tasks after the block and applicable rescue execution.</td>
+</tr>
+</table>
+
+<p>
+These three sections are often used together to create structured
+error-handling workflows.
+</p>
+
+<h2>9. What Happens When always Fails?</h2>
+
+<p>
+The always section contains normal Ansible tasks. If a task inside
+always fails, Ansible treats that failure normally.
+</p>
+
+<pre>
+---
+- name: Demonstrate always failure
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application operation
+      block:
+        - name: Normal task
+          ansible.builtin.debug:
+            msg: "Block executed"
+
+      always:
+        - name: Failing cleanup task
+          ansible.builtin.command:
+            cmd: /bin/false
+
+    - name: Final playbook task
+      ansible.builtin.debug:
+        msg: "This task will not execute after the always failure"
+</pre>
+
+<p>
+The block succeeds, but the always task fails. The final task
+is not executed for that host because the play has encountered
+an unhandled failure.
+</p>
+
+<h2>10. Important Rules About always</h2>
+
+<ul>
+    <li><code>always</code> is associated with a <code>block</code>.</li>
+    <li>It executes after normal block execution.</li>
+    <li>It also executes after applicable rescue execution.</li>
+    <li>It is useful for cleanup and final reporting.</li>
+    <li>It does not automatically recover the original failure.</li>
+    <li>Tasks inside always can also fail.</li>
+    <li>It cannot guarantee execution if the host becomes unreachable or execution is interrupted.</li>
+</ul>
+
+<h2>11. Practical Lab: Application Deployment With Cleanup</h2>
+
+<div class="project">
+<h3>Scenario</h3>
+
+<p>
+You are preparing an application deployment. The playbook must:
+</p>
+
+<ul>
+    <li>Create a temporary configuration file.</li>
+    <li>Execute a validation task.</li>
+    <li>Handle validation failure using rescue.</li>
+    <li>Remove the temporary file using always.</li>
+    <li>Display the final cleanup message.</li>
+</ul>
+
+<p><strong>Create this playbook:</strong></p>
+
+<pre>
+---
+- name: Application deployment with cleanup
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application deployment workflow
+      block:
+
+        - name: Create temporary configuration
+          ansible.builtin.copy:
+            content: |
+              APPLICATION_NAME=learning-labs
+              APPLICATION_PORT=8080
+            dest: /tmp/learning-labs-temp.conf
+            mode: '0600'
+
+        - name: Validate configuration
+          ansible.builtin.command:
+            cmd: test -f /tmp/learning-labs-temp.conf
+          changed_when: false
+
+        - name: Execute deployment check
+          ansible.builtin.command:
+            cmd: /bin/false
+
+      rescue:
+
+        - name: Record deployment failure
+          ansible.builtin.copy:
+            content: "Application deployment failed\n"
+            dest: /tmp/learning-labs-failure.log
+            mode: '0644'
+
+        - name: Display recovery message
+          ansible.builtin.debug:
+            msg: "Failure information recorded"
+
+      always:
+
+        - name: Remove temporary configuration
+          ansible.builtin.file:
+            path: /tmp/learning-labs-temp.conf
+            state: absent
+
+        - name: Display cleanup completion
+          ansible.builtin.debug:
+            msg: "Temporary configuration cleanup completed"
+
+    - name: Display final workflow status
+      ansible.builtin.debug:
+        msg: "Application workflow completed"
+</pre>
+
+<p><strong>Run from ansible-controller:</strong></p>
+
+<pre>
+ansible-playbook application-always.yml
+</pre>
+
+<p><strong>Expected behavior:</strong></p>
+
+<ul>
+    <li>The temporary configuration file is created.</li>
+    <li>The configuration validation succeeds.</li>
+    <li>The deployment check fails.</li>
+    <li>The rescue section records the failure.</li>
+    <li>The always section removes the temporary configuration.</li>
+    <li>The cleanup completion message is displayed.</li>
+    <li>The final workflow status task executes because rescue succeeded.</li>
+</ul>
+
+<p>
+To test a successful block execution, replace
+<code>/bin/false</code> with <code>/bin/true</code>.
+The rescue section will be skipped, but the always section will
+still execute.
+</p>
+</div>
+
+<h2>12. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the <code>always</code> keyword.</li>
+    <li>Executing final tasks after a successful block.</li>
+    <li>Executing final tasks after a failed block.</li>
+    <li>Combining block, rescue, and always.</li>
+    <li>Removing temporary files.</li>
+    <li>Recording execution information.</li>
+    <li>Understanding failures inside the always section.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use the Ansible always Keyword?</h2>
+
+<p>
+In real DevOps environments, automation workflows often create
+temporary resources, generate logs, prepare deployment files,
+or perform operations that require final cleanup.
+</p>
+
+<p>
+If a deployment task fails, normal task execution may stop.
+However, some operations should still be attempted, such as
+removing temporary files, recording execution details, or
+displaying a final status message.
+</p>
+
+<p>
+The <code>always</code> keyword provides a dedicated section
+for these final operations. It executes after the normal block
+tasks and applicable rescue tasks, regardless of whether the
+block completed successfully or encountered an ordinary task failure.
+</p>
+
+<p>
+When combined with <code>block</code> and <code>rescue</code>,
+it provides a structured approach to automation:
+normal execution, failure recovery, and final operations.
+</p>
+
+<p>
+This is particularly useful in application deployments,
+infrastructure provisioning, configuration management, and
+other workflows where cleanup and execution reporting are important.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+</body>
+</html>
