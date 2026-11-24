@@ -49,6 +49,10 @@ def api_error(message, status_code=400):
     }), status_code
 
 
+def is_admin():
+    return session.get("is_admin") is True
+
+
 def current_user_id():
     value = session.get("user_id")
 
@@ -168,6 +172,9 @@ def get_access(cur, user_id, lab):
 
 @bp.before_app_request
 def enforce_lab_subscription_access():
+    if is_admin():
+        return None
+
     path_parts = request.path.strip("/").split("/", 1)
     requested_lab = path_parts[0].lower()
 
@@ -254,6 +261,25 @@ def status():
     if user_id is None:
         return api_error("Please log in to continue.", 401)
 
+    if is_admin():
+        return jsonify({
+            "success": True,
+            "is_admin": True,
+            "admin_access": True,
+            "trial_used": False,
+            "trial_active": False,
+            "trial_expires_at": None,
+            "labs": {
+                lab: {
+                    "has_access": True,
+                    "access_type": "admin",
+                    "expires_at": None,
+                }
+                for lab in LABS
+            },
+            "plans": plans_payload(),
+        })
+
     conn = None
 
     try:
@@ -309,6 +335,17 @@ def start_trial():
 
     if user_id is None:
         return api_error("Please log in to start your free trial.", 401)
+
+    if is_admin():
+        return jsonify({
+            "success": True,
+            "is_admin": True,
+            "admin_access": True,
+            "trial_used": False,
+            "trial_active": False,
+            "message": "Admin accounts have unlimited access.",
+            "labs": list(LABS),
+        })
 
     conn = None
 
@@ -395,6 +432,21 @@ def enroll(lab):
     if lab not in LABS:
         return api_error("Invalid lab.", 404)
 
+    if is_admin():
+        return jsonify({
+            "success": True,
+            "is_admin": True,
+            "admin_access": True,
+            "has_access": True,
+            "access_type": "admin",
+            "expires_at": None,
+            "trial_used": False,
+            "trial_available": False,
+            "needs_subscription": False,
+            "lab": lab,
+            "message": "Admin accounts have unlimited access.",
+        })
+
     conn = None
 
     try:
@@ -456,6 +508,17 @@ def check_access(lab):
     if lab not in LABS:
         return api_error("Invalid lab.", 404)
 
+    if is_admin():
+        return jsonify({
+            "success": True,
+            "is_admin": True,
+            "admin_access": True,
+            "lab": lab,
+            "has_access": True,
+            "access_type": "admin",
+            "expires_at": None,
+        })
+
     conn = None
 
     try:
@@ -490,6 +553,16 @@ def create_payment():
 
     if user_id is None:
         return api_error("Please log in to subscribe.", 401)
+
+    if is_admin():
+        return jsonify({
+            "success": True,
+            "is_admin": True,
+            "admin_access": True,
+            "has_access": True,
+            "message": "Admin accounts do not require payment.",
+            "labs": list(LABS),
+        })
 
     data = request.get_json(silent=True) or {}
 
@@ -835,4 +908,3 @@ def payment_return():
         return redirect("/?payment=success")
 
     return redirect("/?payment=failed")
-
