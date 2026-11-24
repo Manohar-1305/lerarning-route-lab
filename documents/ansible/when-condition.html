@@ -1,0 +1,898 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible When Condition</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.7;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+h1, h2, h3 { color: #f8fafc; }
+h1 { font-size: 32px; }
+
+h2 {
+    margin-top: 38px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 9px;
+}
+
+h3 {
+    margin-top: 25px;
+    color: #93c5fd;
+}
+
+p, li { color: #cbd5e1; }
+
+code {
+    color: #86efac;
+    background: #1e293b;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+pre {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    color: #d1d5db;
+    line-height: 1.6;
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+    color: #d1d5db;
+}
+
+.video-container { margin: 25px 0; }
+
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+}
+
+.video-button {
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 10px 17px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.info-box, .warning-box, .project-box {
+    padding: 16px;
+    border-radius: 7px;
+    margin: 20px 0;
+}
+
+.info-box {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+}
+
+.warning-box {
+    background: #422006;
+    border-left: 4px solid #f59e0b;
+}
+
+.project-box {
+    background: #132e25;
+    border-left: 4px solid #22c55e;
+}
+
+.why-box {
+    background: #713f12;
+    border: 1px solid #a16207;
+    padding: 24px;
+    border-radius: 10px;
+    margin-top: 45px;
+}
+
+.why-box h2 {
+    border: none;
+    margin-top: 0;
+    color: #fef3c7;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #334155;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+td { color: #cbd5e1; }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Ansible When Condition</h1>
+
+<p>
+The Ansible <code>when</code> keyword is used to execute tasks
+conditionally. It allows a playbook to make decisions based on
+variables, facts, registered results and logical expressions.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <div id="videoWrapper">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible When Condition Tutorial"
+            allowfullscreen>
+        </iframe>
+    </div>
+</div>
+
+<h2>1. What Is the When Keyword?</h2>
+
+<p>
+The <code>when</code> keyword is a conditional expression used
+to control whether an Ansible task should execute.
+</p>
+
+<p>
+Ansible evaluates the condition before executing the task.
+If the condition evaluates to true, the task runs. If it evaluates
+to false, Ansible skips the task.
+</p>
+
+<p>Common use cases include:</p>
+
+<ul>
+    <li>Executing tasks only on Ubuntu servers.</li>
+    <li>Installing packages based on operating system versions.</li>
+    <li>Running tasks based on variable values.</li>
+    <li>Executing tasks based on registered command results.</li>
+    <li>Checking available system resources.</li>
+    <li>Running different deployment tasks for development and production.</li>
+    <li>Skipping unnecessary tasks when a condition is not satisfied.</li>
+</ul>
+
+<h2>2. How Does When Work?</h2>
+
+<pre><code>             Ansible Controller
+             ------------------
+                    |
+                    v
+                 Playbook
+                    |
+                    v
+              Evaluate Condition
+                    |
+             +------+------+
+             |             |
+           TRUE          FALSE
+             |             |
+             v             v
+        Execute Task     Skip Task
+             |             |
+             v             v
+        Continue       Continue</code></pre>
+
+<p>
+Unlike an assertion failure, a false <code>when</code> condition
+normally skips the task without failing the play.
+</p>
+
+<h2>3. Basic When Syntax</h2>
+
+<p>
+The <code>when</code> keyword is written at the same indentation
+level as the module inside a task.
+</p>
+
+<pre><code>---
+- name: Basic when condition
+  hosts: ansible-client
+  become: true
+
+  vars:
+    application_environment: production
+
+  tasks:
+    - name: Display production message
+      ansible.builtin.debug:
+        msg: "Production environment detected."
+      when: application_environment == "production"</code></pre>
+
+<p>
+The task executes only when the variable
+<code>application_environment</code> equals
+<code>production</code>.
+</p>
+
+<h2>4. Comparison Operators</h2>
+
+<p>
+You can use comparison operators to evaluate variable values.
+</p>
+
+<table>
+<thead>
+<tr>
+    <th>Operator</th>
+    <th>Meaning</th>
+    <th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td><code>==</code></td>
+    <td>Equal to</td>
+    <td><code>port == 8080</code></td>
+</tr>
+<tr>
+    <td><code>!=</code></td>
+    <td>Not equal to</td>
+    <td><code>environment != "testing"</code></td>
+</tr>
+<tr>
+    <td><code>&gt;</code></td>
+    <td>Greater than</td>
+    <td><code>memory &gt; 1024</code></td>
+</tr>
+<tr>
+    <td><code>&lt;</code></td>
+    <td>Less than</td>
+    <td><code>memory &lt; 2048</code></td>
+</tr>
+<tr>
+    <td><code>&gt;=</code></td>
+    <td>Greater than or equal to</td>
+    <td><code>port &gt;= 1024</code></td>
+</tr>
+<tr>
+    <td><code>&lt;=</code></td>
+    <td>Less than or equal to</td>
+    <td><code>memory &lt;= 4096</code></td>
+</tr>
+<tr>
+    <td><code>in</code></td>
+    <td>Value exists in a list</td>
+    <td><code>environment in supported</code></td>
+</tr>
+<tr>
+    <td><code>not in</code></td>
+    <td>Value does not exist in a list</td>
+    <td><code>environment not in disabled</code></td>
+</tr>
+</tbody>
+</table>
+
+<h2>5. Execute a Task When a Variable Matches</h2>
+
+<p>
+You can execute a task when a variable contains a specific value.
+</p>
+
+<p><strong>Playbook: when-variable.yml</strong></p>
+
+<pre><code>---
+- name: Execute task based on variable
+  hosts: ansible-client
+  become: true
+
+  vars:
+    environment: production
+
+  tasks:
+    - name: Display production configuration message
+      ansible.builtin.debug:
+        msg: "Applying production configuration."
+      when: environment == "production"
+
+    - name: Display development configuration message
+      ansible.builtin.debug:
+        msg: "Applying development configuration."
+      when: environment == "development"</code></pre>
+
+<p>
+Only the task whose condition matches the variable value will execute.
+The other task will be skipped.
+</p>
+
+<h2>6. Execute a Task When a Variable Does Not Match</h2>
+
+<p>
+Use the <code>!=</code> operator when a task should execute
+only if a variable does not match a particular value.
+</p>
+
+<p><strong>Playbook: when-not-equal.yml</strong></p>
+
+<pre><code>---
+- name: Check environment
+  hosts: ansible-client
+  become: true
+
+  vars:
+    environment: development
+
+  tasks:
+    - name: Display non-production warning
+      ansible.builtin.debug:
+        msg: "This is not a production environment."
+      when: environment != "production"</code></pre>
+
+<h2>7. Use Multiple Conditions with AND</h2>
+
+<p>
+When you provide multiple conditions as a YAML list under
+<code>when</code>, all conditions must be true.
+This is equivalent to logical AND.
+</p>
+
+<p><strong>Playbook: when-and.yml</strong></p>
+
+<pre><code>---
+- name: Validate deployment conditions
+  hosts: ansible-client
+  become: true
+
+  vars:
+    environment: production
+    application_port: 8080
+
+  tasks:
+    - name: Execute production deployment task
+      ansible.builtin.debug:
+        msg: "Production deployment requirements satisfied."
+      when:
+        - environment == "production"
+        - application_port == 8080</code></pre>
+
+<p>
+The task executes only when both conditions are true.
+</p>
+
+<h2>8. Use OR Conditions</h2>
+
+<p>
+Use the <code>or</code> operator when at least one condition
+must be true.
+</p>
+
+<p><strong>Playbook: when-or.yml</strong></p>
+
+<pre><code>---
+- name: Check supported environments
+  hosts: ansible-client
+  become: true
+
+  vars:
+    environment: testing
+
+  tasks:
+    - name: Display supported environment message
+      ansible.builtin.debug:
+        msg: "Environment is supported."
+      when: >
+        environment == "development" or
+        environment == "testing"</code></pre>
+
+<p>
+The task executes if either condition evaluates to true.
+</p>
+
+<h2>9. Use NOT Conditions</h2>
+
+<p>
+The <code>not</code> operator reverses a Boolean condition.
+</p>
+
+<p><strong>Playbook: when-not.yml</strong></p>
+
+<pre><code>---
+- name: Check environment using NOT
+  hosts: ansible-client
+  become: true
+
+  vars:
+    maintenance_mode: false
+
+  tasks:
+    - name: Execute task when maintenance is disabled
+      ansible.builtin.debug:
+        msg: "Application is available for deployment."
+      when: not maintenance_mode</code></pre>
+
+<h2>10. Execute Tasks Based on Operating System Facts</h2>
+
+<p>
+Ansible gathers operating system information as facts.
+You can use these facts to execute tasks only on specific
+operating systems.
+</p>
+
+<p><strong>Playbook: when-os.yml</strong></p>
+
+<pre><code>---
+- name: Execute tasks based on operating system
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display Ubuntu information
+      ansible.builtin.debug:
+        msg: "Ubuntu operating system detected."
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Display Debian information
+      ansible.builtin.debug:
+        msg: "Debian operating system detected."
+      when: ansible_distribution == "Debian"</code></pre>
+
+<p>
+Ansible executes the matching task based on the detected
+distribution.
+</p>
+
+<h2>11. Execute Tasks Based on Memory</h2>
+
+<p>
+You can use system facts to control tasks based on memory
+requirements.
+</p>
+
+<p><strong>Playbook: when-memory.yml</strong></p>
+
+<pre><code>---
+- name: Check available system memory
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display high-memory message
+      ansible.builtin.debug:
+        msg: "Host has at least 2 GB of total memory."
+      when: ansible_memtotal_mb >= 2048
+
+    - name: Display low-memory message
+      ansible.builtin.debug:
+        msg: "Host has less than 2 GB of total memory."
+      when: ansible_memtotal_mb < 2048</code></pre>
+
+<p>
+The fact <code>ansible_memtotal_mb</code> represents total detected
+memory, not currently available memory.
+</p>
+
+<h2>12. Use When with Register</h2>
+
+<p>
+One of the most useful applications of <code>when</code> is
+combining it with <code>register</code>.
+</p>
+
+<p>
+A task captures command output, and another task executes
+only when the registered result satisfies a condition.
+</p>
+
+<p><strong>Playbook: when-register.yml</strong></p>
+
+<pre><code>---
+- name: Check application directory
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Check whether application directory exists
+      ansible.builtin.command:
+        cmd: test -d /tmp/learning-labs
+      register: directory_result
+      changed_when: false
+      failed_when: false
+
+    - name: Display directory exists message
+      ansible.builtin.debug:
+        msg: "Application directory exists."
+      when: directory_result.rc == 0
+
+    - name: Display directory missing message
+      ansible.builtin.debug:
+        msg: "Application directory does not exist."
+      when: directory_result.rc != 0</code></pre>
+
+<p>
+The first task captures the command return code.
+The remaining tasks use that result to decide which message
+to display.
+</p>
+
+<h2>13. Check Whether a Variable Is Defined</h2>
+
+<p>
+The <code>is defined</code> test checks whether a variable
+exists before a task attempts to use it.
+</p>
+
+<p><strong>Playbook: when-defined.yml</strong></p>
+
+<pre><code>---
+- name: Check variable definition
+  hosts: ansible-client
+  become: true
+
+  vars:
+    application_name: learning-labs
+
+  tasks:
+    - name: Display application name
+      ansible.builtin.debug:
+        msg: "Application: {{ application_name }}"
+      when: application_name is defined</code></pre>
+
+<p>
+You can also use <code>is not defined</code> to check whether
+a variable is missing.
+</p>
+
+<pre><code>---
+- name: Check missing variable
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display missing variable message
+      ansible.builtin.debug:
+        msg: "Application name was not provided."
+      when: application_name is not defined</code></pre>
+
+<h2>14. Check Boolean Variables</h2>
+
+<p>
+When a variable contains a Boolean value, you can check whether
+it is true or false.
+</p>
+
+<p><strong>Playbook: when-boolean.yml</strong></p>
+
+<pre><code>---
+- name: Check Boolean variable
+  hosts: ansible-client
+  become: true
+
+  vars:
+    enable_monitoring: true
+
+  tasks:
+    - name: Configure monitoring
+      ansible.builtin.debug:
+        msg: "Monitoring is enabled."
+      when: enable_monitoring
+
+    - name: Skip monitoring configuration
+      ansible.builtin.debug:
+        msg: "Monitoring is disabled."
+      when: not enable_monitoring</code></pre>
+
+<h2>15. Use When with a List of Values</h2>
+
+<p>
+The <code>in</code> operator checks whether a value exists
+inside a list.
+</p>
+
+<p><strong>Playbook: when-list.yml</strong></p>
+
+<pre><code>---
+- name: Validate supported environment
+  hosts: ansible-client
+  become: true
+
+  vars:
+    environment: testing
+    supported_environments:
+      - development
+      - testing
+      - production
+
+  tasks:
+    - name: Check supported environment
+      ansible.builtin.debug:
+        msg: "Environment is supported."
+      when: environment in supported_environments
+
+    - name: Check unsupported environment
+      ansible.builtin.debug:
+        msg: "Environment is not supported."
+      when: environment not in supported_environments</code></pre>
+
+<h2>16. Use When with a Loop</h2>
+
+<p>
+You can use <code>when</code> with a loop to execute a task
+only for matching loop items.
+</p>
+
+<p><strong>Playbook: when-loop.yml</strong></p>
+
+<pre><code>---
+- name: Process selected environments
+  hosts: ansible-client
+  become: true
+
+  vars:
+    environments:
+      - development
+      - testing
+      - production
+
+  tasks:
+    - name: Display production environment
+      ansible.builtin.debug:
+        msg: "Processing {{ item }}"
+      loop: "{{ environments }}"
+      when: item == "production"</code></pre>
+
+<p>
+Ansible evaluates the condition for each loop item.
+Only the matching item executes the task.
+</p>
+
+<h2>17. When with String Tests</h2>
+
+<p>
+Jinja2 provides useful tests for checking string values.
+</p>
+
+<table>
+<thead>
+<tr>
+    <th>Test</th>
+    <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td><code>is defined</code></td>
+    <td>Checks whether a variable exists.</td>
+</tr>
+<tr>
+    <td><code>is undefined</code></td>
+    <td>Checks whether a variable does not exist.</td>
+</tr>
+<tr>
+    <td><code>is string</code></td>
+    <td>Checks whether a value is a string.</td>
+</tr>
+<tr>
+    <td><code>is integer</code></td>
+    <td>Checks whether a value is an integer.</td>
+</tr>
+<tr>
+    <td><code>is boolean</code></td>
+    <td>Checks whether a value is a Boolean.</td>
+</tr>
+<tr>
+    <td><code>is true</code></td>
+    <td>Checks whether a value is Boolean true.</td>
+</tr>
+<tr>
+    <td><code>is false</code></td>
+    <td>Checks whether a value is Boolean false.</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Playbook: when-data-type.yml</strong></p>
+
+<pre><code>---
+- name: Validate variable types
+  hosts: ansible-client
+  become: true
+
+  vars:
+    application_name: learning-labs
+    application_port: 8080
+
+  tasks:
+    - name: Validate application name type
+      ansible.builtin.debug:
+        msg: "Application name is a string."
+      when: application_name is string
+
+    - name: Validate application port type
+      ansible.builtin.debug:
+        msg: "Application port is an integer."
+      when: application_port is integer</code></pre>
+
+<h2>18. Important Considerations</h2>
+
+<ul>
+    <li><code>when</code> is a playbook keyword, not a module.</li>
+    <li>Do not use <code>{{ }}</code> around expressions in a <code>when</code> condition.</li>
+    <li>Multiple conditions in a YAML list are evaluated using AND logic.</li>
+    <li>Use <code>or</code> when any one condition can satisfy the requirement.</li>
+    <li>Use <code>not</code> to reverse a Boolean condition.</li>
+    <li>Facts must be gathered before using fact variables.</li>
+    <li>Registered variables can be used in subsequent task conditions.</li>
+    <li>A false condition normally results in a skipped task, not a failed play.</li>
+    <li>Ensure variable types are correct before performing numeric comparisons.</li>
+    <li>Conditions are evaluated separately for each managed host.</li>
+</ul>
+
+<h2>19. Practical Project: Environment-Based Deployment Validation</h2>
+
+<div class="project-box">
+
+<h3>Project Objective</h3>
+
+<p>
+Create a playbook that evaluates deployment settings and executes
+different tasks depending on the target environment and system facts.
+</p>
+
+<strong>Requirements:</strong>
+
+<ol>
+    <li>Define an application environment variable.</li>
+    <li>Validate whether the environment is supported.</li>
+    <li>Execute a production-specific task for production.</li>
+    <li>Execute a development-specific task for development.</li>
+    <li>Check whether monitoring is enabled.</li>
+    <li>Check whether the managed host is Ubuntu.</li>
+    <li>Display a message when the environment is unsupported.</li>
+</ol>
+
+<strong>Project playbook: environment-deployment.yml</strong>
+
+<pre><code>---
+- name: Environment-based deployment
+  hosts: ansible-client
+  become: true
+
+  vars:
+    application_name: learning-labs
+    deployment_environment: production
+    enable_monitoring: true
+
+    supported_environments:
+      - development
+      - testing
+      - production
+
+  tasks:
+    - name: Validate deployment environment
+      ansible.builtin.assert:
+        that:
+          - deployment_environment in supported_environments
+        success_msg: "Deployment environment is supported."
+        fail_msg: "Unsupported deployment environment."
+
+    - name: Display application information
+      ansible.builtin.debug:
+        msg: "Preparing {{ application_name }} deployment."
+
+    - name: Execute production preparation
+      ansible.builtin.debug:
+        msg: "Preparing production deployment."
+      when: deployment_environment == "production"
+
+    - name: Execute development preparation
+      ansible.builtin.debug:
+        msg: "Preparing development deployment."
+      when: deployment_environment == "development"
+
+    - name: Execute testing preparation
+      ansible.builtin.debug:
+        msg: "Preparing testing deployment."
+      when: deployment_environment == "testing"
+
+    - name: Configure monitoring
+      ansible.builtin.debug:
+        msg: "Monitoring configuration is enabled."
+      when: enable_monitoring
+
+    - name: Display Ubuntu information
+      ansible.builtin.debug:
+        msg: "Ubuntu target detected."
+      when: ansible_distribution == "Ubuntu"</code></pre>
+
+</div>
+
+<h2>20. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding conditional task execution.</li>
+    <li>Using comparison operators.</li>
+    <li>Combining conditions with AND and OR.</li>
+    <li>Using NOT conditions.</li>
+    <li>Executing tasks based on variables.</li>
+    <li>Executing tasks based on operating system facts.</li>
+    <li>Using When with Register.</li>
+    <li>Checking whether variables are defined.</li>
+    <li>Checking Boolean values and data types.</li>
+    <li>Using When with loops.</li>
+    <li>Building environment-based deployment logic.</li>
+</ul>
+
+<div class="why-box">
+<h2>Why Do We Use the Ansible When Keyword?</h2>
+
+<p>
+In real-world DevOps environments, not every task should execute
+on every server. Different servers may have different operating
+systems, application environments, resource requirements and
+configuration settings.
+</p>
+
+<p>
+For example, a production deployment may require different
+configuration from a development deployment. Similarly, a task
+that is specific to Ubuntu should not execute on a different
+operating system.
+</p>
+
+<p>
+The When keyword allows engineers to introduce decision-making
+into automation. It evaluates conditions and determines whether
+a task should execute or be skipped.
+</p>
+
+<p>
+It is commonly used in multi-environment deployments, operating
+system-specific automation, infrastructure provisioning and
+conditional configuration management.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const wrapper = document.getElementById("videoWrapper");
+    const button = document.getElementById("videoToggle");
+
+    if (wrapper.style.display === "none") {
+        wrapper.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        wrapper.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
