@@ -1,0 +1,453 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible Roles</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note { background: #172554; border-left: 4px solid #3b82f6; padding:14px; border-radius:6px; margin:18px 0; }
+.warning { background: #451a03; border-left: 4px solid #f59e0b; padding:14px; border-radius:6px; margin:18px 0; }
+table { width:100%; border-collapse:collapse; margin:18px 0; }
+th,td { border:1px solid #334155; padding:10px; text-align:left; }
+th { background:#1e293b; color:#93c5fd; }
+td { color:#cbd5e1; }
+.video-container { margin:24px 0; }
+.video-container iframe { width:100%; aspect-ratio:16 / 9; border:0; border-radius:10px; display:block; }
+.video-button { display:block; background:#16a34a; color:white; border:0; border-radius:6px; padding:10px 16px; cursor:pointer; font-size:14px; margin-bottom:12px; }
+.project { background:#172033; border:1px solid #334155; border-radius:8px; padding:18px; margin-top:20px; }
+.why { background:#451f0b; border:1px solid #92400e; border-radius:10px; padding:24px; margin-top:40px; }
+.why h2 { color:#fbbf24; margin-top:0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible Roles</h1>
+
+<p>
+Ansible Roles provide a standardized directory structure for organizing automation content. They allow you to separate tasks, variables, files, templates, and handlers into reusable components.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. Why Do We Need Ansible Roles?</h2>
+
+<p>Consider a production environment where you need to configure multiple servers:</p>
+
+<ul>
+    <li>Web servers require Nginx installation and configuration.</li>
+    <li>Database servers require database packages and configuration.</li>
+    <li>Application servers require application dependencies and deployment.</li>
+</ul>
+
+<p>Writing all these tasks in one large playbook makes automation difficult to maintain.</p>
+
+<p>Roles allow you to organize each responsibility separately and reuse it across multiple playbooks.</p>
+
+<h2>2. What Is an Ansible Role?</h2>
+
+<p>An Ansible Role is a collection of related automation files organized in a predefined directory structure.</p>
+
+<p>A typical role looks like this:</p>
+
+<pre><code>roles/
+└── webserver/
+    ├── defaults/
+    │   └── main.yml
+    ├── files/
+    ├── handlers/
+    │   └── main.yml
+    ├── meta/
+    │   └── main.yml
+    ├── tasks/
+    │   └── main.yml
+    ├── templates/
+    ├── tests/
+    └── vars/
+        └── main.yml</code></pre>
+
+<h2>3. Understanding the Role Directory Structure</h2>
+
+<table>
+<tr>
+    <th>Directory</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td>tasks/</td>
+    <td>Contains the main tasks executed by the role.</td>
+</tr>
+<tr>
+    <td>handlers/</td>
+    <td>Contains handlers triggered by notifications.</td>
+</tr>
+<tr>
+    <td>defaults/</td>
+    <td>Contains default variables with the lowest variable precedence.</td>
+</tr>
+<tr>
+    <td>vars/</td>
+    <td>Contains role variables with higher precedence than defaults.</td>
+</tr>
+<tr>
+    <td>files/</td>
+    <td>Contains static files copied to managed hosts.</td>
+</tr>
+<tr>
+    <td>templates/</td>
+    <td>Contains Jinja2 templates processed by Ansible.</td>
+</tr>
+<tr>
+    <td>meta/</td>
+    <td>Contains role metadata, including role dependencies.</td>
+</tr>
+<tr>
+    <td>tests/</td>
+    <td>Can contain test playbooks and inventory files.</td>
+</tr>
+</table>
+
+<h2>4. Create an Ansible Role</h2>
+
+<p>Ansible provides the <code>ansible-galaxy</code> command to create a role directory structure.</p>
+
+<p>Run this command on your Ansible controller:</p>
+
+<pre><code>ansible-galaxy role init webserver</code></pre>
+
+<p>This creates a role named <code>webserver</code> with the standard directories and files.</p>
+
+<p>For this lab, use the following project structure:</p>
+
+<pre><code>ansible-project/
+├── inventory
+├── main.yml
+└── roles/
+    └── webserver/
+        ├── defaults/
+        │   └── main.yml
+        ├── handlers/
+        │   └── main.yml
+        ├── tasks/
+        │   └── main.yml
+        └── templates/</code></pre>
+
+<h2>5. Define Tasks Inside a Role</h2>
+
+<p>Open <code>roles/webserver/tasks/main.yml</code>.</p>
+
+<pre><code>---
+- name: Create web application directory
+  ansible.builtin.file:
+    path: /opt/webserver
+    state: directory
+    mode: '0755'
+
+- name: Create web application configuration
+  ansible.builtin.copy:
+    dest: /opt/webserver/index.html
+    content: |
+      Welcome to the Ansible Role Lab
+    mode: '0644'</code></pre>
+
+<p>This file contains the tasks that the role executes.</p>
+
+<h2>6. Define Default Variables</h2>
+
+<p>Open <code>roles/webserver/defaults/main.yml</code>.</p>
+
+<pre><code>---
+webserver_root: /opt/webserver
+webserver_page_title: "Ansible Role Lab"
+webserver_page_content: "Welcome to the webserver role"</code></pre>
+
+<p>Default variables make the role configurable without modifying its task definitions.</p>
+
+<h2>7. Use Variables Inside Role Tasks</h2>
+
+<p>Update <code>roles/webserver/tasks/main.yml</code> to use the default variables.</p>
+
+<pre><code>---
+- name: Create webserver directory
+  ansible.builtin.file:
+    path: "{{ webserver_root }}"
+    state: directory
+    mode: '0755'
+
+- name: Create webserver page
+  ansible.builtin.copy:
+    dest: "{{ webserver_root }}/index.html"
+    content: |
+      {{ webserver_page_title }}
+      {{ webserver_page_content }}
+    mode: '0644'</code></pre>
+
+<p>The role now uses variables instead of hardcoded directory and content values.</p>
+
+<h2>8. Execute a Role from a Playbook</h2>
+
+<p>Create a main playbook named <code>main.yml</code>.</p>
+
+<pre><code>---
+- name: Configure webserver
+  hosts: ansible-client
+  become: true
+
+  roles:
+    - webserver</code></pre>
+
+<p>Ansible automatically discovers the role when it is available in the project's <code>roles/</code> directory.</p>
+
+<p>Execute the playbook:</p>
+
+<pre><code>ansible-playbook main.yml</code></pre>
+
+<div class="note">
+<strong>Important:</strong> The role name in the playbook must match the role directory name. In this example, the directory is <code>roles/webserver/</code>, so the role is referenced as <code>webserver</code>.
+</div>
+
+<h2>9. Use a Role with a Different Variable Value</h2>
+
+<p>You can override the role's default variables from the playbook.</p>
+
+<pre><code>---
+- name: Configure custom webserver
+  hosts: ansible-client
+  become: true
+
+  roles:
+    - role: webserver
+      vars:
+        webserver_root: /opt/custom-webserver
+        webserver_page_title: "Custom Webserver"
+        webserver_page_content: "Configured using role variables"</code></pre>
+
+<p>The role uses these supplied values instead of its defaults.</p>
+
+<h2>10. Execute Multiple Roles</h2>
+
+<p>A playbook can execute multiple roles in sequence.</p>
+
+<p>Example directory structure:</p>
+
+<pre><code>roles/
+├── webserver/
+│   └── tasks/
+│       └── main.yml
+├── application/
+│   └── tasks/
+│       └── main.yml
+└── monitoring/
+    └── tasks/
+        └── main.yml</code></pre>
+
+<p><strong>main.yml</strong></p>
+
+<pre><code>---
+- name: Configure application server
+  hosts: ansible-client
+  become: true
+
+  roles:
+    - webserver
+    - application
+    - monitoring</code></pre>
+
+<p>Ansible executes the roles in the order listed in the playbook.</p>
+
+<h2>11. Practical Project: Build a Reusable Application Role</h2>
+
+<div class="project">
+<h3>Objective</h3>
+
+<p>Create a reusable role that prepares an application directory and generates a configuration file on the Ubuntu client.</p>
+
+<p><strong>Project structure:</strong></p>
+
+<pre><code>application-project/
+├── main.yml
+└── roles/
+    └── application/
+        ├── defaults/
+        │   └── main.yml
+        └── tasks/
+            └── main.yml</code></pre>
+
+<p><strong>Step 1: Create the role</strong></p>
+
+<pre><code>ansible-galaxy role init application</code></pre>
+
+<p><strong>Step 2: Configure defaults/main.yml</strong></p>
+
+<pre><code>---
+app_name: LearningLabs
+app_directory: /opt/learninglabs
+app_environment: development</code></pre>
+
+<p><strong>Step 3: Configure tasks/main.yml</strong></p>
+
+<pre><code>---
+- name: Create application directory
+  ansible.builtin.file:
+    path: "{{ app_directory }}"
+    state: directory
+    mode: '0755'
+
+- name: Create application configuration
+  ansible.builtin.copy:
+    dest: "{{ app_directory }}/application.conf"
+    content: |
+      APP_NAME={{ app_name }}
+      APP_ENV={{ app_environment }}
+    mode: '0644'
+
+- name: Create application log directory
+  ansible.builtin.file:
+    path: "{{ app_directory }}/logs"
+    state: directory
+    mode: '0755'</code></pre>
+
+<p><strong>Step 4: Create main.yml</strong></p>
+
+<pre><code>---
+- name: Deploy LearningLabs application structure
+  hosts: ansible-client
+  become: true
+
+  roles:
+    - application</code></pre>
+
+<p><strong>Step 5: Execute the role</strong></p>
+
+<pre><code>ansible-playbook main.yml</code></pre>
+
+<p><strong>Step 6: Verify using a playbook</strong></p>
+
+<p>Create <code>verify.yml</code>:</p>
+
+<pre><code>---
+- name: Verify application role
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Read application configuration
+      ansible.builtin.command: cat /opt/learninglabs/application.conf
+      register: app_config
+      changed_when: false
+
+    - name: Display application configuration
+      ansible.builtin.debug:
+        var: app_config.stdout
+
+    - name: Check application log directory
+      ansible.builtin.command: test -d /opt/learninglabs/logs
+      changed_when: false</code></pre>
+
+<p>Execute:</p>
+
+<pre><code>ansible-playbook verify.yml</code></pre>
+
+<h3>Expected Result</h3>
+
+<p>The Ubuntu client should contain:</p>
+
+<pre><code>/opt/learninglabs/
+├── application.conf
+└── logs/</code></pre>
+
+<p>The configuration file should contain:</p>
+
+<pre><code>APP_NAME=LearningLabs
+APP_ENV=development</code></pre>
+</div>
+
+<h2>12. Important Points</h2>
+
+<ul>
+    <li>A role is a reusable collection of related Ansible content.</li>
+    <li>The <code>tasks/main.yml</code> file is the role's default task entry point.</li>
+    <li>The <code>defaults/main.yml</code> file defines default variables.</li>
+    <li>Roles can be reused across multiple playbooks.</li>
+    <li>Multiple roles can be executed in a single play.</li>
+    <li>Roles can contain tasks, handlers, variables, files, templates, and metadata.</li>
+</ul>
+
+<h2>13. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding Ansible Roles.</li>
+    <li>Creating roles using ansible-galaxy.</li>
+    <li>Understanding the role directory structure.</li>
+    <li>Writing tasks inside a role.</li>
+    <li>Defining and using default variables.</li>
+    <li>Executing roles from a playbook.</li>
+    <li>Overriding role variables.</li>
+    <li>Executing multiple roles.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use Ansible Roles?</h2>
+
+<p>We use Ansible Roles to organize automation into reusable and maintainable components.</p>
+
+<p>In enterprise DevOps environments, different teams may maintain automation for web servers, databases, monitoring, security, and application deployments.</p>
+
+<p>Roles allow each responsibility to be maintained independently. A webserver role can be reused across multiple environments without copying the same tasks into every playbook.</p>
+
+<p>For example, you can maintain separate roles for Nginx configuration, application deployment, user management, and monitoring configuration.</p>
+
+<p>This makes automation easier to scale, maintain, test, and share across projects.</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
