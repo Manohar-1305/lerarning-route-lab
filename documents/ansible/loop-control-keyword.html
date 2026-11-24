@@ -1,0 +1,559 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible loop_control Keyword</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+.warning {
+    background: #451a03;
+    border-left: 4px solid #f59e0b;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+th, td { border: 1px solid #334155; padding: 10px; text-align: left; }
+th { background: #1e293b; color: #93c5fd; }
+td { color: #cbd5e1; }
+.video-container { margin: 24px 0; }
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+    display: block;
+}
+.video-button {
+    display: block;
+    background: #16a34a;
+    color: white;
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+.project {
+    background: #172033;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    margin-top: 20px;
+}
+.why {
+    background: #451f0b;
+    border: 1px solid #92400e;
+    border-radius: 10px;
+    padding: 24px;
+    margin-top: 40px;
+}
+.why h2 { color: #fbbf24; margin-top: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible loop_control Keyword</h1>
+
+<p>
+The <strong>loop_control</strong> keyword allows you to customize how
+Ansible handles loop iterations. You can control the displayed item,
+change the loop variable name, track the current iteration number,
+and introduce a delay between iterations.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. Why Do We Need loop_control?</h2>
+
+<p>
+In the previous lesson, you learned how to use <code>loop</code> to
+execute a task for multiple items.
+</p>
+
+<p>
+By default, Ansible uses the variable <code>item</code> for the current
+loop value. It also displays loop results in its task output.
+</p>
+
+<p>
+When working with large lists or complex data, you may want more control
+over how each iteration behaves and appears in the output.
+</p>
+
+<p>
+This is where <code>loop_control</code> is useful.
+</p>
+
+<h2>2. Basic Syntax</h2>
+
+<pre>
+- name: Task description
+  ansible.builtin.module_name:
+    parameter: "{{ item }}"
+  loop:
+    - value1
+    - value2
+    - value3
+  loop_control:
+    label: "{{ item }}"
+</pre>
+
+<p>
+The <code>loop_control</code> section is placed at the same indentation
+level as <code>loop</code>.
+</p>
+
+<h2>3. Control Output Using label</h2>
+
+<p>
+The <code>label</code> option controls what Ansible displays for each
+loop iteration in the task output.
+</p>
+
+<p>
+Consider a loop containing application configuration details:
+</p>
+
+<pre>
+---
+- name: Configure applications
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create application directories
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - name: frontend
+          path: /opt/frontend
+          owner: root
+        - name: backend
+          path: /opt/backend
+          owner: root
+        - name: database
+          path: /opt/database
+          owner: root
+      loop_control:
+        label: "{{ item.name }}"
+</pre>
+
+<p>
+Here, each loop item is a dictionary containing multiple fields.
+The label displays only the application name instead of the complete
+dictionary.
+</p>
+
+<p>
+The task output identifies iterations using labels such as:
+</p>
+
+<pre>
+frontend
+backend
+database
+</pre>
+
+<div class="note">
+<strong>Important:</strong> The <code>label</code> option changes only
+how loop items are displayed. It does not change the actual task input
+or hide sensitive values from Ansible's logs in a security-safe way.
+</div>
+
+<h2>4. Change the Default Loop Variable Using loop_var</h2>
+
+<p>
+By default, Ansible stores the current loop value in a variable named
+<code>item</code>.
+</p>
+
+<p>
+The <code>loop_var</code> option allows you to use a different variable
+name.
+</p>
+
+<pre>
+---
+- name: Configure application directories
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create directories
+      ansible.builtin.file:
+        path: "/opt/{{ application }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - frontend
+        - backend
+        - database
+      loop_control:
+        loop_var: application
+</pre>
+
+<p>
+Instead of using <code>item</code>, the task now uses
+<code>application</code>.
+</p>
+
+<table>
+<tr>
+    <th>Iteration</th>
+    <th>Default variable</th>
+    <th>Custom variable</th>
+</tr>
+<tr>
+    <td>1</td>
+    <td>item = frontend</td>
+    <td>application = frontend</td>
+</tr>
+<tr>
+    <td>2</td>
+    <td>item = backend</td>
+    <td>application = backend</td>
+</tr>
+<tr>
+    <td>3</td>
+    <td>item = database</td>
+    <td>application = database</td>
+</tr>
+</table>
+
+<h2>5. Track the Iteration Number Using index_var</h2>
+
+<p>
+The <code>index_var</code> option stores the current loop iteration
+index in a variable.
+</p>
+
+<p>
+The index starts at zero.
+</p>
+
+<pre>
+---
+- name: Display loop indexes
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display each application
+      ansible.builtin.debug:
+        msg: "Index {{ app_index }}: {{ item }}"
+      loop:
+        - frontend
+        - backend
+        - database
+      loop_control:
+        index_var: app_index
+</pre>
+
+<p>
+The output messages will contain these indexes:
+</p>
+
+<pre>
+Index 0: frontend
+Index 1: backend
+Index 2: database
+</pre>
+
+<p>
+If you want numbering to start from one, you can add one to the
+index when displaying it.
+</p>
+
+<pre>
+- name: Display human-readable numbering
+  ansible.builtin.debug:
+    msg: "Application {{ app_index + 1 }}: {{ item }}"
+  loop:
+    - frontend
+    - backend
+    - database
+  loop_control:
+    index_var: app_index
+</pre>
+
+<h2>6. Add a Delay Between Iterations Using pause</h2>
+
+<p>
+The <code>pause</code> option introduces a delay between loop iterations.
+The value is specified in seconds.
+</p>
+
+<pre>
+---
+- name: Process applications with a delay
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display application name
+      ansible.builtin.debug:
+        msg: "Processing {{ item }}"
+      loop:
+        - frontend
+        - backend
+        - database
+      loop_control:
+        pause: 3
+</pre>
+
+<p>
+Ansible waits three seconds between consecutive iterations.
+It does not need to wait before the first iteration.
+</p>
+
+<div class="note">
+<strong>Use case:</strong> A delay can be useful when an external
+service has rate limits or when operations should be spaced out.
+A delay does not guarantee that the external service is ready.
+</div>
+
+<h2>7. Use Multiple loop_control Options Together</h2>
+
+<p>
+You can combine multiple options under the same
+<code>loop_control</code> section.
+</p>
+
+<pre>
+---
+- name: Demonstrate multiple loop controls
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create application directories
+      ansible.builtin.file:
+        path: "/opt/{{ app_name }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - frontend
+        - backend
+        - database
+      loop_control:
+        loop_var: app_name
+        index_var: app_index
+        label: "{{ app_name }}"
+        pause: 1
+</pre>
+
+<p>
+This task:
+</p>
+
+<ul>
+    <li>Uses <code>app_name</code> instead of the default <code>item</code>.</li>
+    <li>Stores the iteration index in <code>app_index</code>.</li>
+    <li>Displays the application name as the loop label.</li>
+    <li>Waits one second between iterations.</li>
+</ul>
+
+<h2>8. Important loop_control Options</h2>
+
+<table>
+<tr>
+    <th>Option</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td><code>label</code></td>
+    <td>Controls the item representation displayed in task output.</td>
+</tr>
+<tr>
+    <td><code>loop_var</code></td>
+    <td>Changes the variable name used for the current item.</td>
+</tr>
+<tr>
+    <td><code>index_var</code></td>
+    <td>Stores the current zero-based iteration index.</td>
+</tr>
+<tr>
+    <td><code>pause</code></td>
+    <td>Adds a delay in seconds between iterations.</td>
+</tr>
+<tr>
+    <td><code>extended</code></td>
+    <td>Enables additional loop information through the <code>ansible_loop</code> variable.</td>
+</tr>
+<tr>
+    <td><code>extended_allitems</code></td>
+    <td>Controls whether the extended loop information includes the complete list of items.</td>
+</tr>
+</table>
+
+<h2>9. Practical Lab: Configure Multiple Application Components</h2>
+
+<div class="project">
+<h3>Scenario</h3>
+
+<p>
+You are preparing an application server with three components:
+frontend, backend, and database.
+You need to create directories and display their iteration numbers.
+</p>
+
+<p><strong>Create this playbook:</strong></p>
+
+<pre>
+---
+- name: Configure application components
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create component directories
+      ansible.builtin.file:
+        path: "/opt/{{ component }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - frontend
+        - backend
+        - database
+      loop_control:
+        loop_var: component
+        index_var: component_index
+        label: "{{ component }}"
+        pause: 1
+
+    - name: Display component information
+      ansible.builtin.debug:
+        msg: "Component {{ component_index + 1 }}: {{ component }}"
+      loop:
+        - frontend
+        - backend
+        - database
+      loop_control:
+        loop_var: component
+        index_var: component_index
+        label: "{{ component }}"
+</pre>
+
+<p><strong>Run from ansible-controller:</strong></p>
+
+<pre>
+ansible-playbook application-components.yml
+</pre>
+
+<p><strong>Expected behavior:</strong></p>
+
+<ul>
+    <li>Three directories are created under <code>/opt</code>.</li>
+    <li>The loop variable is named <code>component</code>.</li>
+    <li>The index variable starts at zero.</li>
+    <li>The first task waits one second between iterations.</li>
+    <li>The second task displays component numbers starting from one.</li>
+</ul>
+</div>
+
+<h2>10. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the <code>loop_control</code> keyword.</li>
+    <li>Controlling loop output using <code>label</code>.</li>
+    <li>Changing the default variable using <code>loop_var</code>.</li>
+    <li>Tracking iterations using <code>index_var</code>.</li>
+    <li>Adding delays using <code>pause</code>.</li>
+    <li>Combining multiple loop control options.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use the Ansible loop_control Keyword?</h2>
+
+<p>
+In real DevOps automation, loops often process large lists of
+servers, applications, packages, users, and configuration objects.
+The default loop behavior may not always provide the clarity or
+control required for complex playbooks.
+</p>
+
+<p>
+The <code>loop_control</code> keyword allows you to customize
+individual loop executions. You can assign meaningful variable names,
+track iteration indexes, simplify task output, and introduce delays
+between operations.
+</p>
+
+<p>
+For example, when configuring multiple application components,
+using a descriptive loop variable such as <code>component</code>
+makes the playbook easier to understand than repeatedly using
+the generic variable <code>item</code>.
+</p>
+
+<p>
+These options improve playbook readability, make execution output
+easier to interpret, and provide better control when automating
+repetitive infrastructure operations.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+</body>
+</html>
