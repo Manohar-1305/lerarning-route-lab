@@ -64,12 +64,6 @@ app = Flask(
 
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY") or None
 
-socketio = SocketIO(
-    app,
-    cors_allowed_origins="*",
-    async_mode="threading",
-)
-
 logging.basicConfig(level=logging.CRITICAL)
 
 for noisy_logger in (
@@ -82,6 +76,14 @@ for noisy_logger in (
 ):
     logging.getLogger(noisy_logger).setLevel(logging.CRITICAL)
     logging.getLogger(noisy_logger).propagate = False
+
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="*",
+    async_mode="threading",
+    logger=False,
+    engineio_logger=False,
+)
 
 logger = logging.getLogger("lab_dashboard")
 logger.setLevel(logging.INFO)
