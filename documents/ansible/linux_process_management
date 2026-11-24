@@ -1,0 +1,453 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux Process Management</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 14px;
+    background: #111827;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+h1, h2, h3 { color: #60a5fa; }
+
+h1 { margin-top: 0; }
+
+h2 {
+    margin-top: 25px;
+    border-bottom: 1px solid #374151;
+    padding-bottom: 6px;
+}
+
+p { color: #d1d5db; }
+
+pre {
+    background: #020617;
+    color: #86efac;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 13px;
+}
+
+code { color: #86efac; }
+
+.video-toggle {
+    background: #16a34a;
+    color: white;
+    border: 0;
+    padding: 9px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.video-container {
+    max-width: 850px;
+    margin: 10px 0 20px;
+}
+
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 8px;
+}
+
+.note, .project {
+    padding: 12px;
+    margin: 14px 0;
+    border-radius: 5px;
+}
+
+.note {
+    background: #1e293b;
+    border-left: 4px solid #3b82f6;
+}
+
+.project {
+    background: #172554;
+    border-left: 4px solid #60a5fa;
+}
+
+li { margin-bottom: 6px; }
+</style>
+</head>
+
+<body>
+
+<h1>Linux Process Management</h1>
+
+<p>
+Learn how to find, monitor, manage and stop running processes in Linux.
+</p>
+
+<button class="video-toggle" id="videoToggle" onclick="toggleVideo()">
+✕ Hide Video
+</button>
+
+<div class="video-container" id="videoContainer">
+    <iframe
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Linux Tutorial"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. What Is a Process?</h2>
+
+<p>
+A process is a program that is currently running.
+</p>
+
+<p>For example, execute:</p>
+
+<pre>sleep 300</pre>
+
+<p>
+This starts a process that runs for 300 seconds. Press Ctrl+C to stop it.
+</p>
+
+<h2>2. Find Running Processes</h2>
+
+<p>Display running processes:</p>
+
+<pre>ps aux</pre>
+
+<p>Find a process by name:</p>
+
+<pre>pgrep -a sleep</pre>
+
+<p>Display detailed process information:</p>
+
+<pre>ps -ef</pre>
+
+<h2>3. Understand PID and PPID</h2>
+
+<p>
+Every process has a unique Process ID (PID). A process can also have a parent process, identified by PPID.
+</p>
+
+<pre>ps -eo pid,ppid,comm</pre>
+
+<p>
+- PID: ID of the running process.
+- PPID: ID of its parent process.
+</p>
+
+<h2>4. Monitor Processes</h2>
+
+<p>
+Use <code>top</code> to monitor running processes and resource usage.
+</p>
+
+<pre>top</pre>
+
+<p>Useful shortcuts:</p>
+
+<ul>
+<li><code>P</code> - Sort by CPU usage.</li>
+<li><code>M</code> - Sort by memory usage.</li>
+<li><code>q</code> - Exit.</li>
+</ul>
+
+<h2>5. Process States</h2>
+
+<p>A process can have different states:</p>
+
+<ul>
+<li><strong>R:</strong> Running or ready to run.</li>
+<li><strong>S:</strong> Sleeping and waiting for an event.</li>
+<li><strong>D:</strong> Waiting for an I/O operation.</li>
+<li><strong>T:</strong> Stopped.</li>
+<li><strong>Z:</strong> Zombie process.</li>
+</ul>
+
+<p>View process states:</p>
+
+<pre>ps -eo pid,stat,comm</pre>
+
+<h2>6. Background and Foreground Processes</h2>
+
+<p>Start a process in the background:</p>
+
+<pre>sleep 300 &amp;</pre>
+
+<p>View background jobs:</p>
+
+<pre>jobs</pre>
+
+<p>Bring a background job to the foreground:</p>
+
+<pre>fg %1</pre>
+
+<p>Stop a foreground process:</p>
+
+<pre>Ctrl + C</pre>
+
+<p>Pause a foreground process:</p>
+
+<pre>Ctrl + Z</pre>
+
+<p>Resume it in the background:</p>
+
+<pre>bg %1</pre>
+
+<h2>7. Stop and Manage Processes</h2>
+
+<p>Find the process ID:</p>
+
+<pre>pgrep -a sleep</pre>
+
+<p>Stop a process gracefully:</p>
+
+<pre>kill -TERM PID</pre>
+
+<p>Forcefully stop a process:</p>
+
+<pre>kill -9 PID</pre>
+
+<p>Pause a process:</p>
+
+<pre>kill -STOP PID</pre>
+
+<p>Resume a process:</p>
+
+<pre>kill -CONT PID</pre>
+
+<div class="note">
+Use SIGTERM first. Use SIGKILL only when a process does not stop normally.
+</div>
+
+<h2>8. Process Priority</h2>
+
+<p>
+Linux uses process priority to decide how CPU time is shared between processes.
+</p>
+
+<p>Start a process with a lower scheduling priority:</p>
+
+<pre>nice -n 10 sleep 300 &amp;</pre>
+
+<p>Change the priority of an existing process:</p>
+
+<pre>renice 15 -p PID</pre>
+
+<h2>9. Real-Time Project: Process Monitoring Utility</h2>
+
+<div class="project">
+<strong>Project objective</strong>
+
+<p>
+Create a Bash script that starts an application, checks whether it is running and automatically restarts it if it stops unexpectedly.
+</p>
+</div>
+
+<h3>Step 1: Install required tools</h3>
+
+<p>
+The following commands are provided by the procps package. Install it before continuing.
+</p>
+
+<pre>
+if [ "$(id -u)" -eq 0 ]; then
+    apt-get update
+    apt-get install -y procps
+else
+    sudo apt-get update
+    sudo apt-get install -y procps
+fi
+</pre>
+
+<h3>Step 2: Create the project directory</h3>
+
+<pre>
+mkdir -p ~/process-monitor
+cd ~/process-monitor
+</pre>
+
+<h3>Step 3: Create a sample application</h3>
+
+<pre>
+cat &gt; app.sh &lt;&lt;'EOF'
+#!/bin/bash
+
+while true
+do
+    echo "$(date): Application is running"
+    read -r -t 5 input || true
+done
+EOF
+</pre>
+
+<h3>Step 4: Create the monitoring script</h3>
+
+<pre>
+cat &gt; monitor.sh &lt;&lt;'EOF'
+#!/bin/bash
+
+DIR="$(cd "$(dirname "$0")" &amp;&amp; pwd)"
+APP="$DIR/app.sh"
+PID_FILE="$DIR/app.pid"
+LOG_FILE="$DIR/monitor.log"
+
+is_running() {
+    if [ ! -f "$PID_FILE" ]; then
+        return 1
+    fi
+
+    PID=$(cat "$PID_FILE")
+
+    if ! [[ "$PID" =~ ^[0-9]+$ ]]; then
+        return 1
+    fi
+
+    kill -0 "$PID" 2&gt;/dev/null
+}
+
+start_app() {
+    if is_running; then
+        echo "Application is already running."
+        return
+    fi
+
+    rm -f "$PID_FILE"
+
+    bash "$APP" &gt;&gt; "$DIR/app.log" 2&gt;&amp;1 &amp;
+    echo $! &gt; "$PID_FILE"
+
+    echo "$(date): Application started." | tee -a "$LOG_FILE"
+}
+
+stop_app() {
+    if is_running; then
+        PID=$(cat "$PID_FILE")
+        kill -TERM "$PID"
+        rm -f "$PID_FILE"
+
+        echo "$(date): Application stopped." | tee -a "$LOG_FILE"
+    else
+        rm -f "$PID_FILE"
+        echo "Application is not running."
+    fi
+}
+
+status_app() {
+    if is_running; then
+        echo "Application is running. PID: $(cat "$PID_FILE")"
+    else
+        echo "Application is not running."
+    fi
+}
+
+monitor_app() {
+    echo "Monitoring started. Press Ctrl+C to exit."
+
+    while true
+    do
+        if ! is_running; then
+            echo "$(date): Application stopped. Restarting." | tee -a "$LOG_FILE"
+            rm -f "$PID_FILE"
+            start_app
+        fi
+
+        read -r -t 5 input || true
+    done
+}
+
+case "$1" in
+    start) start_app ;;
+    stop) stop_app ;;
+    status) status_app ;;
+    monitor) monitor_app ;;
+    *)
+        echo "Usage: $0 {start|stop|status|monitor}"
+        ;;
+esac
+EOF
+</pre>
+
+<h3>Step 5: Make the scripts executable</h3>
+
+<pre>chmod +x app.sh monitor.sh</pre>
+
+<h3>Step 6: Start the application</h3>
+
+<pre>./monitor.sh start</pre>
+
+<h3>Step 7: Check application status</h3>
+
+<pre>./monitor.sh status</pre>
+
+<h3>Step 8: Start monitoring</h3>
+
+<pre>./monitor.sh monitor</pre>
+
+<p>
+Keep this terminal running. Open another terminal for the next step.
+</p>
+
+<h3>Step 9: Simulate application failure</h3>
+
+<pre>kill -9 "$(cat ~/process-monitor/app.pid)"</pre>
+
+<p>
+The monitoring script should detect the stopped application and restart it.
+</p>
+
+<h3>Step 10: Check the logs</h3>
+
+<pre>
+cat ~/process-monitor/app.log
+cat ~/process-monitor/monitor.log
+</pre>
+
+<h3>Step 11: Stop the application</h3>
+
+<pre>./monitor.sh stop</pre>
+
+<h2>10. What This Lab Covers</h2>
+
+<ul>
+<li>Understanding Linux processes.</li>
+<li>Finding processes using PID and PPID.</li>
+<li>Viewing processes using ps and pgrep.</li>
+<li>Monitoring processes using top.</li>
+<li>Understanding process states.</li>
+<li>Managing foreground and background processes.</li>
+<li>Stopping processes using signals.</li>
+<li>Understanding process priority.</li>
+<li>Creating a Bash process monitoring script.</li>
+<li>Automatically restarting a stopped application.</li>
+</ul>
+
+<p>
+<strong>Final outcome:</strong> Build a simple process monitoring utility using Bash.
+</p>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("videoContainer");
+    const button = document.getElementById("videoToggle");
+
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
