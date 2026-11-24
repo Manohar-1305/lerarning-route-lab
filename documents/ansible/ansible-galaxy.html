@@ -92,15 +92,25 @@ Ansible Galaxy is a platform and command-line tool for finding, sharing, install
 <strong>Important:</strong> Roles and collections are different types of Ansible content. A collection can contain multiple roles and plugins.
 </div>
 
-<h2>3. Check Ansible Galaxy Command</h2>
+<h2>3. Check and Install Ansible Galaxy Command</h2>
 
-<p>Run this command on your Ansible controller:</p>
+<p>First, check whether Ansible Galaxy is available on your Ansible controller.</p>
 
 <pre><code>ansible-galaxy --version</code></pre>
 
-<p>To view the available command options:</p>
+<p>If the command is not found, install Ansible using APT:</p>
 
-<pre><code>ansible-galaxy --help</code></pre>
+<pre><code>sudo apt update
+sudo apt install -y ansible</code></pre>
+
+<p>Verify the installation:</p>
+
+<pre><code>ansible --version
+ansible-galaxy --version</code></pre>
+
+<div class="note">
+<strong>Important:</strong> Run these commands on your Ansible controller, not on the managed Ubuntu client. The <code>ansible-galaxy</code> command is included with Ansible.
+</div>
 
 <h2>4. Search for Roles</h2>
 
