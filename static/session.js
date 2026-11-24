@@ -167,7 +167,7 @@
     function startSocket() {
       if (typeof io !== "function") return;
 
-      var socket = io({ transports: ["websocket"] });
+      var socket = io({ transports: ["polling"] });
 
       socket.on("connect", function () {
         socket.emit("join_slot");
