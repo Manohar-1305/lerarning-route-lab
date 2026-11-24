@@ -1,0 +1,690 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible changed_when Keyword</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.7;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+h1, h2, h3 { color: #f8fafc; }
+h1 { font-size: 32px; }
+
+h2 {
+    margin-top: 38px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 9px;
+}
+
+h3 {
+    margin-top: 25px;
+    color: #93c5fd;
+}
+
+p, li { color: #cbd5e1; }
+
+code {
+    color: #86efac;
+    background: #1e293b;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+pre {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    color: #d1d5db;
+    line-height: 1.6;
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+    color: #d1d5db;
+}
+
+.video-container { margin: 25px 0; }
+
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+}
+
+.video-button {
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 10px 17px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.info-box, .warning-box, .project-box {
+    padding: 16px;
+    border-radius: 7px;
+    margin: 20px 0;
+}
+
+.info-box {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+}
+
+.warning-box {
+    background: #422006;
+    border-left: 4px solid #f59e0b;
+}
+
+.project-box {
+    background: #132e25;
+    border-left: 4px solid #22c55e;
+}
+
+.why-box {
+    background: #713f12;
+    border: 1px solid #a16207;
+    padding: 24px;
+    border-radius: 10px;
+    margin-top: 45px;
+}
+
+.why-box h2 {
+    border: none;
+    margin-top: 0;
+    color: #fef3c7;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #334155;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+td { color: #cbd5e1; }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Ansible changed_when Keyword</h1>
+
+<p>
+The Ansible <code>changed_when</code> keyword controls whether
+Ansible reports a task as changed or unchanged. It allows engineers
+to define custom conditions for determining the change status of
+a task.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <div id="videoWrapper">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible changed_when Tutorial"
+            allowfullscreen>
+        </iframe>
+    </div>
+</div>
+
+<h2>1. What Is changed_when?</h2>
+
+<p>
+Ansible modules normally report whether a task changed something.
+However, certain modules such as Command and Shell cannot always
+determine whether the command actually changed the system.
+</p>
+
+<p>
+The <code>changed_when</code> keyword allows you to define your own
+logic for reporting the task status.
+</p>
+
+<p>Common use cases include:</p>
+
+<ul>
+    <li>Preventing read-only commands from reporting changes.</li>
+    <li>Reporting a change only when command output meets a condition.</li>
+    <li>Determining change status using a registered return code.</li>
+    <li>Controlling change reporting for custom scripts.</li>
+    <li>Making Ansible playbook output more accurate.</li>
+    <li>Controlling whether a task is considered changed for reporting and handlers.</li>
+</ul>
+
+<h2>2. Understanding Ansible Task Status</h2>
+
+<p>
+Ansible commonly reports the following task statuses:
+</p>
+
+<table>
+<thead>
+<tr>
+    <th>Status</th>
+    <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td><code>ok</code></td>
+    <td>The task completed without reporting a change.</td>
+</tr>
+<tr>
+    <td><code>changed</code></td>
+    <td>The task reports that something changed.</td>
+</tr>
+<tr>
+    <td><code>failed</code></td>
+    <td>The task failed.</td>
+</tr>
+<tr>
+    <td><code>skipped</code></td>
+    <td>The task was not executed because its condition was not met.</td>
+</tr>
+</tbody>
+</table>
+
+<h2>3. How Does changed_when Work?</h2>
+
+<pre><code>             Ansible Controller
+             ------------------
+                    |
+                    v
+                Playbook
+                    |
+                    v
+                Execute Task
+                    |
+                    v
+             Evaluate changed_when
+                    |
+             +------+------+
+             |             |
+           TRUE          FALSE
+             |             |
+             v             v
+        Report Changed   Report OK
+                    |
+                    v
+             Continue Playbook</code></pre>
+
+<p>
+Ansible evaluates the expression configured under
+<code>changed_when</code>.
+</p>
+
+<ul>
+    <li>If the expression is true, the task reports <code>changed</code>.</li>
+    <li>If the expression is false, the task reports <code>ok</code>.</li>
+</ul>
+
+<div class="warning-box">
+<strong>Important:</strong>
+<code>changed_when</code> controls Ansible's reported change status.
+It does not prevent a command from modifying the system or make
+a non-idempotent command idempotent.
+</div>
+
+<h2>4. Basic changed_when Syntax</h2>
+
+<p>
+The keyword is written at the task level, alongside the module.
+</p>
+
+<pre><code>---
+- name: Basic changed_when example
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Execute a command
+      ansible.builtin.command:
+        cmd: hostname
+      changed_when: false</code></pre>
+
+<p>
+The hostname command executes, but Ansible reports the task as
+unchanged because the condition is explicitly set to false.
+</p>
+
+<h2>5. Use changed_when: false</h2>
+
+<p>
+Use <code>changed_when: false</code> for read-only commands that
+do not modify the managed host.
+</p>
+
+<p><strong>Playbook: changed-when-false.yml</strong></p>
+
+<pre><code>---
+- name: Execute read-only commands
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Get hostname
+      ansible.builtin.command:
+        cmd: hostname
+      changed_when: false
+
+    - name: Get kernel version
+      ansible.builtin.command:
+        cmd: uname -r
+      changed_when: false
+
+    - name: Get disk usage
+      ansible.builtin.command:
+        cmd: df -h /
+      changed_when: false
+
+    - name: Get current date
+      ansible.builtin.command:
+        cmd: date
+      changed_when: false</code></pre>
+
+<p>
+These commands retrieve information without intentionally changing
+the system. The playbook reports them as unchanged.
+</p>
+
+<h2>6. Use changed_when: true</h2>
+
+<p>
+You can explicitly make a task report a change by setting
+<code>changed_when: true</code>.
+</p>
+
+<p><strong>Playbook: changed-when-true.yml</strong></p>
+
+<pre><code>---
+- name: Force changed status
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Execute hostname command
+      ansible.builtin.command:
+        cmd: hostname
+      changed_when: true</code></pre>
+
+<p>
+Even though the hostname command does not modify the system,
+Ansible reports this task as changed.
+</p>
+
+<div class="warning-box">
+<strong>Important:</strong>
+This example demonstrates change-status reporting only.
+Do not use <code>changed_when: true</code> indiscriminately
+for read-only tasks.
+</div>
+
+<h2>7. Use changed_when with Register</h2>
+
+<p>
+You can combine <code>register</code> and
+<code>changed_when</code> to determine task status based on
+the result returned by a command.
+</p>
+
+<p><strong>Playbook: changed-when-register.yml</strong></p>
+
+<pre><code>---
+- name: Determine change status from command output
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Check application directory
+      ansible.builtin.command:
+        cmd: test -d /tmp/learning-labs
+      register: directory_result
+      changed_when: false
+      failed_when: false
+
+    - name: Display directory status
+      ansible.builtin.debug:
+        msg: "Directory check return code: {{ directory_result.rc }}"</code></pre>
+
+<p>
+The directory check is read-only. It is always reported as unchanged,
+regardless of whether the directory exists.
+</p>
+
+<h2>8. Determine Change Status Using stdout</h2>
+
+<p>
+You can evaluate command output and report a change only when
+the output contains a particular value.
+</p>
+
+<p><strong>Playbook: changed-when-stdout.yml</strong></p>
+
+<pre><code>---
+- name: Determine change status using output
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Generate a command result
+      ansible.builtin.command:
+        cmd: echo "CONFIGURATION_UPDATED"
+      register: command_result
+      changed_when: "'CONFIGURATION_UPDATED' in command_result.stdout"</code></pre>
+
+<p>
+If the command output contains <code>CONFIGURATION_UPDATED</code>,
+Ansible reports the task as changed.
+</p>
+
+<div class="info-box">
+<strong>Important:</strong>
+The example demonstrates how output controls the reported status.
+The echo command itself does not modify the system.
+</div>
+
+<h2>9. Determine Change Status Using Return Code</h2>
+
+<p>
+You can use the registered command return code to determine
+whether Ansible should report a change.
+</p>
+
+<p><strong>Playbook: changed-when-rc.yml</strong></p>
+
+<pre><code>---
+- name: Determine status using return code
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Check whether application directory exists
+      ansible.builtin.command:
+        cmd: test -d /tmp/learning-labs
+      register: directory_result
+      changed_when: directory_result.rc == 0
+      failed_when: false</code></pre>
+
+<p>
+The task reports changed when the directory exists and unchanged
+when it does not.
+</p>
+
+<p>
+This example only demonstrates custom status reporting. It does
+not create or modify the directory.
+</p>
+
+<h2>10. Use Multiple Conditions</h2>
+
+<p>
+You can define multiple expressions under
+<code>changed_when</code>. All expressions must be true for
+the task to report changed.
+</p>
+
+<p><strong>Playbook: changed-when-multiple.yml</strong></p>
+
+<pre><code>---
+- name: Evaluate multiple change conditions
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Generate application status
+      ansible.builtin.command:
+        cmd: echo "APP_UPDATED"
+      register: application_result
+      changed_when:
+        - "'APP_UPDATED' in application_result.stdout"
+        - application_result.rc == 0</code></pre>
+
+<p>
+Both conditions must be true for Ansible to report the task
+as changed.
+</p>
+
+<h2>11. Use changed_when with Shell</h2>
+
+<p>
+The keyword also works with the Shell module.
+</p>
+
+<p><strong>Playbook: changed-when-shell.yml</strong></p>
+
+<pre><code>---
+- name: Control Shell task status
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Count running processes
+      ansible.builtin.shell:
+        cmd: ps aux | wc -l
+      register: process_result
+      changed_when: false
+
+    - name: Display process count
+      ansible.builtin.debug:
+        msg: "Process count: {{ process_result.stdout }}"</code></pre>
+
+<p>
+The command collects information without intentionally changing
+the system. Therefore, the task is reported as unchanged.
+</p>
+
+<h2>12. Understanding changed_when and Idempotency</h2>
+
+<p>
+Idempotency means that running the same automation repeatedly
+produces the same desired system state without unnecessary changes.
+</p>
+
+<p>
+The <code>changed_when</code> keyword does not itself provide
+idempotency. It only controls how Ansible reports the result.
+</p>
+
+<p><strong>Example: A command that creates a file</strong></p>
+
+<pre><code>---
+- name: Create report file
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create report if it does not exist
+      ansible.builtin.command:
+        cmd: touch /tmp/ansible-report.txt
+        creates: /tmp/ansible-report.txt</code></pre>
+
+<p>
+The Command module's <code>creates</code> parameter skips the
+command when the file already exists. This prevents unnecessary
+execution on subsequent runs.
+</p>
+
+<p>
+The command module can therefore report changed on the first run
+and unchanged on later runs.
+</p>
+
+<h2>13. Practical Project: Linux System Information Collector</h2>
+
+<div class="project-box">
+
+<h3>Project Objective</h3>
+
+<p>
+Build a playbook that collects Linux system information while
+accurately reporting read-only tasks as unchanged.
+</p>
+
+<strong>Requirements:</strong>
+
+<ol>
+    <li>Collect the hostname.</li>
+    <li>Collect the kernel version.</li>
+    <li>Collect memory information.</li>
+    <li>Collect root filesystem usage.</li>
+    <li>Use Register to capture command results.</li>
+    <li>Use changed_when to report read-only tasks as unchanged.</li>
+    <li>Display the collected information.</li>
+</ol>
+
+<strong>Project playbook: system-information.yml</strong>
+
+<pre><code>---
+- name: Collect Linux system information
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Collect hostname
+      ansible.builtin.command:
+        cmd: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Collect kernel version
+      ansible.builtin.command:
+        cmd: uname -r
+      register: kernel_result
+      changed_when: false
+
+    - name: Collect memory information
+      ansible.builtin.command:
+        cmd: free -h
+      register: memory_result
+      changed_when: false
+
+    - name: Collect root filesystem usage
+      ansible.builtin.command:
+        cmd: df -h /
+      register: disk_result
+      changed_when: false
+
+    - name: Display system information
+      ansible.builtin.debug:
+        msg:
+          - "Hostname: {{ hostname_result.stdout }}"
+          - "Kernel: {{ kernel_result.stdout }}"
+          - "Memory information:"
+          - "{{ memory_result.stdout }}"
+          - "Root filesystem:"
+          - "{{ disk_result.stdout }}"</code></pre>
+
+</div>
+
+<h2>14. Important Considerations</h2>
+
+<ul>
+    <li><code>changed_when</code> is a playbook keyword, not a module.</li>
+    <li>It controls Ansible's reported change status.</li>
+    <li>It does not prevent commands from modifying the managed host.</li>
+    <li>Use <code>changed_when: false</code> for appropriate read-only commands.</li>
+    <li>Use expressions when change status depends on command output.</li>
+    <li>Registered variables can be used inside change conditions.</li>
+    <li>Multiple conditions in a YAML list must all evaluate to true.</li>
+    <li>Do not confuse change reporting with idempotency.</li>
+    <li>Incorrect change reporting can affect handlers and playbook statistics.</li>
+</ul>
+
+<h2>15. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the changed_when keyword.</li>
+    <li>Controlling task change status.</li>
+    <li>Using true and false conditions.</li>
+    <li>Combining changed_when with Register.</li>
+    <li>Evaluating command output.</li>
+    <li>Evaluating command return codes.</li>
+    <li>Using multiple change conditions.</li>
+    <li>Applying changed_when to Command and Shell tasks.</li>
+    <li>Understanding the difference between change reporting and idempotency.</li>
+</ul>
+
+<div class="why-box">
+<h2>Why Do We Use the Ansible changed_when Keyword?</h2>
+
+<p>
+In production automation, accurate task reporting is important.
+Engineers need to distinguish between tasks that actually modify
+a system and tasks that simply collect information.
+</p>
+
+<p>
+For example, commands such as <code>hostname</code>,
+<code>uname</code> and <code>df</code> retrieve information.
+They do not intentionally modify the managed host.
+However, command-based tasks may otherwise report a change.
+</p>
+
+<p>
+The changed_when keyword allows engineers to define how Ansible
+should report these tasks. This improves playbook output and
+makes change reporting more meaningful.
+</p>
+
+<p>
+It is commonly used with Command, Shell and custom automation
+tasks where the default change detection does not accurately
+represent the operation.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const wrapper = document.getElementById("videoWrapper");
+    const button = document.getElementById("videoToggle");
+
+    if (wrapper.style.display === "none") {
+        wrapper.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        wrapper.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
