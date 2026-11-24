@@ -1,0 +1,702 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible Tags Keyword</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+.warning {
+    background: #451a03;
+    border-left: 4px solid #f59e0b;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+th, td { border: 1px solid #334155; padding: 10px; text-align: left; }
+th { background: #1e293b; color: #93c5fd; }
+td { color: #cbd5e1; }
+.video-container { margin: 24px 0; }
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+    display: block;
+}
+.video-button {
+    display: block;
+    background: #16a34a;
+    color: white;
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+.project {
+    background: #172033;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    margin-top: 20px;
+}
+.why {
+    background: #451f0b;
+    border: 1px solid #92400e;
+    border-radius: 10px;
+    padding: 24px;
+    margin-top: 40px;
+}
+.why h2 { color: #fbbf24; margin-top: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible Tags Keyword</h1>
+
+<p>
+The <strong>tags</strong> keyword allows you to assign labels to
+Ansible tasks. You can use these labels to execute selected tasks
+instead of running the entire playbook.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. Why Do We Need Tags?</h2>
+
+<p>
+Imagine that you have an application deployment playbook containing
+the following operations:
+</p>
+
+<ul>
+    <li>Install application packages.</li>
+    <li>Create application directories.</li>
+    <li>Configure application files.</li>
+    <li>Create application users.</li>
+    <li>Validate the deployment.</li>
+</ul>
+
+<p>
+Normally, running the playbook executes all applicable tasks.
+But what if you only want to execute the configuration tasks?
+</p>
+
+<p>
+You can assign tags to individual tasks and execute only the
+tasks associated with a particular tag.
+</p>
+
+<h2>2. Basic Syntax</h2>
+
+<pre>
+- name: Task description
+  ansible.builtin.module_name:
+    parameter: value
+  tags:
+    - configuration
+</pre>
+
+<p>
+The <code>tags</code> keyword is placed at the same indentation
+level as the module and its parameters.
+</p>
+
+<h2>3. Assign Tags to Individual Tasks</h2>
+
+<p>
+You can assign different tags to different tasks in the same playbook.
+</p>
+
+<pre>
+---
+- name: Application deployment
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Install application packages
+      ansible.builtin.apt:
+        name: curl
+        state: present
+      tags:
+        - installation
+
+    - name: Create application directory
+      ansible.builtin.file:
+        path: /opt/myapp
+        state: directory
+        mode: '0755'
+      tags:
+        - configuration
+
+    - name: Create application configuration
+      ansible.builtin.copy:
+        content: "APP_PORT=8080\n"
+        dest: /opt/myapp/app.conf
+        mode: '0644'
+      tags:
+        - configuration
+
+    - name: Validate application directory
+      ansible.builtin.command:
+        cmd: test -d /opt/myapp
+      changed_when: false
+      tags:
+        - validation
+</pre>
+
+<p>
+This playbook contains three tags:
+</p>
+
+<table>
+<tr>
+    <th>Tag</th>
+    <th>Tasks</th>
+</tr>
+<tr>
+    <td><code>installation</code></td>
+    <td>Install application packages</td>
+</tr>
+<tr>
+    <td><code>configuration</code></td>
+    <td>Create directory and configuration file</td>
+</tr>
+<tr>
+    <td><code>validation</code></td>
+    <td>Validate application directory</td>
+</tr>
+</table>
+
+<h2>4. Execute a Specific Tag Using --tags</h2>
+
+<p>
+The <code>--tags</code> option allows you to execute tasks associated
+with a particular tag.
+</p>
+
+<p>
+To execute only installation tasks:
+</p>
+
+<pre>
+ansible-playbook application.yml --tags installation
+</pre>
+
+<p>
+To execute only configuration tasks:
+</p>
+
+<pre>
+ansible-playbook application.yml --tags configuration
+</pre>
+
+<p>
+To execute only validation tasks:
+</p>
+
+<pre>
+ansible-playbook application.yml --tags validation
+</pre>
+
+<p>
+You can also execute multiple tags in one command:
+</p>
+
+<pre>
+ansible-playbook application.yml --tags "installation,configuration"
+</pre>
+
+<p>
+In this example, Ansible executes tasks tagged with either
+<code>installation</code> or <code>configuration</code>.
+</p>
+
+<h2>5. Skip Specific Tags Using --skip-tags</h2>
+
+<p>
+Sometimes you want to execute most of the playbook but skip
+a particular category of tasks.
+</p>
+
+<p>
+The <code>--skip-tags</code> option allows you to exclude tasks
+associated with specified tags.
+</p>
+
+<pre>
+ansible-playbook application.yml --skip-tags validation
+</pre>
+
+<p>
+This executes the applicable tasks except those tagged with
+<code>validation</code>.
+</p>
+
+<p>
+You can skip multiple tags:
+</p>
+
+<pre>
+ansible-playbook application.yml --skip-tags "installation,validation"
+</pre>
+
+<h2>6. Assign Multiple Tags to One Task</h2>
+
+<p>
+A single task can have multiple tags. This allows the same task
+to be selected through different tag names.
+</p>
+
+<pre>
+---
+- name: Application configuration
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create application directory
+      ansible.builtin.file:
+        path: /opt/myapp
+        state: directory
+      tags:
+        - configuration
+        - application
+        - deployment
+</pre>
+
+<p>
+You can execute this task using any one of its tags:
+</p>
+
+<pre>
+ansible-playbook application.yml --tags configuration
+
+ansible-playbook application.yml --tags application
+
+ansible-playbook application.yml --tags deployment
+</pre>
+
+<h2>7. Assign Tags to a Block</h2>
+
+<p>
+You can assign a tag to an entire block. The tag is inherited
+by the tasks inside that block.
+</p>
+
+<pre>
+---
+- name: Application setup
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Configure application
+      tags:
+        - application_setup
+      block:
+
+        - name: Create application directory
+          ansible.builtin.file:
+            path: /opt/myapp
+            state: directory
+
+        - name: Create configuration file
+          ansible.builtin.copy:
+            content: "APP_PORT=8080\n"
+            dest: /opt/myapp/app.conf
+
+        - name: Display completion
+          ansible.builtin.debug:
+            msg: "Application setup completed"
+</pre>
+
+<p>
+All tasks inside this block inherit the
+<code>application_setup</code> tag.
+</p>
+
+<p>
+Execute the block using:
+</p>
+
+<pre>
+ansible-playbook application.yml --tags application_setup
+</pre>
+
+<h2>8. Special Tags: always and never</h2>
+
+<p>
+Ansible provides special tags that control task selection.
+Two important special tags are <code>always</code> and
+<code>never</code>.
+</p>
+
+<h3>always</h3>
+
+<p>
+A task tagged with <code>always</code> normally executes even
+when you select a different tag.
+</p>
+
+<pre>
+---
+- name: Demonstrate always tag
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display application information
+      ansible.builtin.debug:
+        msg: "Application information"
+      tags:
+        - always
+
+    - name: Install package
+      ansible.builtin.apt:
+        name: curl
+        state: present
+      tags:
+        - installation
+</pre>
+
+<p>
+When you run:
+</p>
+
+<pre>
+ansible-playbook application.yml --tags installation
+</pre>
+
+<p>
+The installation task executes, and the task tagged
+<code>always</code> normally executes as well.
+</p>
+
+<h3>never</h3>
+
+<p>
+A task tagged with <code>never</code> is skipped during a normal
+playbook run. It executes only when you explicitly select its
+tag or another applicable tag assigned to that task.
+</p>
+
+<pre>
+---
+- name: Demonstrate never tag
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display diagnostic information
+      ansible.builtin.debug:
+        msg: "Diagnostic task executed"
+      tags:
+        - never
+        - diagnostics
+
+    - name: Display normal task
+      ansible.builtin.debug:
+        msg: "Normal task executed"
+</pre>
+
+<p>
+Normal execution:
+</p>
+
+<pre>
+ansible-playbook application.yml
+</pre>
+
+<p>
+The diagnostic task is skipped, while the normal task executes.
+</p>
+
+<p>
+Execute the diagnostic task explicitly:
+</p>
+
+<pre>
+ansible-playbook application.yml --tags diagnostics
+</pre>
+
+<div class="note">
+<strong>Important:</strong> Special tags have selection behavior
+that differs from ordinary tags. A task tagged with
+<code>never</code> can still execute if another tag assigned
+to that task is selected.
+</div>
+
+<h2>9. List Available Tags</h2>
+
+<p>
+You can inspect the tags defined in a playbook without executing
+the tasks.
+</p>
+
+<pre>
+ansible-playbook application.yml --list-tags
+</pre>
+
+<p>
+Ansible displays the available tags for the playbook.
+</p>
+
+<h2>10. List Tasks Associated With Tags</h2>
+
+<p>
+You can also list the tasks that would be selected by a tag.
+</p>
+
+<pre>
+ansible-playbook application.yml --list-tasks --tags configuration
+</pre>
+
+<p>
+This displays the tasks selected by the
+<code>configuration</code> tag without executing them.
+</p>
+
+<h2>11. Important Rules About Tags</h2>
+
+<ul>
+    <li>Tags are labels assigned to tasks, blocks, plays, or roles.</li>
+    <li><code>--tags</code> selects tasks associated with specified tags.</li>
+    <li><code>--skip-tags</code> excludes tasks associated with specified tags.</li>
+    <li>A task can have multiple tags.</li>
+    <li>Block-level tags are inherited by tasks inside the block.</li>
+    <li><code>always</code> is a special tag that normally executes regardless of ordinary tag selection.</li>
+    <li><code>never</code> prevents normal execution unless an applicable tag is explicitly selected.</li>
+    <li><code>--list-tags</code> displays available tags.</li>
+    <li><code>--list-tasks</code> displays selected tasks without executing them.</li>
+</ul>
+
+<h2>12. Practical Lab: Selectively Execute Application Tasks</h2>
+
+<div class="project">
+<h3>Scenario</h3>
+
+<p>
+You are managing an application server. Your playbook contains
+installation, configuration, user creation, and validation tasks.
+You must be able to execute each category independently.
+</p>
+
+<p><strong>Create this playbook:</strong></p>
+
+<pre>
+---
+- name: Application management
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Install required package
+      ansible.builtin.apt:
+        name: curl
+        state: present
+        update_cache: true
+      tags:
+        - installation
+
+    - name: Create application directory
+      ansible.builtin.file:
+        path: /opt/learning-labs
+        state: directory
+        mode: '0755'
+      tags:
+        - configuration
+
+    - name: Create application configuration
+      ansible.builtin.copy:
+        content: |
+          APP_NAME=learning-labs
+          APP_PORT=8080
+          APP_ENV=production
+        dest: /opt/learning-labs/app.conf
+        mode: '0644'
+      tags:
+        - configuration
+
+    - name: Create application user
+      ansible.builtin.user:
+        name: labuser
+        state: present
+      tags:
+        - users
+
+    - name: Validate application directory
+      ansible.builtin.command:
+        cmd: test -d /opt/learning-labs
+      changed_when: false
+      tags:
+        - validation
+
+    - name: Display execution information
+      ansible.builtin.debug:
+        msg: "Application management playbook started"
+      tags:
+        - always
+</pre>
+
+<h3>Run the following commands from ansible-controller</h3>
+
+<p><strong>1. List available tags:</strong></p>
+
+<pre>
+ansible-playbook application-tags.yml --list-tags
+</pre>
+
+<p><strong>2. List tasks for configuration:</strong></p>
+
+<pre>
+ansible-playbook application-tags.yml --list-tasks --tags configuration
+</pre>
+
+<p><strong>3. Install packages only:</strong></p>
+
+<pre>
+ansible-playbook application-tags.yml --tags installation
+</pre>
+
+<p><strong>4. Configure the application only:</strong></p>
+
+<pre>
+ansible-playbook application-tags.yml --tags configuration
+</pre>
+
+<p><strong>5. Create the application user only:</strong></p>
+
+<pre>
+ansible-playbook application-tags.yml --tags users
+</pre>
+
+<p><strong>6. Execute validation only:</strong></p>
+
+<pre>
+ansible-playbook application-tags.yml --tags validation
+</pre>
+
+<p><strong>7. Skip installation:</strong></p>
+
+<pre>
+ansible-playbook application-tags.yml --skip-tags installation
+</pre>
+
+<p><strong>Expected behavior:</strong></p>
+
+<ul>
+    <li>Each tag selects its corresponding tasks.</li>
+    <li>Tasks with the <code>always</code> tag normally execute with tag selection.</li>
+    <li>Skipped categories do not execute.</li>
+    <li>You can inspect selected tasks before running them.</li>
+</ul>
+</div>
+
+<h2>13. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the <code>tags</code> keyword.</li>
+    <li>Assigning tags to individual tasks.</li>
+    <li>Executing selected tasks using <code>--tags</code>.</li>
+    <li>Skipping tasks using <code>--skip-tags</code>.</li>
+    <li>Assigning multiple tags to one task.</li>
+    <li>Applying tags to blocks.</li>
+    <li>Understanding special tags <code>always</code> and <code>never</code>.</li>
+    <li>Listing available tags and selected tasks.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use Ansible Tags?</h2>
+
+<p>
+In real DevOps environments, playbooks can contain hundreds of
+tasks covering package installation, configuration management,
+user administration, application deployment, and validation.
+</p>
+
+<p>
+Running every task during every execution is not always necessary.
+For example, if you only need to update an application configuration,
+you should not need to execute unrelated package installation
+or user creation tasks.
+</p>
+
+<p>
+Ansible tags allow you to divide a playbook into logical execution
+categories. You can select the required tasks using
+<code>--tags</code> or exclude specific categories using
+<code>--skip-tags</code>.
+</p>
+
+<p>
+This makes large playbooks easier to operate and maintain.
+It is particularly useful for Day 2 operations, where administrators
+may need to perform a specific activity without repeating the
+entire deployment workflow.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+</body>
+</html>
