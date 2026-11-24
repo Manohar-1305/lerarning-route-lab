@@ -219,7 +219,37 @@
                 padding: 12px;
             }
         }
-    </style>
+    
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
+</style>
 </head>
 
 <body>
@@ -274,19 +304,19 @@
 
     <p>Consider the following application configuration file:</p>
 
-    <pre><code># Application Configuration
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code># Application Configuration
 APP_NAME=learning-labs
 APP_PORT=5000
-APP_ENV=development</code></pre>
+APP_ENV=development</code></pre></div>
 
     <p>Suppose you want to change the application port from 5000 to 8080.</p>
 
     <p>Using lineinfile, Ansible can find the line containing APP_PORT and
        replace it with the required value.</p>
 
-    <pre><code>APP_NAME=learning-labs
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME=learning-labs
 APP_PORT=8080
-APP_ENV=development</code></pre>
+APP_ENV=development</code></pre></div>
 
     <p>
         Ansible checks the file before making changes. If the desired
@@ -296,7 +326,7 @@ APP_ENV=development</code></pre>
 
     <h2>3. Basic Playbook Structure</h2>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Manage configuration file
   hosts: ansible-client
   become: true
@@ -306,7 +336,7 @@ APP_ENV=development</code></pre>
       ansible.builtin.lineinfile:
         path: /tmp/app.conf
         line: "APP_PORT=8080"
-        state: present</code></pre>
+        state: present</code></pre></div>
 
     <p>Important fields:</p>
 
@@ -386,7 +416,7 @@ APP_ENV=development</code></pre>
 
     <p>Create <code>add-line.yml</code>:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Add a configuration line
   hosts: ansible-client
   become: true
@@ -397,7 +427,7 @@ APP_ENV=development</code></pre>
         path: /tmp/ansible-lineinfile-lab/app.conf
         line: "APP_PORT=8080"
         state: present
-        create: true</code></pre>
+        create: true</code></pre></div>
 
     <p>
         If the file does not exist, <code>create: true</code> creates it.
@@ -414,13 +444,13 @@ APP_ENV=development</code></pre>
 
     <p>Suppose the file contains:</p>
 
-    <pre><code>APP_NAME=learning-labs
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME=learning-labs
 APP_PORT=5000
-APP_ENV=development</code></pre>
+APP_ENV=development</code></pre></div>
 
     <p>Playbook:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Update application port
   hosts: localhost
   connection: local
@@ -432,13 +462,13 @@ APP_ENV=development</code></pre>
         path: /tmp/ansible-lineinfile-lab/app.conf
         regexp: '^APP_PORT='
         line: "APP_PORT=8080"
-        state: present</code></pre>
+        state: present</code></pre></div>
 
     <p>Result:</p>
 
-    <pre><code>APP_NAME=learning-labs
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME=learning-labs
 APP_PORT=8080
-APP_ENV=development</code></pre>
+APP_ENV=development</code></pre></div>
 
     <div class="info-box">
         <strong>Remember:</strong>
@@ -454,7 +484,7 @@ APP_ENV=development</code></pre>
         specified regular expression.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Remove development configuration
   hosts: localhost
   connection: local
@@ -465,7 +495,7 @@ APP_ENV=development</code></pre>
       ansible.builtin.lineinfile:
         path: /tmp/ansible-lineinfile-lab/app.conf
         regexp: '^APP_ENV='
-        state: absent</code></pre>
+        state: absent</code></pre></div>
 
     <p>
         Every line matching the regular expression is removed.
@@ -481,7 +511,7 @@ APP_ENV=development</code></pre>
 
     <h3>Using insertafter</h3>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Insert configuration after application name
   hosts: ansible-client
   become: true
@@ -492,11 +522,11 @@ APP_ENV=development</code></pre>
         path: /tmp/ansible-lineinfile-lab/app.conf
         line: "APP_OWNER=admin"
         insertafter: '^APP_NAME='
-        state: present</code></pre>
+        state: present</code></pre></div>
 
     <h3>Using insertbefore</h3>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Insert configuration before application port
   hosts: ansible-client
   become: true
@@ -507,7 +537,7 @@ APP_ENV=development</code></pre>
         path: /tmp/ansible-lineinfile-lab/app.conf
         line: "APP_VERSION=1.0"
         insertbefore: '^APP_PORT='
-        state: present</code></pre>
+        state: present</code></pre></div>
 
     <h3>Special insertion positions</h3>
 
@@ -523,7 +553,7 @@ APP_ENV=development</code></pre>
         create a backup before modifying the original file.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Update configuration with backup
   hosts: ansible-client
   become: true
@@ -535,7 +565,7 @@ APP_ENV=development</code></pre>
         regexp: '^APP_ENV='
         line: "APP_ENV=production"
         state: present
-        backup: true</code></pre>
+        backup: true</code></pre></div>
 
     <p>
         When Ansible modifies the file, it creates a backup containing
@@ -552,11 +582,11 @@ APP_ENV=development</code></pre>
 
     <p>Suppose the configuration contains:</p>
 
-    <pre><code>APP_PORT=5000</code></pre>
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_PORT=5000</code></pre></div>
 
     <p>Playbook:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Update configuration using backreferences
   hosts: ansible-client
   become: true
@@ -567,11 +597,11 @@ APP_ENV=development</code></pre>
         path: /tmp/ansible-lineinfile-lab/app.conf
         regexp: '^(APP_PORT=).*'
         line: '\g&lt;1&gt;8080'
-        backrefs: true</code></pre>
+        backrefs: true</code></pre></div>
 
     <p>Result:</p>
 
-    <pre><code>APP_PORT=8080</code></pre>
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_PORT=8080</code></pre></div>
 
     <div class="warning-box">
         <strong>Important:</strong>
@@ -590,12 +620,12 @@ APP_ENV=development</code></pre>
 
     <p>Consider this task:</p>
 
-    <pre><code>- name: Ensure application port
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>- name: Ensure application port
   ansible.builtin.lineinfile:
     path: /tmp/ansible-lineinfile-lab/app.conf
     regexp: '^APP_PORT='
     line: "APP_PORT=8080"
-    state: present</code></pre>
+    state: present</code></pre></div>
 
     <ul>
         <li>First run: Ansible adds or updates the configuration.</li>
@@ -634,7 +664,7 @@ APP_ENV=development</code></pre>
 
     <h3>Step 2: Write the Complete Playbook</h3>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Manage application configuration
   hosts: ansible-client
   become: true
@@ -700,14 +730,14 @@ APP_ENV=development</code></pre>
 
     - name: Display final configuration
       ansible.builtin.debug:
-        msg: "Application configuration has been updated successfully."</code></pre>
+        msg: "Application configuration has been updated successfully."</code></pre></div>
 
     <h3>Step 3: Expected Configuration</h3>
 
-    <pre><code>APP_NAME=learning-labs
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME=learning-labs
 APP_PORT=8080
 APP_ENV=production
-APP_OWNER=admin</code></pre>
+APP_OWNER=admin</code></pre></div>
 
     <h3>Step 4: Verify the Result</h3>
 
@@ -716,7 +746,7 @@ APP_OWNER=admin</code></pre>
         <code>verify-config.yml</code>.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Verify application configuration
   hosts: ansible-client
   become: true
@@ -732,7 +762,7 @@ APP_OWNER=admin</code></pre>
 
     - name: Display configuration
       ansible.builtin.debug:
-        var: config_output.stdout</code></pre>
+        var: config_output.stdout</code></pre></div>
 
     <h3>Step 5: Test Idempotency</h3>
 
@@ -879,6 +909,41 @@ APP_OWNER=admin</code></pre>
             button.textContent = "▶ Watch Video";
         }
     }
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
 </script>
 
 </body>

@@ -160,6 +160,36 @@ pre code {
     background: #523a29;
     color: #ffd3a8;
 }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 
@@ -222,7 +252,7 @@ pre code {
     The fully qualified module name is:
 </p>
 
-<pre><code>ansible.builtin.group</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible.builtin.group</code></pre></div>
 
 <h2>2. Understanding Linux Groups</h2>
 
@@ -241,9 +271,9 @@ pre code {
     an administrator can create three Linux groups:
 </p>
 
-<pre><code>developers
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>developers
 administrators
-testers</code></pre>
+testers</code></pre></div>
 
 <p>
     Users can then be assigned to the appropriate groups.
@@ -263,10 +293,10 @@ testers</code></pre>
     The basic structure of the Group module looks like this:
 </p>
 
-<pre><code>- name: Create a Linux group
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>- name: Create a Linux group
   ansible.builtin.group:
     name: developers
-    state: present</code></pre>
+    state: present</code></pre></div>
 
 <p>
     <code>ansible.builtin.group</code> identifies the module.
@@ -284,7 +314,7 @@ testers</code></pre>
     should manage.
 </p>
 
-<pre><code>name: developers</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>name: developers</code></pre></div>
 
 <p>
     In this example, Ansible manages a group named
@@ -318,7 +348,7 @@ testers</code></pre>
     Specifies the numeric Group ID assigned to the Linux group.
 </p>
 
-<pre><code>gid: 2001</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>gid: 2001</code></pre></div>
 
 <p>
     Every Linux group has a numeric GID. The operating system
@@ -340,7 +370,7 @@ testers</code></pre>
     Specifies whether the group should be created as a system group.
 </p>
 
-<pre><code>system: true</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>system: true</code></pre></div>
 
 <p>
     A system group is generally used for operating system
@@ -363,8 +393,8 @@ testers</code></pre>
     Controls whether a group can be forcibly removed.
 </p>
 
-<pre><code>state: absent
-force: true</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>state: absent
+force: true</code></pre></div>
 
 <p>
     This parameter is relevant when deleting a group.
@@ -384,7 +414,7 @@ force: true</code></pre>
     In this example, you will create a group named developers.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create Linux Group
   hosts: localhost
   connection: local
@@ -394,7 +424,7 @@ force: true</code></pre>
     - name: Create developers group
       ansible.builtin.group:
         name: developers
-        state: present</code></pre>
+        state: present</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -432,7 +462,7 @@ force: true</code></pre>
     Create <code>create-group-gid.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create Group with Specific GID
   hosts: localhost
   connection: local
@@ -443,7 +473,7 @@ force: true</code></pre>
       ansible.builtin.group:
         name: appgroup
         gid: 2001
-        state: present</code></pre>
+        state: present</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -480,7 +510,7 @@ force: true</code></pre>
     Create <code>create-multiple-groups.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create Multiple Linux Groups
   hosts: localhost
   connection: local
@@ -495,7 +525,7 @@ force: true</code></pre>
         - developers
         - testers
         - administrators
-        - monitoring</code></pre>
+        - monitoring</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -537,7 +567,7 @@ force: true</code></pre>
     Create <code>create-system-group.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create Application System Group
   hosts: localhost
   connection: local
@@ -548,7 +578,7 @@ force: true</code></pre>
       ansible.builtin.group:
         name: appservice
         system: true
-        state: present</code></pre>
+        state: present</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -580,7 +610,7 @@ force: true</code></pre>
     Create <code>remove-group.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Remove Linux Group
   hosts: localhost
   connection: local
@@ -590,7 +620,7 @@ force: true</code></pre>
     - name: Remove testers group
       ansible.builtin.group:
         name: testers
-        state: absent</code></pre>
+        state: absent</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -622,7 +652,7 @@ force: true</code></pre>
 
 <h3>Check a Specific Group</h3>
 
-<pre><code>getent group developers</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>getent group developers</code></pre></div>
 
 <p>
     This displays the group entry, including its name,
@@ -631,7 +661,7 @@ force: true</code></pre>
 
 <h3>Display All Groups</h3>
 
-<pre><code>getent group</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>getent group</code></pre></div>
 
 <p>
     This displays the group entries available through
@@ -640,7 +670,7 @@ force: true</code></pre>
 
 <h3>Check a Group's GID</h3>
 
-<pre><code>getent group appgroup</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>getent group appgroup</code></pre></div>
 
 <p>
     The output includes the numeric GID assigned to appgroup.
@@ -648,7 +678,7 @@ force: true</code></pre>
 
 <h3>Check a User's Group Membership</h3>
 
-<pre><code>id devops</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>id devops</code></pre></div>
 
 <p>
     This displays the user's UID, primary GID and
@@ -687,8 +717,8 @@ force: true</code></pre>
 
 <h3>Step 1: Create the Project Directory</h3>
 
-<pre><code>mkdir -p linux-group-management
-cd linux-group-management</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>mkdir -p linux-group-management
+cd linux-group-management</code></pre></div>
 
 <h3>Step 2: Create the Main Playbook</h3>
 
@@ -696,7 +726,7 @@ cd linux-group-management</code></pre>
     Create a file named <code>group-management.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Linux Team Group Management
   hosts: localhost
   connection: local
@@ -732,7 +762,7 @@ cd linux-group-management</code></pre>
       ansible.builtin.group:
         name: appservice
         system: true
-        state: present</code></pre>
+        state: present</code></pre></div>
 
 <h3>Step 3: Understand the Project Playbook</h3>
 
@@ -766,11 +796,11 @@ cd linux-group-management</code></pre>
     Validate the YAML syntax and playbook structure.
 </p>
 
-<pre><code>ansible-playbook group-management.yml --syntax-check</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook group-management.yml --syntax-check</code></pre></div>
 
 <h3>Step 5: Execute the Playbook</h3>
 
-<pre><code>ansible-playbook group-management.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook group-management.yml</code></pre></div>
 
 <p>
     Ansible executes each task and creates the required
@@ -779,11 +809,11 @@ cd linux-group-management</code></pre>
 
 <h3>Step 6: Verify the Created Groups</h3>
 
-<pre><code>getent group developers
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>getent group developers
 getent group testers
 getent group administrators
 getent group monitoring
-getent group appservice</code></pre>
+getent group appservice</code></pre></div>
 
 <h3>Step 7: Execute the Playbook Again</h3>
 
@@ -791,7 +821,7 @@ getent group appservice</code></pre>
     Run the same playbook again:
 </p>
 
-<pre><code>ansible-playbook group-management.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook group-management.yml</code></pre></div>
 
 <p>
     Since the requested groups already exist with the
@@ -1036,6 +1066,41 @@ function toggleVideo() {
     } else {
         wrapper.classList.add("hidden");
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

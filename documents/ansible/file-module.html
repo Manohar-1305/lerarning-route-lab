@@ -135,6 +135,36 @@ th {
 }
 
 td { color: #cbd5e1; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 
@@ -183,7 +213,7 @@ objects on remote managed hosts.
 
 <h2>2. How Does the File Module Work?</h2>
 
-<pre><code>             Ansible Controller
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>             Ansible Controller
              ------------------
              Playbook
                  |
@@ -199,7 +229,7 @@ objects on remote managed hosts.
           Create / Delete / Modify
                  |
                  v
-          Updated File or Directory</code></pre>
+          Updated File or Directory</code></pre></div>
 
 <p>
 Ansible connects to the managed host and applies the requested
@@ -314,7 +344,7 @@ managed host.
 
 <p><strong>Playbook: create-directory.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create directory
   hosts: ansible-client
   become: true
@@ -324,7 +354,7 @@ managed host.
       ansible.builtin.file:
         path: /tmp/learning-labs
         state: directory
-        mode: '0755'</code></pre>
+        mode: '0755'</code></pre></div>
 
 <p>
 If the directory already exists, Ansible ensures that its requested
@@ -340,7 +370,7 @@ not exist.
 
 <p><strong>Playbook: create-file.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create empty file
   hosts: ansible-client
   become: true
@@ -352,7 +382,7 @@ not exist.
         state: touch
         owner: root
         group: root
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
 <div class="warning-box">
 <strong>Important:</strong>
@@ -370,7 +400,7 @@ The file must already exist.
 
 <p><strong>Playbook: file-permissions.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Change file permissions
   hosts: ansible-client
   become: true
@@ -380,7 +410,7 @@ The file must already exist.
       ansible.builtin.file:
         path: /tmp/learning-labs/application.log
         state: file
-        mode: '0640'</code></pre>
+        mode: '0640'</code></pre></div>
 
 <p>
 The permission <code>0640</code> means:
@@ -400,7 +430,7 @@ Use <code>owner</code> and <code>group</code> to manage ownership.
 
 <p><strong>Playbook: file-ownership.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Change file ownership
   hosts: ansible-client
   become: true
@@ -412,7 +442,7 @@ Use <code>owner</code> and <code>group</code> to manage ownership.
         state: file
         owner: root
         group: root
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
 <h2>9. Create Nested Directories</h2>
 
@@ -423,7 +453,7 @@ its parent directories do not exist.
 
 <p><strong>Playbook: nested-directories.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create nested directories
   hosts: ansible-client
   become: true
@@ -435,7 +465,7 @@ its parent directories do not exist.
         state: directory
         owner: root
         group: root
-        mode: '0755'</code></pre>
+        mode: '0755'</code></pre></div>
 
 <h2>10. Apply Permissions Recursively</h2>
 
@@ -446,7 +476,7 @@ changes to the directory and its contents.
 
 <p><strong>Playbook: recursive-permissions.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Apply recursive permissions
   hosts: ansible-client
   become: true
@@ -459,7 +489,7 @@ changes to the directory and its contents.
         owner: root
         group: root
         mode: '0755'
-        recurse: true</code></pre>
+        recurse: true</code></pre></div>
 
 <div class="warning-box">
 <strong>Important:</strong>
@@ -475,7 +505,7 @@ Use <code>state: absent</code> to remove a file.
 
 <p><strong>Playbook: delete-file.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Delete application log
   hosts: ansible-client
   become: true
@@ -484,7 +514,7 @@ Use <code>state: absent</code> to remove a file.
     - name: Remove application log file
       ansible.builtin.file:
         path: /tmp/learning-labs/application.log
-        state: absent</code></pre>
+        state: absent</code></pre></div>
 
 <h2>12. Delete a Directory</h2>
 
@@ -495,7 +525,7 @@ contents.
 
 <p><strong>Playbook: delete-directory.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Delete application directory
   hosts: ansible-client
   become: true
@@ -504,7 +534,7 @@ contents.
     - name: Remove application directory
       ansible.builtin.file:
         path: /tmp/learning-labs
-        state: absent</code></pre>
+        state: absent</code></pre></div>
 
 <h2>13. Create a Symbolic Link</h2>
 
@@ -515,7 +545,7 @@ A symbolic link points to another file or directory. Use
 
 <p><strong>Playbook: symbolic-link.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create symbolic link
   hosts: ansible-client
   become: true
@@ -531,7 +561,7 @@ A symbolic link points to another file or directory. Use
       ansible.builtin.file:
         src: /tmp/application-logs
         path: /tmp/logs-link
-        state: link</code></pre>
+        state: link</code></pre></div>
 
 <p>
 The link <code>/tmp/logs-link</code> points to
@@ -548,7 +578,7 @@ and both paths must be on the same filesystem.
 
 <p><strong>Playbook: hard-link.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create hard link
   hosts: ansible-client
   become: true
@@ -564,7 +594,7 @@ and both paths must be on the same filesystem.
       ansible.builtin.file:
         src: /tmp/original-file.txt
         path: /tmp/hard-link.txt
-        state: hard</code></pre>
+        state: hard</code></pre></div>
 
 <h2>15. Practical Project: Manage Application Filesystem</h2>
 
@@ -590,7 +620,7 @@ directory structure and manages its files, permissions and links.
 
 <strong>Project playbook: manage-application-filesystem.yml</strong>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Manage application filesystem
   hosts: ansible-client
   become: true
@@ -637,7 +667,7 @@ directory structure and manages its files, permissions and links.
       ansible.builtin.file:
         src: /tmp/learning-labs/logs
         path: /tmp/application-logs
-        state: link</code></pre>
+        state: link</code></pre></div>
 
 </div>
 
@@ -696,6 +726,41 @@ function toggleVideo() {
     } else {
         wrapper.style.display = "none";
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

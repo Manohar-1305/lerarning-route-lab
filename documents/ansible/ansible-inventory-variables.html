@@ -81,6 +81,36 @@ td { color:#cbd5e1; }
     margin-top:40px;
 }
 .why h2 { color:#fbbf24; margin-top:0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -130,7 +160,7 @@ td { color:#cbd5e1; }
 
 <p>Create the following project structure on the Ansible controller:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-inventory-lab/
 ├── inventory.yml
 ├── inventory-vars.yml
@@ -138,7 +168,7 @@ ansible-inventory-lab/
 │   └── lab.yml
 └── host_vars/
     └── ansible-client.yml
-</pre>
+</pre></div>
 
 <p>Each file has a separate responsibility:</p>
 
@@ -153,21 +183,21 @@ ansible-inventory-lab/
 
 <p>Create the project directory and move into it:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 mkdir -p ansible-inventory-lab/group_vars
 mkdir -p ansible-inventory-lab/host_vars
 cd ansible-inventory-lab
-</pre>
+</pre></div>
 
 <p>Create the inventory file:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 vi inventory.yml
-</pre>
+</pre></div>
 
 <p>Add the following configuration:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 all:
   children:
@@ -177,7 +207,7 @@ all:
           ansible_user: root
           ansible_connection: ssh
           ansible_port: 22
-</pre>
+</pre></div>
 
 <p>Save the file using <code>:wq</code>.</p>
 
@@ -187,19 +217,19 @@ all:
 
 <p>Create the group variable file:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 vi group_vars/lab.yml
-</pre>
+</pre></div>
 
 <p>Add the following variables:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 environment: training
 application_name: learning-labs
 application_port: 8080
 package_name: curl
-</pre>
+</pre></div>
 
 <p>Save the file using <code>:wq</code>.</p>
 
@@ -239,18 +269,18 @@ package_name: curl
 
 <p>Create the host variable file:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 vi host_vars/ansible-client.yml
-</pre>
+</pre></div>
 
 <p>Add the following configuration:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 environment: development
 server_role: application-server
 server_owner: devops-team
-</pre>
+</pre></div>
 
 <p>Save the file using <code>:wq</code>.</p>
 
@@ -281,23 +311,23 @@ server_owner: devops-team
 
 <p>For example:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 # group_vars/lab.yml
 
 environment: training
-</pre>
+</pre></div>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 # host_vars/ansible-client.yml
 
 environment: development
-</pre>
+</pre></div>
 
 <p>Effective value:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 environment: development
-</pre>
+</pre></div>
 
 <p>This is the inventory-level precedence relationship. Ansible has additional precedence levels involving playbook variables, task variables, extra variables, and other sources.</p>
 
@@ -305,13 +335,13 @@ environment: development
 
 <p>Create the playbook:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 vi inventory-vars.yml
-</pre>
+</pre></div>
 
 <p>Add the following content:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate Inventory Variables
   hosts: ansible-client
@@ -343,7 +373,7 @@ vi inventory-vars.yml
         name: "{{ package_name }}"
         state: present
         update_cache: true
-</pre>
+</pre></div>
 
 <h3>What Happens During Execution?</h3>
 
@@ -358,9 +388,9 @@ vi inventory-vars.yml
 
 <h2>8. Execute the Playbook</h2>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook -i inventory.yml inventory-vars.yml
-</pre>
+</pre></div>
 
 <p>Command breakdown:</p>
 
@@ -389,13 +419,13 @@ ansible-playbook -i inventory.yml inventory-vars.yml
 
 <p>The debug tasks should display values similar to:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 Environment: development
 Application: learning-labs
 Application Port: 8080
 Server Role: application-server
 Server Owner: devops-team
-</pre>
+</pre></div>
 
 <p>The package installation task installs curl if it is not already installed.</p>
 
@@ -409,9 +439,9 @@ Server Owner: devops-team
 
 <h3>Display the Inventory Graph</h3>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-inventory -i inventory.yml --graph
-</pre>
+</pre></div>
 
 <p>Command breakdown:</p>
 
@@ -423,9 +453,9 @@ ansible-inventory -i inventory.yml --graph
 
 <h3>Display All Inventory Data</h3>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-inventory -i inventory.yml --list
-</pre>
+</pre></div>
 
 <p>Command breakdown:</p>
 
@@ -435,9 +465,9 @@ ansible-inventory -i inventory.yml --list
 
 <h3>Display Variables for a Specific Host</h3>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-inventory -i inventory.yml --host ansible-client
-</pre>
+</pre></div>
 
 <p>Command breakdown:</p>
 
@@ -458,48 +488,48 @@ ansible-inventory -i inventory.yml --host ansible-client
 
 <p><strong>Step 1:</strong> Open the group variable file.</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 vi group_vars/lab.yml
-</pre>
+</pre></div>
 
 <p>Change the environment value:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 environment: staging
 application_name: learning-labs
 application_port: 9090
 package_name: curl
-</pre>
+</pre></div>
 
 <p><strong>Step 2:</strong> Open the host variable file.</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 vi host_vars/ansible-client.yml
-</pre>
+</pre></div>
 
 <p>Change the environment value:</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 environment: production
 server_role: application-server
 server_owner: devops-team
-</pre>
+</pre></div>
 
 <p><strong>Step 3:</strong> Execute the same playbook again.</p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook -i inventory.yml inventory-vars.yml
-</pre>
+</pre></div>
 
 <p><strong>Expected result:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 Environment: production
 Application: learning-labs
 Application Port: 9090
 Server Role: application-server
 Server Owner: devops-team
-</pre>
+</pre></div>
 
 <p>The playbook remains unchanged. Only the variable files have been modified.</p>
 
@@ -556,6 +586,41 @@ function toggleVideo() {
     } else {
         video.style.display = "none";
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

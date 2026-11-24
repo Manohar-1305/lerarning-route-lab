@@ -135,6 +135,36 @@ th {
 }
 
 td { color: #cbd5e1; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 
@@ -190,7 +220,7 @@ that later tasks can access.
 
 <h2>2. How Does Register Work?</h2>
 
-<pre><code>             Ansible Controller
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>             Ansible Controller
              ------------------
                     |
                     v
@@ -209,7 +239,7 @@ that later tasks can access.
              Store Result Variable
                     |
                     v
-             Next Task Uses Variable</code></pre>
+             Next Task Uses Variable</code></pre></div>
 
 <p>
 For example, a task can execute a command to retrieve the hostname.
@@ -224,7 +254,7 @@ The <code>register</code> keyword is written at the same indentation
 level as the module used in the task.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Register example
   hosts: ansible-client
   become: true
@@ -233,7 +263,7 @@ level as the module used in the task.
     - name: Get hostname
       ansible.builtin.command:
         cmd: hostname
-      register: hostname_result</code></pre>
+      register: hostname_result</code></pre></div>
 
 <p>
 Here, <code>hostname_result</code> is the variable containing
@@ -315,7 +345,7 @@ the Debug module.
 
 <p><strong>Playbook: register-hostname.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Capture hostname
   hosts: ansible-client
   become: true
@@ -329,7 +359,7 @@ the Debug module.
 
     - name: Display hostname
       ansible.builtin.debug:
-        msg: "Managed host hostname is {{ hostname_result.stdout }}"</code></pre>
+        msg: "Managed host hostname is {{ hostname_result.stdout }}"</code></pre></div>
 
 <p>
 The hostname command result is stored in
@@ -347,7 +377,7 @@ as a list of lines.
 
 <p><strong>Playbook: register-output.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Capture command output
   hosts: ansible-client
   become: true
@@ -365,7 +395,7 @@ as a list of lines.
 
     - name: Display output line by line
       ansible.builtin.debug:
-        var: disk_result.stdout_lines</code></pre>
+        var: disk_result.stdout_lines</code></pre></div>
 
 <h2>7. Access the Return Code</h2>
 
@@ -377,7 +407,7 @@ A non-zero return code usually indicates an error.
 
 <p><strong>Playbook: register-return-code.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Check command return code
   hosts: ansible-client
   become: true
@@ -392,7 +422,7 @@ A non-zero return code usually indicates an error.
 
     - name: Display return code
       ansible.builtin.debug:
-        msg: "Return code is {{ directory_result.rc }}"</code></pre>
+        msg: "Return code is {{ directory_result.rc }}"</code></pre></div>
 
 <p>
 The <code>test -d</code> command returns zero when the directory
@@ -408,7 +438,7 @@ of multiple tasks in the same playbook.
 
 <p><strong>Playbook: register-multiple.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Collect Linux system information
   hosts: ansible-client
   become: true
@@ -437,7 +467,7 @@ of multiple tasks in the same playbook.
         msg:
           - "Hostname: {{ hostname_result.stdout }}"
           - "Date: {{ date_result.stdout }}"
-          - "Kernel: {{ kernel_result.stdout }}"</code></pre>
+          - "Kernel: {{ kernel_result.stdout }}"</code></pre></div>
 
 <h2>9. Register Results from the Copy Module</h2>
 
@@ -452,7 +482,7 @@ The following example captures the result of a file-copy operation.
 
 <p><strong>Playbook: register-copy.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Capture copy module result
   hosts: ansible-client
   become: true
@@ -469,7 +499,7 @@ The following example captures the result of a file-copy operation.
 
     - name: Display copy operation result
       ansible.builtin.debug:
-        var: copy_result</code></pre>
+        var: copy_result</code></pre></div>
 
 <p>
 The registered result may include information such as the destination
@@ -493,7 +523,7 @@ If you want to inspect that result in a later task, you can use
 
 <p><strong>Playbook: register-failure.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Capture command failure
   hosts: ansible-client
   become: true
@@ -508,7 +538,7 @@ If you want to inspect that result in a later task, you can use
 
     - name: Display command status
       ansible.builtin.debug:
-        msg: "Command return code: {{ check_result.rc }}"</code></pre>
+        msg: "Command return code: {{ check_result.rc }}"</code></pre></div>
 
 <p>
 The task is allowed to continue even when the command returns
@@ -525,7 +555,7 @@ the individual task results in a <code>results</code> list.
 
 <p><strong>Playbook: register-loop.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Register results from multiple commands
   hosts: ansible-client
   become: true
@@ -544,7 +574,7 @@ the individual task results in a <code>results</code> list.
 
     - name: Display all directory check results
       ansible.builtin.debug:
-        var: directory_checks.results</code></pre>
+        var: directory_checks.results</code></pre></div>
 
 <p>
 Each item produces an individual result. The results are collected
@@ -559,7 +589,7 @@ A registered result can be used in later tasks to make decisions.
 
 <p><strong>Playbook: register-reuse.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Reuse registered result
   hosts: ansible-client
   become: true
@@ -577,7 +607,7 @@ A registered result can be used in later tasks to make decisions.
 
     - name: Display command return code
       ansible.builtin.debug:
-        msg: "Command completed with return code {{ hostname_result.rc }}"</code></pre>
+        msg: "Command completed with return code {{ hostname_result.rc }}"</code></pre></div>
 
 <h2>13. Register and Assert</h2>
 
@@ -589,7 +619,7 @@ an expected result.
 
 <p><strong>Playbook: register-assert.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate registered command result
   hosts: ansible-client
   become: true
@@ -606,7 +636,7 @@ an expected result.
         that:
           - hostname_result.stdout | length > 0
         success_msg: "Hostname validation passed."
-        fail_msg: "Hostname information is empty."</code></pre>
+        fail_msg: "Hostname information is empty."</code></pre></div>
 
 <p>
 This example uses the registered hostname output as the input
@@ -638,7 +668,7 @@ stores each result in a registered variable and generates a report.
 
 <strong>Project playbook: server-information.yml</strong>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Collect Linux server information
   hosts: ansible-client
   become: true
@@ -682,7 +712,7 @@ stores each result in a registered variable and generates a report.
           - "Kernel: {{ kernel_result.stdout }}"
           - "Date: {{ date_result.stdout }}"
           - "Disk usage:"
-          - "{{ disk_result.stdout }}"</code></pre>
+          - "{{ disk_result.stdout }}"</code></pre></div>
 
 </div>
 
@@ -760,6 +790,41 @@ function toggleVideo() {
     } else {
         wrapper.style.display = "none";
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

@@ -1,0 +1,883 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible APT Module</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 25px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+h1, h2, h3 {
+    color: #f8fafc;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+h2 {
+    margin-top: 35px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #334155;
+}
+
+h3 {
+    margin-top: 25px;
+    color: #93c5fd;
+}
+
+p, li {
+    color: #cbd5e1;
+}
+
+code {
+    color: #86efac;
+    background: #1e293b;
+    padding: 3px 6px;
+    border-radius: 4px;
+}
+
+pre {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    color: #86efac;
+    line-height: 1.6;
+}
+
+pre code {
+    padding: 0;
+    background: transparent;
+    color: inherit;
+}
+
+.section {
+    margin-bottom: 25px;
+}
+
+.note {
+    background: #1e293b;
+    border-left: 4px solid #38bdf8;
+    padding: 12px 16px;
+    margin: 18px 0;
+    border-radius: 4px;
+}
+
+.warning {
+    background: #292524;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 16px;
+    margin: 18px 0;
+    border-radius: 4px;
+}
+
+.video-container {
+    margin: 25px 0;
+}
+
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 8px;
+}
+
+.video-toggle {
+    margin-bottom: 12px;
+    padding: 9px 16px;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.video-toggle:hover {
+    background: #15803d;
+}
+
+.hidden {
+    display: none;
+}
+
+.task {
+    margin: 20px 0;
+    padding: 15px;
+    background: #172033;
+    border: 1px solid #334155;
+    border-radius: 8px;
+}
+
+.task h3 {
+    margin-top: 0;
+}
+
+/* Why APT is used section */
+
+.why-apt-box {
+    background: #3b2b1f;
+    border: 1px solid #8b5e3c;
+    border-left: 5px solid #c08457;
+    border-radius: 8px;
+    padding: 22px;
+    margin-top: 35px;
+}
+
+.why-apt-box h2 {
+    color: #f0c49b;
+    border-bottom: 1px solid #795237;
+    margin-top: 0;
+}
+
+.why-apt-box h3 {
+    color: #e8b98f;
+    margin-top: 22px;
+}
+
+.why-apt-box p,
+.why-apt-box li {
+    color: #f1dfce;
+}
+
+.why-apt-box code {
+    background: #523a29;
+    color: #ffd3a8;
+}
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Ansible APT Module</h1>
+
+<p>
+    In this lab, you will learn how to use the Ansible APT module
+    to manage software packages on Ubuntu servers. You will create
+    playbooks to install, remove, update and upgrade packages.
+    At the end, you will build a practical project that automates
+    the installation of essential Linux administration tools.
+</p>
+
+<div class="video-container">
+    <button class="video-toggle" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <div id="videoWrapper">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible APT Module"
+            allowfullscreen>
+        </iframe>
+    </div>
+</div>
+
+<h2>1. What Is the APT Module?</h2>
+
+<p>
+    APT stands for Advanced Package Tool. Ubuntu uses APT to
+    install, update, upgrade and remove software packages.
+</p>
+
+<p>
+    For example, when you want to install a package such as
+    <code>curl</code>, Ubuntu uses its package management system
+    to download and install the required software.
+</p>
+
+<p>
+    Ansible provides the <code>ansible.builtin.apt</code> module
+    to automate these package management operations across
+    multiple Ubuntu servers.
+</p>
+
+<p>
+    Instead of manually installing packages on every server,
+    you can define the required package configuration in a
+    playbook and execute it against your inventory.
+</p>
+
+<h2>2. APT Module Syntax</h2>
+
+<p>
+    The basic structure of the APT module looks like this:
+</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>- name: Install a package
+  ansible.builtin.apt:
+    name: curl
+    state: present</code></pre></div>
+
+<p>
+    <code>ansible.builtin.apt</code> identifies the module,
+    while <code>name</code> and <code>state</code> are parameters
+    used to control the package.
+</p>
+
+<h2>3. Important APT Module Parameters</h2>
+
+<h3>name</h3>
+
+<p>
+    Specifies the package that you want Ansible to manage.
+    You can specify a single package or multiple packages.
+</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>name: curl</code></pre></div>
+
+<p>To manage multiple packages, use a YAML list:</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>name:
+  - curl
+  - wget
+  - unzip</code></pre></div>
+
+<h3>state</h3>
+
+<p>
+    Specifies the desired state of the package. Ansible compares
+    the current package state with the requested state and takes
+    action when necessary.
+</p>
+
+<ul>
+    <li><code>present</code> – Ensures the package is installed.</li>
+    <li><code>absent</code> – Ensures the package is removed.</li>
+    <li><code>latest</code> – Ensures the latest available package version is installed.</li>
+</ul>
+
+<h3>update_cache</h3>
+
+<p>
+    Refreshes the local APT package information from configured
+    repositories before performing package operations.
+</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>update_cache: true</code></pre></div>
+
+<p>
+    This is similar to refreshing package information before
+    installing software. It does not itself upgrade installed packages.
+</p>
+
+<h3>cache_valid_time</h3>
+
+<p>
+    Specifies how long the existing APT cache is considered valid,
+    in seconds.
+</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>cache_valid_time: 3600</code></pre></div>
+
+<p>
+    In this example, Ansible refreshes the cache only when it is
+    older than 3600 seconds (one hour).
+</p>
+
+<h3>upgrade</h3>
+
+<p>
+    Upgrades installed packages using the available package
+    information.
+</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>upgrade: dist</code></pre></div>
+
+<p>
+    The <code>dist</code> option performs a distribution-style
+    package upgrade, allowing APT to handle dependency changes.
+    It does not upgrade Ubuntu to another operating system release.
+</p>
+
+<h2>4. Install a Single Package</h2>
+
+<p>
+    Create a playbook named <code>install-package.yml</code>.
+    In this example, you will install the curl package.
+</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
+- name: Install Curl on Ubuntu
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install curl package
+      ansible.builtin.apt:
+        name: curl
+        state: present
+        update_cache: true</code></pre></div>
+
+<h3>Understanding the Playbook</h3>
+
+<p>
+    <code>hosts: all</code> targets all servers in the inventory.
+</p>
+
+<p>
+    <code>become: true</code> enables privilege escalation because
+    installing software requires administrative permissions.
+</p>
+
+<p>
+    <code>name: curl</code> identifies the package to install.
+</p>
+
+<p>
+    <code>state: present</code> ensures that curl is installed.
+    If it is already installed, Ansible leaves it unchanged.
+</p>
+
+<p>
+    <code>update_cache: true</code> refreshes package information
+    before installing curl.
+</p>
+
+<h2>5. Install Multiple Packages</h2>
+
+<p>
+    You do not need to create a separate task for every package.
+    The APT module supports installing multiple packages in one task.
+</p>
+
+<p>
+    Create <code>install-multiple-packages.yml</code>.
+</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
+- name: Install Multiple Ubuntu Packages
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install administration tools
+      ansible.builtin.apt:
+        name:
+          - curl
+          - wget
+          - unzip
+          - tree
+          - htop
+        state: present
+        update_cache: true
+        cache_valid_time: 3600</code></pre></div>
+
+<p>
+    The <code>name</code> parameter contains a list of five packages.
+    Ansible ensures that all five packages are installed.
+</p>
+
+<p>
+    <code>state: present</code> applies to every package in the list.
+</p>
+
+<h2>6. Remove a Package</h2>
+
+<p>
+    The APT module can also remove software packages.
+    Create <code>remove-package.yml</code>.
+</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
+- name: Remove Package from Ubuntu
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Remove curl package
+      ansible.builtin.apt:
+        name: curl
+        state: absent</code></pre></div>
+
+<h3>Understanding the Playbook</h3>
+
+<p>
+    <code>name: curl</code> identifies the package to remove.
+</p>
+
+<p>
+    <code>state: absent</code> ensures that the package is not
+    installed on the managed server.
+</p>
+
+<p>
+    If the package is already absent, Ansible does not need to
+    remove it again.
+</p>
+
+<h2>7. Upgrade Installed Packages</h2>
+
+<p>
+    You can use the APT module to upgrade installed packages.
+    Create <code>upgrade-packages.yml</code>.
+</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
+- name: Upgrade Ubuntu Packages
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Refresh APT package cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Upgrade installed packages
+      ansible.builtin.apt:
+        upgrade: dist</code></pre></div>
+
+<h3>Understanding the Playbook</h3>
+
+<p>
+    The first task refreshes the package information so that
+    APT can identify available updates.
+</p>
+
+<p>
+    The second task upgrades installed packages using the
+    distribution-style upgrade operation.
+</p>
+
+<div class="warning">
+    <strong>Important:</strong>
+    Package upgrades can change software versions and dependencies.
+    Test updates before applying them to production servers.
+</div>
+
+<h2>8. Idempotency in the APT Module</h2>
+
+<p>
+    Idempotency is an important concept in Ansible. It means that
+    running the same playbook multiple times should not repeatedly
+    change a system that is already in the desired state.
+</p>
+
+<p>Consider this task:</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>- name: Ensure curl is installed
+  ansible.builtin.apt:
+    name: curl
+    state: present</code></pre></div>
+
+<p>
+    When curl is not installed, Ansible installs it.
+    When curl is already installed, Ansible leaves it unchanged.
+</p>
+
+<p>
+    If you execute the playbook again without any changes needed,
+    the task should report <code>ok</code> instead of
+    <code>changed</code>.
+</p>
+
+<h2>9. Practical Project: Ubuntu Administration Tools Setup</h2>
+
+<p>
+    In this project, you will automate the installation of essential
+    Linux administration tools on Ubuntu servers using the APT module.
+</p>
+
+<p>
+    You will create one inventory file and one Ansible playbook.
+    The playbook will refresh the package cache and ensure that
+    all required packages are installed.
+</p>
+
+<h3>Project Requirements</h3>
+
+<ul>
+    <li>Target all servers in the inventory.</li>
+    <li>Refresh the APT package cache.</li>
+    <li>Install curl for HTTP requests.</li>
+    <li>Install wget for downloading files.</li>
+    <li>Install unzip for extracting ZIP archives.</li>
+    <li>Install tree for viewing directory structures.</li>
+    <li>Install htop for interactive process monitoring.</li>
+    <li>Ensure all packages remain installed when the playbook runs again.</li>
+</ul>
+
+<h3>Step 1: Create the Project Directory</h3>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>mkdir -p ubuntu-admin-setup
+cd ubuntu-admin-setup</code></pre></div>
+
+<h3>Step 2: Create the Inventory File</h3>
+
+<p>
+    Create a file named <code>inventory.ini</code>.
+</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>[ubuntu_servers]
+192.168.1.101 ansible_user=ubuntu
+192.168.1.102 ansible_user=ubuntu</code></pre></div>
+
+<p>
+    Replace the example IP addresses and username with the
+    connection details of your managed Ubuntu servers.
+</p>
+
+<h3>Step 3: Create the Playbook</h3>
+
+<p>
+    Create a file named <code>ubuntu-admin-setup.yml</code>.
+</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
+- name: Configure Ubuntu Administration Tools
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Refresh APT package cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install required administration tools
+      ansible.builtin.apt:
+        name:
+          - curl
+          - wget
+          - unzip
+          - tree
+          - htop
+        state: present</code></pre></div>
+
+<h3>Step 4: Understand the Project Playbook</h3>
+
+<p>
+    The playbook contains two tasks.
+</p>
+
+<p>
+    The first task refreshes the APT package cache. The
+    <code>cache_valid_time</code> parameter avoids unnecessary
+    cache refreshes when the existing cache is less than one
+    hour old.
+</p>
+
+<p>
+    The second task installs five administration tools using
+    a single APT module task.
+</p>
+
+<p>
+    The <code>state: present</code> parameter ensures that all
+    five packages are installed. If a package is already present,
+    Ansible does not reinstall it.
+</p>
+
+<h3>Step 5: Validate the Playbook</h3>
+
+<p>
+    Check the YAML syntax and playbook structure before execution.
+</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook -i inventory.ini ubuntu-admin-setup.yml --syntax-check</code></pre></div>
+
+<p>
+    If the playbook is valid, Ansible displays a syntax OK message.
+</p>
+
+<h3>Step 6: Execute the Playbook</h3>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook -i inventory.ini ubuntu-admin-setup.yml</code></pre></div>
+
+<p>
+    Ansible connects to the inventory hosts, refreshes the APT cache
+    when required and installs the five administration packages.
+</p>
+
+<h3>Step 7: Execute the Playbook Again</h3>
+
+<p>Run the same playbook again:</p>
+
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook -i inventory.ini ubuntu-admin-setup.yml</code></pre></div>
+
+<p>
+    Since the packages are already installed, the package installation
+    task should report <code>ok</code> instead of <code>changed</code>,
+    provided the desired package state has not changed.
+</p>
+
+<div class="note">
+    <strong>Project completed:</strong>
+    You have automated Ubuntu package management using an Ansible
+    playbook and the APT module.
+</div>
+
+<h2>What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the Ansible APT module.</li>
+    <li>Understanding APT module parameters.</li>
+    <li>Installing a single package.</li>
+    <li>Installing multiple packages.</li>
+    <li>Removing packages.</li>
+    <li>Refreshing the APT package cache.</li>
+    <li>Upgrading installed Ubuntu packages.</li>
+    <li>Understanding Ansible idempotency.</li>
+    <li>Creating and executing an Ubuntu package management project.</li>
+</ul>
+
+<!-- Detailed explanation box at the end -->
+
+<div class="why-apt-box">
+
+    <h2>Why Do We Use the Ansible APT Module?</h2>
+
+    <p>
+        Ubuntu uses APT (Advanced Package Tool) to manage software
+        packages. Whenever you install, update, upgrade or remove
+        software on an Ubuntu server, APT handles the package
+        management operations.
+    </p>
+
+    <p>
+        In a real-world environment, administrators may manage
+        dozens or hundreds of Ubuntu servers. Installing or updating
+        software manually on every server takes time and increases
+        the possibility of configuration differences and human errors.
+    </p>
+
+    <p>
+        The Ansible APT module solves this problem by allowing
+        administrators to define package requirements in a playbook
+        and apply them consistently across multiple Ubuntu servers.
+    </p>
+
+    <h3>1. Centralized Package Management</h3>
+
+    <p>
+        Instead of connecting to every server and installing packages
+        individually, you can define all required packages in one
+        Ansible playbook. Ansible applies the same package configuration
+        to every server in the selected inventory group.
+    </p>
+
+    <p>
+        For example, if your organization requires curl, wget, unzip
+        and htop on all Ubuntu servers, you can define these packages
+        in one task. Ansible ensures that the required packages are
+        installed across the managed servers.
+    </p>
+
+    <h3>2. Consistent Server Configuration</h3>
+
+    <p>
+        Inconsistent software installations can cause problems.
+        One server might have curl installed while another server
+        does not. Different package versions can also lead to
+        unexpected application behavior.
+    </p>
+
+    <p>
+        By using the APT module, you can define the desired package
+        state and apply it consistently across your servers.
+        This helps maintain a standardized server configuration.
+    </p>
+
+    <h3>3. Idempotency and Reduced Manual Work</h3>
+
+    <p>
+        The APT module supports idempotent operations. This means
+        Ansible checks the existing package state before making
+        changes.
+    </p>
+
+    <p>
+        For example, when you specify <code>state: present</code>,
+        Ansible checks whether the requested package is installed.
+        If it is already installed, Ansible does not install it again.
+        If it is missing, Ansible installs it.
+    </p>
+
+    <p>
+        This allows you to execute the same playbook repeatedly
+        without unnecessarily reinstalling packages.
+    </p>
+
+    <h3>4. Automated Software Updates</h3>
+
+    <p>
+        Servers need regular software updates to receive security
+        fixes, bug fixes and package improvements. Manually updating
+        multiple servers can become difficult as the infrastructure
+        grows.
+    </p>
+
+    <p>
+        The APT module allows you to automate package cache updates
+        and package upgrades through Ansible playbooks. You can
+        execute the same patching workflow across your managed
+        Ubuntu servers.
+    </p>
+
+    <h3>5. Package Installation and Removal</h3>
+
+    <p>
+        The APT module supports different package states. You can
+        install required software using <code>state: present</code>,
+        remove unwanted software using <code>state: absent</code>,
+        and install the latest available package version using
+        <code>state: latest</code>.
+    </p>
+
+    <p>
+        This makes the APT module useful throughout the server
+        lifecycle, from initial configuration to ongoing software
+        maintenance.
+    </p>
+
+    <h3>6. Real-World Example</h3>
+
+    <p>
+        Imagine an organization managing 50 Ubuntu servers.
+        Every server requires the following packages:
+    </p>
+
+    <ul>
+        <li>curl for making HTTP requests.</li>
+        <li>wget for downloading files.</li>
+        <li>unzip for extracting ZIP archives.</li>
+        <li>htop for monitoring running processes.</li>
+        <li>tree for viewing directory structures.</li>
+    </ul>
+
+    <p>
+        Without automation, an administrator would need to install
+        these packages individually on all 50 servers.
+    </p>
+
+    <p>
+        With Ansible, the administrator creates one playbook
+        containing the required package list and executes it
+        against the inventory. Ansible handles the installation
+        across all selected servers.
+    </p>
+
+    <h3>7. Why Is This Important for a DevOps Engineer?</h3>
+
+    <p>
+        Package management is a fundamental server administration
+        activity. DevOps engineers frequently need to install
+        dependencies, maintain software versions, apply security
+        updates and prepare servers for application deployments.
+    </p>
+
+    <p>
+        Understanding the APT module helps you automate these
+        repetitive activities, maintain consistent environments
+        and reduce manual intervention across Ubuntu infrastructure.
+    </p>
+
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const wrapper = document.getElementById("videoWrapper");
+    const button = document.getElementById("videoToggle");
+
+    if (wrapper.classList.contains("hidden")) {
+        wrapper.classList.remove("hidden");
+        button.textContent = "✕ Hide Video";
+    } else {
+        wrapper.classList.add("hidden");
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
+</script>
+
+</body>
+</html>

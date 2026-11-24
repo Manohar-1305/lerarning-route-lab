@@ -173,7 +173,37 @@
             h2 { font-size: 22px; }
             pre { font-size: 12px; padding: 12px; }
         }
-    </style>
+    
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
+</style>
 </head>
 
 <body>
@@ -334,7 +364,7 @@
         can be installed inside the Ubuntu container.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Install Nginx
   hosts: ansible-client
   become: true
@@ -344,7 +374,7 @@
       ansible.builtin.apt:
         name: nginx
         state: present
-        update_cache: true</code></pre>
+        update_cache: true</code></pre></div>
 
     <div class="warning-box">
         Installing Nginx does not guarantee that its service can be
@@ -360,7 +390,7 @@
         If it is already running, Ansible does not restart it.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Start Nginx service
   hosts: ansible-client
   become: true
@@ -369,7 +399,7 @@
     - name: Ensure Nginx is running
       ansible.builtin.service:
         name: nginx
-        state: started</code></pre>
+        state: started</code></pre></div>
 
     <p>
         This is a valid service-management task when the target has
@@ -382,7 +412,7 @@
         Use <code>state: stopped</code> to ensure a service is not running.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Stop Nginx service
   hosts: ansible-client
   become: true
@@ -391,7 +421,7 @@
     - name: Ensure Nginx is stopped
       ansible.builtin.service:
         name: nginx
-        state: stopped</code></pre>
+        state: stopped</code></pre></div>
 
     <h2>8. Restarting a Service</h2>
 
@@ -400,7 +430,7 @@
         restarted, for example after a configuration change.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Restart Nginx service
   hosts: ansible-client
   become: true
@@ -409,7 +439,7 @@
     - name: Restart Nginx
       ansible.builtin.service:
         name: nginx
-        state: restarted</code></pre>
+        state: restarted</code></pre></div>
 
     <div class="info-box">
         Unlike <code>started</code>, the <code>restarted</code> state
@@ -424,7 +454,7 @@
         should start automatically when the system boots.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Enable Nginx at boot
   hosts: ansible-client
   become: true
@@ -433,7 +463,7 @@
     - name: Enable Nginx service
       ansible.builtin.service:
         name: nginx
-        enabled: true</code></pre>
+        enabled: true</code></pre></div>
 
     <p>
         This operation requires a compatible service manager.
@@ -449,7 +479,7 @@
         both operations.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure Nginx service
   hosts: ansible-client
   become: true
@@ -459,7 +489,7 @@
       ansible.builtin.service:
         name: nginx
         state: started
-        enabled: true</code></pre>
+        enabled: true</code></pre></div>
 
     <h2>11. Understanding Handlers</h2>
 
@@ -474,7 +504,7 @@
         Ansible can notify a handler to restart Nginx.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure Nginx
   hosts: ansible-client
   become: true
@@ -495,7 +525,7 @@
     - name: Restart Nginx
       ansible.builtin.service:
         name: nginx
-        state: restarted</code></pre>
+        state: restarted</code></pre></div>
 
     <p>
         The handler runs only if the configuration task reports a change.
@@ -516,7 +546,7 @@
         using Ansible's <code>command</code> module.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Check Nginx process
   hosts: ansible-client
   become: true
@@ -539,7 +569,7 @@
             'Nginx process is running'
             if nginx_process.rc == 0
             else 'Nginx process is not running'
-          }}</code></pre>
+          }}</code></pre></div>
 
     <p>
         This checks for a process named nginx. It does not prove that
@@ -572,19 +602,19 @@
         Ansible controller.
     </p>
 
-    <pre><code>#!/bin/sh
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>#!/bin/sh
 
 while true
 do
     echo "Learning Labs worker is running"
     sleep 30
-done</code></pre>
+done</code></pre></div>
 
     <h3>Step 2: Create the Start Playbook</h3>
 
     <p>Create <code>start-worker.yml</code>:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Start background worker
   hosts: ansible-client
   become: true
@@ -629,7 +659,7 @@ done</code></pre>
             'Worker process is running'
             if worker_process.rc == 0
             else 'Worker process is not running'
-          }}</code></pre>
+          }}</code></pre></div>
 
     <div class="warning-box">
         <strong>Correction for this project:</strong>
@@ -645,7 +675,7 @@ done</code></pre>
         starting, checking, and stopping the background worker.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Manage background worker
   hosts: ansible-client
   become: true
@@ -728,13 +758,13 @@ done</code></pre>
 
     - name: Display worker status
       ansible.builtin.debug:
-        msg: "Background worker is running"</code></pre>
+        msg: "Background worker is running"</code></pre></div>
 
     <h3>Step 4: Stop the Worker</h3>
 
     <p>Create <code>stop-worker.yml</code>:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Stop background worker
   hosts: ansible-client
   become: true
@@ -768,7 +798,7 @@ done</code></pre>
 
     - name: Display completion message
       ansible.builtin.debug:
-        msg: "Worker stop operation completed"</code></pre>
+        msg: "Worker stop operation completed"</code></pre></div>
 
     <div class="info-box">
         <strong>Project outcome:</strong>
@@ -900,6 +930,41 @@ done</code></pre>
             button.textContent = "▶ Watch Video";
         }
     }
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
 </script>
 
 </body>

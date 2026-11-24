@@ -81,6 +81,36 @@ td { color: #cbd5e1; }
     margin-top: 40px;
 }
 .why h2 { color: #fbbf24; margin-top: 0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -133,13 +163,13 @@ tasks associated with a particular tag.
 
 <h2>2. Basic Syntax</h2>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Task description
   ansible.builtin.module_name:
     parameter: value
   tags:
     - configuration
-</pre>
+</pre></div>
 
 <p>
 The <code>tags</code> keyword is placed at the same indentation
@@ -152,7 +182,7 @@ level as the module and its parameters.
 You can assign different tags to different tasks in the same playbook.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Application deployment
   hosts: ansible-client
@@ -188,7 +218,7 @@ You can assign different tags to different tasks in the same playbook.
       changed_when: false
       tags:
         - validation
-</pre>
+</pre></div>
 
 <p>
 This playbook contains three tags:
@@ -224,33 +254,33 @@ with a particular tag.
 To execute only installation tasks:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml --tags installation
-</pre>
+</pre></div>
 
 <p>
 To execute only configuration tasks:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml --tags configuration
-</pre>
+</pre></div>
 
 <p>
 To execute only validation tasks:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml --tags validation
-</pre>
+</pre></div>
 
 <p>
 You can also execute multiple tags in one command:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml --tags "installation,configuration"
-</pre>
+</pre></div>
 
 <p>
 In this example, Ansible executes tasks tagged with either
@@ -269,9 +299,9 @@ The <code>--skip-tags</code> option allows you to exclude tasks
 associated with specified tags.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml --skip-tags validation
-</pre>
+</pre></div>
 
 <p>
 This executes the applicable tasks except those tagged with
@@ -282,9 +312,9 @@ This executes the applicable tasks except those tagged with
 You can skip multiple tags:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml --skip-tags "installation,validation"
-</pre>
+</pre></div>
 
 <h2>6. Assign Multiple Tags to One Task</h2>
 
@@ -293,7 +323,7 @@ A single task can have multiple tags. This allows the same task
 to be selected through different tag names.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Application configuration
   hosts: ansible-client
@@ -308,19 +338,19 @@ to be selected through different tag names.
         - configuration
         - application
         - deployment
-</pre>
+</pre></div>
 
 <p>
 You can execute this task using any one of its tags:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml --tags configuration
 
 ansible-playbook application.yml --tags application
 
 ansible-playbook application.yml --tags deployment
-</pre>
+</pre></div>
 
 <h2>7. Assign Tags to a Block</h2>
 
@@ -329,7 +359,7 @@ You can assign a tag to an entire block. The tag is inherited
 by the tasks inside that block.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Application setup
   hosts: ansible-client
@@ -354,7 +384,7 @@ by the tasks inside that block.
         - name: Display completion
           ansible.builtin.debug:
             msg: "Application setup completed"
-</pre>
+</pre></div>
 
 <p>
 All tasks inside this block inherit the
@@ -365,9 +395,9 @@ All tasks inside this block inherit the
 Execute the block using:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml --tags application_setup
-</pre>
+</pre></div>
 
 <h2>8. Special Tags: always and never</h2>
 
@@ -384,7 +414,7 @@ A task tagged with <code>always</code> normally executes even
 when you select a different tag.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate always tag
   hosts: ansible-client
@@ -403,15 +433,15 @@ when you select a different tag.
         state: present
       tags:
         - installation
-</pre>
+</pre></div>
 
 <p>
 When you run:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml --tags installation
-</pre>
+</pre></div>
 
 <p>
 The installation task executes, and the task tagged
@@ -426,7 +456,7 @@ playbook run. It executes only when you explicitly select its
 tag or another applicable tag assigned to that task.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate never tag
   hosts: ansible-client
@@ -443,15 +473,15 @@ tag or another applicable tag assigned to that task.
     - name: Display normal task
       ansible.builtin.debug:
         msg: "Normal task executed"
-</pre>
+</pre></div>
 
 <p>
 Normal execution:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml
-</pre>
+</pre></div>
 
 <p>
 The diagnostic task is skipped, while the normal task executes.
@@ -461,9 +491,9 @@ The diagnostic task is skipped, while the normal task executes.
 Execute the diagnostic task explicitly:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml --tags diagnostics
-</pre>
+</pre></div>
 
 <div class="note">
 <strong>Important:</strong> Special tags have selection behavior
@@ -479,9 +509,9 @@ You can inspect the tags defined in a playbook without executing
 the tasks.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml --list-tags
-</pre>
+</pre></div>
 
 <p>
 Ansible displays the available tags for the playbook.
@@ -493,9 +523,9 @@ Ansible displays the available tags for the playbook.
 You can also list the tasks that would be selected by a tag.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application.yml --list-tasks --tags configuration
-</pre>
+</pre></div>
 
 <p>
 This displays the tasks selected by the
@@ -529,7 +559,7 @@ You must be able to execute each category independently.
 
 <p><strong>Create this playbook:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Application management
   hosts: ansible-client
@@ -582,51 +612,51 @@ You must be able to execute each category independently.
         msg: "Application management playbook started"
       tags:
         - always
-</pre>
+</pre></div>
 
 <h3>Run the following commands from ansible-controller</h3>
 
 <p><strong>1. List available tags:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-tags.yml --list-tags
-</pre>
+</pre></div>
 
 <p><strong>2. List tasks for configuration:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-tags.yml --list-tasks --tags configuration
-</pre>
+</pre></div>
 
 <p><strong>3. Install packages only:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-tags.yml --tags installation
-</pre>
+</pre></div>
 
 <p><strong>4. Configure the application only:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-tags.yml --tags configuration
-</pre>
+</pre></div>
 
 <p><strong>5. Create the application user only:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-tags.yml --tags users
-</pre>
+</pre></div>
 
 <p><strong>6. Execute validation only:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-tags.yml --tags validation
-</pre>
+</pre></div>
 
 <p><strong>7. Skip installation:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-tags.yml --skip-tags installation
-</pre>
+</pre></div>
 
 <p><strong>Expected behavior:</strong></p>
 
@@ -698,5 +728,40 @@ function toggleVideo() {
     }
 }
 </script>
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
+</script>
+
 </body>
 </html>

@@ -215,7 +215,37 @@
                 padding: 12px;
             }
         }
-    </style>
+    
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
+</style>
 </head>
 
 <body>
@@ -274,11 +304,11 @@
 
     <p>For example, a playbook may insert this configuration:</p>
 
-    <pre><code># BEGIN ANSIBLE MANAGED BLOCK
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code># BEGIN ANSIBLE MANAGED BLOCK
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=learning_labs
-# END ANSIBLE MANAGED BLOCK</code></pre>
+# END ANSIBLE MANAGED BLOCK</code></pre></div>
 
     <p>
         The markers help Ansible locate the block during subsequent
@@ -288,7 +318,7 @@ DB_NAME=learning_labs
 
     <h2>3. Basic Playbook Structure</h2>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Manage configuration block
   hosts: ansible-client
   become: true
@@ -302,7 +332,7 @@ DB_NAME=learning_labs
           DB_PORT=5432
           DB_NAME=learning_labs
         state: present
-        create: true</code></pre>
+        create: true</code></pre></div>
 
     <p>Important fields:</p>
 
@@ -393,7 +423,7 @@ DB_NAME=learning_labs
 
     <p>Create <code>add-block.yml</code>:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Add application configuration block
   hosts: ansible-client
   become: true
@@ -408,16 +438,16 @@ DB_NAME=learning_labs
           DB_NAME=learning_labs
           DB_USER=learning_user
         state: present
-        create: true</code></pre>
+        create: true</code></pre></div>
 
     <p>The resulting file contains:</p>
 
-    <pre><code># BEGIN ANSIBLE MANAGED BLOCK
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code># BEGIN ANSIBLE MANAGED BLOCK
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=learning_labs
 DB_USER=learning_user
-# END ANSIBLE MANAGED BLOCK</code></pre>
+# END ANSIBLE MANAGED BLOCK</code></pre></div>
 
     <h2>6. Updating an Existing Block</h2>
 
@@ -428,7 +458,7 @@ DB_USER=learning_user
 
     <p>For example, change the database port to 3306:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Update database configuration
   hosts: ansible-client
   become: true
@@ -442,16 +472,16 @@ DB_USER=learning_user
           DB_PORT=3306
           DB_NAME=learning_labs
           DB_USER=learning_user
-        state: present</code></pre>
+        state: present</code></pre></div>
 
     <p>Updated content:</p>
 
-    <pre><code># BEGIN ANSIBLE MANAGED BLOCK
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code># BEGIN ANSIBLE MANAGED BLOCK
 DB_HOST=localhost
 DB_PORT=3306
 DB_NAME=learning_labs
 DB_USER=learning_user
-# END ANSIBLE MANAGED BLOCK</code></pre>
+# END ANSIBLE MANAGED BLOCK</code></pre></div>
 
     <div class="info-box">
         Ansible identifies the existing block using its markers and
@@ -466,7 +496,7 @@ DB_USER=learning_user
         Ansible.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Remove database configuration block
   hosts: ansible-client
   become: true
@@ -480,7 +510,7 @@ DB_USER=learning_user
           DB_PORT=5432
           DB_NAME=learning_labs
           DB_USER=learning_user
-        state: absent</code></pre>
+        state: absent</code></pre></div>
 
     <p>
         Ansible removes the managed block and its markers. Other content
@@ -494,7 +524,7 @@ DB_USER=learning_user
         easier to identify.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Add block with custom markers
   hosts: ansible-client
   become: true
@@ -509,15 +539,15 @@ DB_USER=learning_user
           CACHE_PORT=6379
         marker: "# {mark} APPLICATION CACHE CONFIGURATION"
         state: present
-        create: true</code></pre>
+        create: true</code></pre></div>
 
     <p>Result:</p>
 
-    <pre><code># BEGIN APPLICATION CACHE CONFIGURATION
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code># BEGIN APPLICATION CACHE CONFIGURATION
 CACHE_ENABLED=true
 CACHE_HOST=localhost
 CACHE_PORT=6379
-# END APPLICATION CACHE CONFIGURATION</code></pre>
+# END APPLICATION CACHE CONFIGURATION</code></pre></div>
 
     <div class="warning-box">
         <strong>Important:</strong>
@@ -536,7 +566,7 @@ CACHE_PORT=6379
 
     <h3>Using insertafter</h3>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Insert block after application section
   hosts: ansible-client
   become: true
@@ -549,11 +579,11 @@ CACHE_PORT=6379
           LOG_LEVEL=INFO
           LOG_FILE=/tmp/application.log
         insertafter: '^APP_NAME='
-        state: present</code></pre>
+        state: present</code></pre></div>
 
     <h3>Using insertbefore</h3>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Insert block before database section
   hosts: ansible-client
   become: true
@@ -566,7 +596,7 @@ CACHE_PORT=6379
           APP_OWNER=admin
           APP_VERSION=1.0
         insertbefore: '^DB_HOST='
-        state: present</code></pre>
+        state: present</code></pre></div>
 
     <h3>Special insertion positions</h3>
 
@@ -582,7 +612,7 @@ CACHE_PORT=6379
         before Ansible modifies it.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Update configuration with backup
   hosts: ansible-client
   become: true
@@ -596,7 +626,7 @@ CACHE_PORT=6379
           APP_DEBUG=false
           APP_LOG_LEVEL=INFO
         state: present
-        backup: true</code></pre>
+        backup: true</code></pre></div>
 
     <h2>11. Using Validate</h2>
 
@@ -611,7 +641,7 @@ CACHE_PORT=6379
         <code>%s</code>.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate configuration before applying
   hosts: ansible-client
   become: true
@@ -626,7 +656,7 @@ CACHE_PORT=6379
           APP_ENV=production
         state: present
         create: true
-        validate: "/usr/bin/test -s %s"</code></pre>
+        validate: "/usr/bin/test -s %s"</code></pre></div>
 
     <p>
         This example checks that the temporary file is not empty.
@@ -643,7 +673,7 @@ CACHE_PORT=6379
 
     <p>Consider this task:</p>
 
-    <pre><code>- name: Ensure database configuration
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>- name: Ensure database configuration
   ansible.builtin.blockinfile:
     path: /tmp/app.conf
     block: |
@@ -651,7 +681,7 @@ CACHE_PORT=6379
       DB_PORT=5432
       DB_NAME=learning_labs
     state: present
-    create: true</code></pre>
+    create: true</code></pre></div>
 
     <ul>
         <li>First execution: Ansible creates the managed block.</li>
@@ -688,7 +718,7 @@ CACHE_PORT=6379
         on the Ansible controller.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Manage application configuration sections
   hosts: ansible-client
   become: true
@@ -769,7 +799,7 @@ CACHE_PORT=6379
 
     - name: Display project completion message
       ansible.builtin.debug:
-        msg: "Application configuration blocks have been managed successfully."</code></pre>
+        msg: "Application configuration blocks have been managed successfully."</code></pre></div>
 
     <h3>Step 2: Expected Configuration</h3>
 
@@ -778,7 +808,7 @@ CACHE_PORT=6379
         contain the following sections:
     </p>
 
-    <pre><code># Application configuration
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code># Application configuration
 APP_NAME=learning-labs
 
 # Additional settings
@@ -794,7 +824,7 @@ DB_HOST=127.0.0.1
 DB_PORT=5432
 DB_NAME=learning_labs
 DB_USER=learning_user
-# END DATABASE SETTINGS</code></pre>
+# END DATABASE SETTINGS</code></pre></div>
 
     <h3>Step 3: Verify the Configuration</h3>
 
@@ -802,7 +832,7 @@ DB_USER=learning_user
         Create <code>verify-config.yml</code> on the controller.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Verify application configuration
   hosts: ansible-client
   become: true
@@ -815,7 +845,7 @@ DB_USER=learning_user
 
     - name: Display application configuration
       ansible.builtin.debug:
-        msg: "{{ config_file_content.content | b64decode }}"</code></pre>
+        msg: "{{ config_file_content.content | b64decode }}"</code></pre></div>
 
     <h3>Step 4: Test Idempotency</h3>
 
@@ -958,6 +988,41 @@ DB_USER=learning_user
             button.textContent = "▶ Watch Video";
         }
     }
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
 </script>
 
 </body>

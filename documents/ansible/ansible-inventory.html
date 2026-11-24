@@ -41,6 +41,36 @@ td { color:#cbd5e1; }
 .project { background:#172033; border:1px solid #334155; border-radius:8px; padding:18px; margin-top:20px; }
 .why { background:#451f0b; border:1px solid #92400e; border-radius:10px; padding:24px; margin-top:40px; }
 .why h2 { color:#fbbf24; margin-top:0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -105,8 +135,8 @@ Ansible Inventory defines the managed hosts and groups of hosts that Ansible can
 
 <p>Create a project directory on your Ansible controller:</p>
 
-<pre><code>mkdir -p inventory-project
-cd inventory-project</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>mkdir -p inventory-project
+cd inventory-project</code></pre></div>
 
 <p><strong>Command explanation:</strong></p>
 
@@ -135,11 +165,11 @@ cd inventory-project</code></pre>
 
 <p>Create the inventory file using the vi editor:</p>
 
-<pre><code>vi inventory</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>vi inventory</code></pre></div>
 
 <p>Press <code>i</code> to enter INSERT mode and add:</p>
 
-<pre><code>[lab]
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>[lab]
 ansible-client ansible_user=root
 
 [ubuntu]
@@ -147,7 +177,7 @@ ansible-client
 
 [all:vars]
 ansible_connection=ssh
-ansible_port=22</code></pre>
+ansible_port=22</code></pre></div>
 
 <p>Press <code>Esc</code>, type <code>:wq</code>, and press Enter.</p>
 
@@ -198,28 +228,28 @@ ansible_port=22</code></pre>
 
 <p>Your inventory contains two groups:</p>
 
-<pre><code>[lab]
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>[lab]
 ansible-client
 
 [ubuntu]
-ansible-client</code></pre>
+ansible-client</code></pre></div>
 
 <p>The same host can belong to multiple groups.</p>
 
 <p>You can target the client through either group:</p>
 
-<pre><code>hosts: lab</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>hosts: lab</code></pre></div>
 
 <p>Or:</p>
 
-<pre><code>hosts: ubuntu</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>hosts: ubuntu</code></pre></div>
 
 <h2>5. Understand Host and Group Variables</h2>
 
 <p>You can define connection variables directly beside a host entry:</p>
 
-<pre><code>[lab]
-ansible-client ansible_user=root ansible_port=22</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>[lab]
+ansible-client ansible_user=root ansible_port=22</code></pre></div>
 
 <p>Common inventory variables:</p>
 
@@ -252,12 +282,12 @@ ansible-client ansible_user=root ansible_port=22</code></pre>
 
 <p>Group variables are defined using the group name followed by <code>:vars</code>.</p>
 
-<pre><code>[lab]
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>[lab]
 ansible-client
 
 [lab:vars]
 ansible_user=root
-ansible_port=22</code></pre>
+ansible_port=22</code></pre></div>
 
 <p>These variables apply to the hosts belonging to the lab group.</p>
 
@@ -271,7 +301,7 @@ ansible_port=22</code></pre>
 
 <p>Execute:</p>
 
-<pre><code>ansible-inventory -i inventory --graph</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-inventory -i inventory --graph</code></pre></div>
 
 <p><strong>Command breakdown:</strong></p>
 
@@ -300,12 +330,12 @@ ansible_port=22</code></pre>
 
 <p><strong>Expected output:</strong></p>
 
-<pre><code>@all:
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>@all:
   |--@lab:
   |  |--ansible-client
   |--@ubuntu:
   |  |--ansible-client
-  |--@ungrouped:</code></pre>
+  |--@ungrouped:</code></pre></div>
 
 <p><strong>Understanding the output:</strong></p>
 
@@ -327,7 +357,7 @@ ansible_port=22</code></pre>
 
 <p>Execute:</p>
 
-<pre><code>ansible-inventory -i inventory --list</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-inventory -i inventory --list</code></pre></div>
 
 <p><strong>Command breakdown:</strong></p>
 
@@ -356,7 +386,7 @@ ansible_port=22</code></pre>
 
 <p><strong>Expected output structure:</strong></p>
 
-<pre><code>{
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>{
     "_meta": {
         "hostvars": {
             "ansible-client": {
@@ -383,7 +413,7 @@ ansible_port=22</code></pre>
             "ansible-client"
         ]
     }
-}</code></pre>
+}</code></pre></div>
 
 <p>The exact formatting and metadata can vary with the Ansible version and inventory configuration.</p>
 
@@ -393,7 +423,7 @@ ansible_port=22</code></pre>
 
 <p>Execute:</p>
 
-<pre><code>ansible-inventory -i inventory --host ansible-client</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-inventory -i inventory --host ansible-client</code></pre></div>
 
 <p><strong>Command breakdown:</strong></p>
 
@@ -422,11 +452,11 @@ ansible_port=22</code></pre>
 
 <p><strong>Expected output:</strong></p>
 
-<pre><code>{
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>{
     "ansible_connection": "ssh",
     "ansible_port": 22,
     "ansible_user": "root"
-}</code></pre>
+}</code></pre></div>
 
 <p>This command displays inventory data. It does not establish an SSH connection.</p>
 
@@ -434,7 +464,7 @@ ansible_port=22</code></pre>
 
 <p>Execute:</p>
 
-<pre><code>ansible lab -i inventory -m ansible.builtin.ping</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible lab -i inventory -m ansible.builtin.ping</code></pre></div>
 
 <p><strong>Command breakdown:</strong></p>
 
@@ -467,10 +497,10 @@ ansible_port=22</code></pre>
 
 <p><strong>Expected output:</strong></p>
 
-<pre><code>ansible-client | SUCCESS => {
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-client | SUCCESS => {
     "changed": false,
     "ping": "pong"
-}</code></pre>
+}</code></pre></div>
 
 <div class="note">
 <strong>Important:</strong> Ansible's ping module is not an ICMP ping. It verifies that Ansible can communicate with the managed host and execute its module.
@@ -480,11 +510,11 @@ ansible_port=22</code></pre>
 
 <p>Create a file named <code>main.yml</code>:</p>
 
-<pre><code>vi main.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>vi main.yml</code></pre></div>
 
 <p>Press <code>i</code> and add:</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Test Ansible inventory
   hosts: lab
   become: true
@@ -497,13 +527,13 @@ ansible_port=22</code></pre>
 
     - name: Display hostname result
       ansible.builtin.debug:
-        var: host_output.stdout</code></pre>
+        var: host_output.stdout</code></pre></div>
 
 <p>Press <code>Esc</code>, type <code>:wq</code>, and press Enter.</p>
 
 <p>Execute:</p>
 
-<pre><code>ansible-playbook -i inventory main.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook -i inventory main.yml</code></pre></div>
 
 <p><strong>Command breakdown:</strong></p>
 
@@ -590,22 +620,22 @@ ansible_port=22</code></pre>
 
 <p><strong>Project structure:</strong></p>
 
-<pre><code>inventory-project/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>inventory-project/
 ├── inventory
-└── main.yml</code></pre>
+└── main.yml</code></pre></div>
 
 <p><strong>Step 1: Create the project directory</strong></p>
 
-<pre><code>mkdir -p inventory-project
-cd inventory-project</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>mkdir -p inventory-project
+cd inventory-project</code></pre></div>
 
 <p><strong>Step 2: Create the inventory file</strong></p>
 
-<pre><code>vi inventory</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>vi inventory</code></pre></div>
 
 <p>Press <code>i</code> and add:</p>
 
-<pre><code>[lab]
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>[lab]
 ansible-client ansible_user=root
 
 [ubuntu]
@@ -613,25 +643,25 @@ ansible-client
 
 [all:vars]
 ansible_connection=ssh
-ansible_port=22</code></pre>
+ansible_port=22</code></pre></div>
 
 <p>Save using <code>Esc</code>, <code>:wq</code>, and Enter.</p>
 
 <p><strong>Step 3: Display the inventory tree</strong></p>
 
-<pre><code>ansible-inventory -i inventory --graph</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-inventory -i inventory --graph</code></pre></div>
 
 <p><strong>Step 4: Test connectivity</strong></p>
 
-<pre><code>ansible lab -i inventory -m ansible.builtin.ping</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible lab -i inventory -m ansible.builtin.ping</code></pre></div>
 
 <p><strong>Step 5: Create the playbook</strong></p>
 
-<pre><code>vi main.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>vi main.yml</code></pre></div>
 
 <p>Press <code>i</code> and add:</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure Ubuntu lab client
   hosts: lab
   become: true
@@ -658,13 +688,13 @@ ansible_port=22</code></pre>
 
     - name: Display inventory information
       ansible.builtin.debug:
-        var: inventory_info.stdout</code></pre>
+        var: inventory_info.stdout</code></pre></div>
 
 <p>Save the file using <code>Esc</code>, <code>:wq</code>, and Enter.</p>
 
 <p><strong>Step 6: Check playbook syntax</strong></p>
 
-<pre><code>ansible-playbook -i inventory main.yml --syntax-check</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook -i inventory main.yml --syntax-check</code></pre></div>
 
 <p><strong>Command breakdown:</strong></p>
 
@@ -693,7 +723,7 @@ ansible_port=22</code></pre>
 
 <p><strong>Step 7: Display selected hosts without executing tasks</strong></p>
 
-<pre><code>ansible-playbook -i inventory main.yml --list-hosts</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook -i inventory main.yml --list-hosts</code></pre></div>
 
 <p><strong>Command breakdown:</strong></p>
 
@@ -710,26 +740,26 @@ ansible_port=22</code></pre>
 
 <p><strong>Expected output:</strong></p>
 
-<pre><code>playbook: main.yml
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>playbook: main.yml
 
   play #1 (lab): Configure Ubuntu lab client
     pattern: ['lab']
     hosts (1):
-      ansible-client</code></pre>
+      ansible-client</code></pre></div>
 
 <p><strong>Step 8: Execute the playbook</strong></p>
 
-<pre><code>ansible-playbook -i inventory main.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook -i inventory main.yml</code></pre></div>
 
 <p><strong>Step 9: Verify the result</strong></p>
 
 <p>Create a verification playbook:</p>
 
-<pre><code>vi verify.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>vi verify.yml</code></pre></div>
 
 <p>Add:</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Verify inventory configuration
   hosts: lab
   become: true
@@ -742,23 +772,23 @@ ansible_port=22</code></pre>
 
     - name: Display inventory information
       ansible.builtin.debug:
-        var: inventory_info.stdout</code></pre>
+        var: inventory_info.stdout</code></pre></div>
 
 <p>Save and execute:</p>
 
-<pre><code>ansible-playbook -i inventory verify.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook -i inventory verify.yml</code></pre></div>
 
 <h3>Expected Result</h3>
 
 <p>Your existing <code>ansible-client</code> container should contain:</p>
 
-<pre><code>/opt/ansible-inventory-lab/
-└── info.txt</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>/opt/ansible-inventory-lab/
+└── info.txt</code></pre></div>
 
 <p>The information file should contain:</p>
 
-<pre><code>Managed by Ansible Inventory
-Host: ansible-client</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>Managed by Ansible Inventory
+Host: ansible-client</code></pre></div>
 </div>
 
 <h2>13. Important Points</h2>
@@ -817,6 +847,41 @@ function toggleVideo() {
     } else {
         video.style.display = "none";
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

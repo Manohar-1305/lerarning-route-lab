@@ -41,6 +41,36 @@ td { color:#cbd5e1; }
 .project { background:#172033; border:1px solid #334155; border-radius:8px; padding:18px; margin-top:20px; }
 .why { background:#451f0b; border:1px solid #92400e; border-radius:10px; padding:24px; margin-top:40px; }
 .why h2 { color:#fbbf24; margin-top:0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -96,17 +126,17 @@ Ansible Galaxy is a platform and command-line tool for finding, sharing, install
 
 <p>First, check whether Ansible Galaxy is available on your Ansible controller.</p>
 
-<pre><code>ansible-galaxy --version</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy --version</code></pre></div>
 
 <p>If the command is not found, install Ansible using APT:</p>
 
-<pre><code>sudo apt update
-sudo apt install -y ansible</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>sudo apt update
+sudo apt install -y ansible</code></pre></div>
 
 <p>Verify the installation:</p>
 
-<pre><code>ansible --version
-ansible-galaxy --version</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible --version
+ansible-galaxy --version</code></pre></div>
 
 <div class="note">
 <strong>Important:</strong> Run these commands on your Ansible controller, not on the managed Ubuntu client. The <code>ansible-galaxy</code> command is included with Ansible.
@@ -118,11 +148,11 @@ ansible-galaxy --version</code></pre>
 
 <p>Example:</p>
 
-<pre><code>ansible-galaxy search nginx</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy search nginx</code></pre></div>
 
 <p>You can also search for roles related to Docker:</p>
 
-<pre><code>ansible-galaxy search docker</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy search docker</code></pre></div>
 
 <p>The search results help you identify roles available for installation.</p>
 
@@ -136,18 +166,18 @@ ansible-galaxy --version</code></pre>
 
 <p>Example:</p>
 
-<pre><code>ansible-galaxy role install geerlingguy.nginx</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy role install geerlingguy.nginx</code></pre></div>
 
 <p>By default, Ansible installs the role into its configured roles path.</p>
 
 <p>To install a role into a specific directory:</p>
 
-<pre><code>ansible-galaxy role install geerlingguy.nginx \
-  -p ./roles</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy role install geerlingguy.nginx \
+  -p ./roles</code></pre></div>
 
 <p>The project directory may look like this:</p>
 
-<pre><code>ansible-project/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-project/
 ├── main.yml
 └── roles/
     └── geerlingguy.nginx/
@@ -155,17 +185,17 @@ ansible-galaxy --version</code></pre>
         ├── handlers/
         ├── tasks/
         ├── templates/
-        └── vars/</code></pre>
+        └── vars/</code></pre></div>
 
 <h2>6. List Installed Roles</h2>
 
 <p>To view the roles installed in the configured roles paths:</p>
 
-<pre><code>ansible-galaxy role list</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy role list</code></pre></div>
 
 <p>To list roles from a specific directory:</p>
 
-<pre><code>ansible-galaxy role list -p ./roles</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy role list -p ./roles</code></pre></div>
 
 <h2>7. Use an Installed Role in a Playbook</h2>
 
@@ -173,13 +203,13 @@ ansible-galaxy --version</code></pre>
 
 <p><strong>main.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure webserver
   hosts: ansible-client
   become: true
 
   roles:
-    - geerlingguy.nginx</code></pre>
+    - geerlingguy.nginx</code></pre></div>
 
 <p>Ansible looks for the role in its configured role search paths.</p>
 
@@ -193,14 +223,14 @@ ansible-galaxy --version</code></pre>
 
 <p>Create a file named <code>requirements.yml</code>.</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 roles:
   - name: geerlingguy.nginx
-    version: "3.2.0"</code></pre>
+    version: "3.2.0"</code></pre></div>
 
 <p>Install the roles defined in the requirements file:</p>
 
-<pre><code>ansible-galaxy role install -r requirements.yml -p ./roles</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy role install -r requirements.yml -p ./roles</code></pre></div>
 
 <p>This downloads the specified role into the local <code>roles/</code> directory.</p>
 
@@ -210,20 +240,20 @@ roles:
 
 <p>For example, install the community general collection:</p>
 
-<pre><code>ansible-galaxy collection install community.general</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy collection install community.general</code></pre></div>
 
 <p>To install a collection into a specific project directory:</p>
 
-<pre><code>ansible-galaxy collection install community.general \
-  -p ./collections</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy collection install community.general \
+  -p ./collections</code></pre></div>
 
 <p>List installed collections:</p>
 
-<pre><code>ansible-galaxy collection list</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy collection list</code></pre></div>
 
 <p>Use a module from the collection in a playbook by specifying its fully qualified collection name.</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Collection example
   hosts: ansible-client
   become: true
@@ -231,7 +261,7 @@ roles:
   tasks:
     - name: Display a message
       ansible.builtin.debug:
-        msg: "Ansible collection example"</code></pre>
+        msg: "Ansible collection example"</code></pre></div>
 
 <p>The example uses a built-in module. A collection module would use its own namespace, collection name, and module name.</p>
 
@@ -239,39 +269,39 @@ roles:
 
 <p>You can also define collections in a requirements file.</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 collections:
   - name: community.general
-    version: "10.0.0"</code></pre>
+    version: "10.0.0"</code></pre></div>
 
 <p>Install the specified collections:</p>
 
-<pre><code>ansible-galaxy collection install -r requirements.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy collection install -r requirements.yml</code></pre></div>
 
 <p>You can define both roles and collections in the same requirements file:</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 roles:
   - name: geerlingguy.nginx
     version: "3.2.0"
 
 collections:
   - name: community.general
-    version: "10.0.0"</code></pre>
+    version: "10.0.0"</code></pre></div>
 
 <p>Install both types of content:</p>
 
-<pre><code>ansible-galaxy install -r requirements.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy install -r requirements.yml</code></pre></div>
 
 <h2>11. Remove an Installed Role</h2>
 
 <p>To remove an installed role:</p>
 
-<pre><code>ansible-galaxy role remove geerlingguy.nginx</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy role remove geerlingguy.nginx</code></pre></div>
 
 <p>To remove an installed collection:</p>
 
-<pre><code>ansible-galaxy collection remove community.general</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy collection remove community.general</code></pre></div>
 
 <p>Removing a role or collection affects the installed content in the relevant Ansible paths.</p>
 
@@ -329,39 +359,39 @@ collections:
 
 <p><strong>Project structure:</strong></p>
 
-<pre><code>galaxy-project/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>galaxy-project/
 ├── requirements.yml
 ├── main.yml
 ├── inventory
 ├── roles/
-└── collections/</code></pre>
+└── collections/</code></pre></div>
 
 <p><strong>Step 1: Create requirements.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 roles:
   - name: geerlingguy.nginx
     version: "3.2.0"
 
 collections:
   - name: community.general
-    version: "10.0.0"</code></pre>
+    version: "10.0.0"</code></pre></div>
 
 <p><strong>Step 2: Install the dependencies</strong></p>
 
-<pre><code>ansible-galaxy install -r requirements.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy install -r requirements.yml</code></pre></div>
 
 <p><strong>Step 3: List installed roles</strong></p>
 
-<pre><code>ansible-galaxy role list</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy role list</code></pre></div>
 
 <p><strong>Step 4: List installed collections</strong></p>
 
-<pre><code>ansible-galaxy collection list</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy collection list</code></pre></div>
 
 <p><strong>Step 5: Create a main playbook</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Test Ansible project
   hosts: ansible-client
   become: true
@@ -369,11 +399,11 @@ collections:
   tasks:
     - name: Verify Ansible execution
       ansible.builtin.debug:
-        msg: "Ansible Galaxy dependencies are ready"</code></pre>
+        msg: "Ansible Galaxy dependencies are ready"</code></pre></div>
 
 <p><strong>Step 6: Execute the playbook</strong></p>
 
-<pre><code>ansible-playbook main.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook main.yml</code></pre></div>
 
 <h3>Expected Result</h3>
 
@@ -419,6 +449,41 @@ function toggleVideo() {
     } else {
         video.style.display = "none";
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

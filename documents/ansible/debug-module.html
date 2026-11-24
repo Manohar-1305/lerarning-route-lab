@@ -135,6 +135,36 @@ th {
 }
 
 td { color: #cbd5e1; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 
@@ -183,7 +213,7 @@ or change the configuration of a managed host.
 
 <h2>2. How Does the Debug Module Work?</h2>
 
-<pre><code>             Ansible Controller
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>             Ansible Controller
              ------------------
                     |
                     v
@@ -199,7 +229,7 @@ or change the configuration of a managed host.
           Display Message or Variable
                     |
                     v
-             Ansible Output</code></pre>
+             Ansible Output</code></pre></div>
 
 <p>
 The Debug module displays information in the Ansible execution output.
@@ -240,7 +270,7 @@ Use the <code>msg</code> parameter to print a custom message.
 
 <p><strong>Playbook: debug-message.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Display a message
   hosts: ansible-client
   become: true
@@ -248,7 +278,7 @@ Use the <code>msg</code> parameter to print a custom message.
   tasks:
     - name: Display welcome message
       ansible.builtin.debug:
-        msg: "Welcome to Ansible automation"</code></pre>
+        msg: "Welcome to Ansible automation"</code></pre></div>
 
 <h2>5. Display Variables Using Debug</h2>
 
@@ -259,7 +289,7 @@ You can display variables defined in the playbook using the
 
 <p><strong>Playbook: debug-variable.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Display variables
   hosts: ansible-client
   become: true
@@ -280,7 +310,7 @@ You can display variables defined in the playbook using the
 
     - name: Display environment
       ansible.builtin.debug:
-        var: environment</code></pre>
+        var: environment</code></pre></div>
 
 <div class="info-box">
 <strong>Important:</strong>
@@ -297,7 +327,7 @@ multiple variables in a single message.
 
 <p><strong>Playbook: debug-multiple.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Display application details
   hosts: ansible-client
   become: true
@@ -313,7 +343,7 @@ multiple variables in a single message.
         msg: |
           Application: {{ application_name }}
           Port: {{ application_port }}
-          Environment: {{ environment }}</code></pre>
+          Environment: {{ environment }}</code></pre></div>
 
 <h2>7. Display Registered Task Results</h2>
 
@@ -325,7 +355,7 @@ by another task.
 
 <p><strong>Playbook: debug-register.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Display registered command output
   hosts: ansible-client
   become: true
@@ -343,7 +373,7 @@ by another task.
 
     - name: Display command return code
       ansible.builtin.debug:
-        var: hostname_result.rc</code></pre>
+        var: hostname_result.rc</code></pre></div>
 
 <p>
 The first task captures the command result. The following tasks
@@ -359,7 +389,7 @@ The Debug module can display these facts.
 
 <p><strong>Playbook: debug-facts.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Display system facts
   hosts: ansible-client
   become: true
@@ -383,7 +413,7 @@ The Debug module can display these facts.
 
     - name: Display processor information
       ansible.builtin.debug:
-        var: ansible_processor_vcpus</code></pre>
+        var: ansible_processor_vcpus</code></pre></div>
 
 <p>
 These values depend on the managed host and its environment.
@@ -398,7 +428,7 @@ individual fields.
 
 <p><strong>Playbook: debug-full-result.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Display complete task result
   hosts: ansible-client
   become: true
@@ -412,7 +442,7 @@ individual fields.
 
     - name: Display complete result
       ansible.builtin.debug:
-        var: disk_result</code></pre>
+        var: disk_result</code></pre></div>
 
 <p>
 This displays the available fields returned by the task, including
@@ -429,7 +459,7 @@ the playbook.
 
 <p><strong>Playbook: debug-verbosity.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Debug verbosity example
   hosts: ansible-client
   become: true
@@ -442,7 +472,7 @@ the playbook.
     - name: Display detailed information
       ansible.builtin.debug:
         msg: "Detailed troubleshooting information"
-        verbosity: 2</code></pre>
+        verbosity: 2</code></pre></div>
 
 <p>
 The second task requires Ansible verbosity level 2 or higher.
@@ -456,7 +486,7 @@ Debug can display structured data such as lists and dictionaries.
 
 <p><strong>Playbook: debug-structured-data.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Display structured data
   hosts: ansible-client
   become: true
@@ -482,7 +512,7 @@ Debug can display structured data such as lists and dictionaries.
 
     - name: Display application services
       ansible.builtin.debug:
-        var: application.services</code></pre>
+        var: application.services</code></pre></div>
 
 <h2>12. Display Values Using Jinja2 Expressions</h2>
 
@@ -493,7 +523,7 @@ values and perform simple calculations.
 
 <p><strong>Playbook: debug-jinja.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Display formatted values
   hosts: ansible-client
   become: true
@@ -509,7 +539,7 @@ values and perform simple calculations.
 
     - name: Display port information
       ansible.builtin.debug:
-        msg: "Application will use port {{ application_port }}"</code></pre>
+        msg: "Application will use port {{ application_port }}"</code></pre></div>
 
 <h2>13. Practical Project: Linux Server Diagnostic Report</h2>
 
@@ -536,7 +566,7 @@ a readable diagnostic report.
 
 <strong>Project playbook: linux-diagnostic-report.yml</strong>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Generate Linux diagnostic report
   hosts: ansible-client
   become: true
@@ -570,7 +600,7 @@ a readable diagnostic report.
           - "Kernel: {{ kernel_result.stdout }}"
           - "Total Memory: {{ ansible_memtotal_mb }} MB"
           - "Root Filesystem:"
-          - "{{ disk_result.stdout }}"</code></pre>
+          - "{{ disk_result.stdout }}"</code></pre></div>
 
 </div>
 
@@ -643,6 +673,41 @@ function toggleVideo() {
     } else {
         wrapper.style.display = "none";
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

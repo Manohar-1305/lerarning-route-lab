@@ -41,6 +41,36 @@ td { color:#cbd5e1; }
 .project { background:#172033; border:1px solid #334155; border-radius:8px; padding:18px; margin-top:20px; }
 .why { background:#451f0b; border:1px solid #92400e; border-radius:10px; padding:24px; margin-top:40px; }
 .why h2 { color:#fbbf24; margin-top:0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -83,7 +113,7 @@ Ansible Roles provide a standardized directory structure for organizing automati
 
 <p>A typical role looks like this:</p>
 
-<pre><code>roles/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>roles/
 └── webserver/
     ├── defaults/
     │   └── main.yml
@@ -97,7 +127,7 @@ Ansible Roles provide a standardized directory structure for organizing automati
     ├── templates/
     ├── tests/
     └── vars/
-        └── main.yml</code></pre>
+        └── main.yml</code></pre></div>
 
 <h2>3. Understanding the Role Directory Structure</h2>
 
@@ -146,13 +176,13 @@ Ansible Roles provide a standardized directory structure for organizing automati
 
 <p>Run this command on your Ansible controller:</p>
 
-<pre><code>ansible-galaxy role init webserver</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy role init webserver</code></pre></div>
 
 <p>This creates a role named <code>webserver</code> with the standard directories and files.</p>
 
 <p>For this lab, use the following project structure:</p>
 
-<pre><code>ansible-project/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-project/
 ├── inventory
 ├── main.yml
 └── roles/
@@ -163,13 +193,13 @@ Ansible Roles provide a standardized directory structure for organizing automati
         │   └── main.yml
         ├── tasks/
         │   └── main.yml
-        └── templates/</code></pre>
+        └── templates/</code></pre></div>
 
 <h2>5. Define Tasks Inside a Role</h2>
 
 <p>Open <code>roles/webserver/tasks/main.yml</code>.</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create web application directory
   ansible.builtin.file:
     path: /opt/webserver
@@ -181,7 +211,7 @@ Ansible Roles provide a standardized directory structure for organizing automati
     dest: /opt/webserver/index.html
     content: |
       Welcome to the Ansible Role Lab
-    mode: '0644'</code></pre>
+    mode: '0644'</code></pre></div>
 
 <p>This file contains the tasks that the role executes.</p>
 
@@ -189,10 +219,10 @@ Ansible Roles provide a standardized directory structure for organizing automati
 
 <p>Open <code>roles/webserver/defaults/main.yml</code>.</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 webserver_root: /opt/webserver
 webserver_page_title: "Ansible Role Lab"
-webserver_page_content: "Welcome to the webserver role"</code></pre>
+webserver_page_content: "Welcome to the webserver role"</code></pre></div>
 
 <p>Default variables make the role configurable without modifying its task definitions.</p>
 
@@ -200,7 +230,7 @@ webserver_page_content: "Welcome to the webserver role"</code></pre>
 
 <p>Update <code>roles/webserver/tasks/main.yml</code> to use the default variables.</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create webserver directory
   ansible.builtin.file:
     path: "{{ webserver_root }}"
@@ -213,7 +243,7 @@ webserver_page_content: "Welcome to the webserver role"</code></pre>
     content: |
       {{ webserver_page_title }}
       {{ webserver_page_content }}
-    mode: '0644'</code></pre>
+    mode: '0644'</code></pre></div>
 
 <p>The role now uses variables instead of hardcoded directory and content values.</p>
 
@@ -221,19 +251,19 @@ webserver_page_content: "Welcome to the webserver role"</code></pre>
 
 <p>Create a main playbook named <code>main.yml</code>.</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure webserver
   hosts: ansible-client
   become: true
 
   roles:
-    - webserver</code></pre>
+    - webserver</code></pre></div>
 
 <p>Ansible automatically discovers the role when it is available in the project's <code>roles/</code> directory.</p>
 
 <p>Execute the playbook:</p>
 
-<pre><code>ansible-playbook main.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook main.yml</code></pre></div>
 
 <div class="note">
 <strong>Important:</strong> The role name in the playbook must match the role directory name. In this example, the directory is <code>roles/webserver/</code>, so the role is referenced as <code>webserver</code>.
@@ -243,7 +273,7 @@ webserver_page_content: "Welcome to the webserver role"</code></pre>
 
 <p>You can override the role's default variables from the playbook.</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure custom webserver
   hosts: ansible-client
   become: true
@@ -253,7 +283,7 @@ webserver_page_content: "Welcome to the webserver role"</code></pre>
       vars:
         webserver_root: /opt/custom-webserver
         webserver_page_title: "Custom Webserver"
-        webserver_page_content: "Configured using role variables"</code></pre>
+        webserver_page_content: "Configured using role variables"</code></pre></div>
 
 <p>The role uses these supplied values instead of its defaults.</p>
 
@@ -263,7 +293,7 @@ webserver_page_content: "Welcome to the webserver role"</code></pre>
 
 <p>Example directory structure:</p>
 
-<pre><code>roles/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>roles/
 ├── webserver/
 │   └── tasks/
 │       └── main.yml
@@ -272,11 +302,11 @@ webserver_page_content: "Welcome to the webserver role"</code></pre>
 │       └── main.yml
 └── monitoring/
     └── tasks/
-        └── main.yml</code></pre>
+        └── main.yml</code></pre></div>
 
 <p><strong>main.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure application server
   hosts: ansible-client
   become: true
@@ -284,7 +314,7 @@ webserver_page_content: "Welcome to the webserver role"</code></pre>
   roles:
     - webserver
     - application
-    - monitoring</code></pre>
+    - monitoring</code></pre></div>
 
 <p>Ansible executes the roles in the order listed in the playbook.</p>
 
@@ -297,29 +327,29 @@ webserver_page_content: "Welcome to the webserver role"</code></pre>
 
 <p><strong>Project structure:</strong></p>
 
-<pre><code>application-project/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>application-project/
 ├── main.yml
 └── roles/
     └── application/
         ├── defaults/
         │   └── main.yml
         └── tasks/
-            └── main.yml</code></pre>
+            └── main.yml</code></pre></div>
 
 <p><strong>Step 1: Create the role</strong></p>
 
-<pre><code>ansible-galaxy role init application</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-galaxy role init application</code></pre></div>
 
 <p><strong>Step 2: Configure defaults/main.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 app_name: LearningLabs
 app_directory: /opt/learninglabs
-app_environment: development</code></pre>
+app_environment: development</code></pre></div>
 
 <p><strong>Step 3: Configure tasks/main.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create application directory
   ansible.builtin.file:
     path: "{{ app_directory }}"
@@ -338,27 +368,27 @@ app_environment: development</code></pre>
   ansible.builtin.file:
     path: "{{ app_directory }}/logs"
     state: directory
-    mode: '0755'</code></pre>
+    mode: '0755'</code></pre></div>
 
 <p><strong>Step 4: Create main.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Deploy LearningLabs application structure
   hosts: ansible-client
   become: true
 
   roles:
-    - application</code></pre>
+    - application</code></pre></div>
 
 <p><strong>Step 5: Execute the role</strong></p>
 
-<pre><code>ansible-playbook main.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook main.yml</code></pre></div>
 
 <p><strong>Step 6: Verify using a playbook</strong></p>
 
 <p>Create <code>verify.yml</code>:</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Verify application role
   hosts: ansible-client
   become: true
@@ -375,24 +405,24 @@ app_environment: development</code></pre>
 
     - name: Check application log directory
       ansible.builtin.command: test -d /opt/learninglabs/logs
-      changed_when: false</code></pre>
+      changed_when: false</code></pre></div>
 
 <p>Execute:</p>
 
-<pre><code>ansible-playbook verify.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook verify.yml</code></pre></div>
 
 <h3>Expected Result</h3>
 
 <p>The Ubuntu client should contain:</p>
 
-<pre><code>/opt/learninglabs/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>/opt/learninglabs/
 ├── application.conf
-└── logs/</code></pre>
+└── logs/</code></pre></div>
 
 <p>The configuration file should contain:</p>
 
-<pre><code>APP_NAME=LearningLabs
-APP_ENV=development</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME=LearningLabs
+APP_ENV=development</code></pre></div>
 </div>
 
 <h2>12. Important Points</h2>
@@ -445,6 +475,41 @@ function toggleVideo() {
     } else {
         video.style.display = "none";
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

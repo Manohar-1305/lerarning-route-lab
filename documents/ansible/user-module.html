@@ -160,6 +160,36 @@ pre code {
     background: #523a29;
     color: #ffd3a8;
 }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 
@@ -217,7 +247,7 @@ pre code {
     The fully qualified module name is:
 </p>
 
-<pre><code>ansible.builtin.user</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible.builtin.user</code></pre></div>
 
 <h2>2. User Module Syntax</h2>
 
@@ -225,10 +255,10 @@ pre code {
     The basic structure of the User module looks like this:
 </p>
 
-<pre><code>- name: Create a Linux user
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>- name: Create a Linux user
   ansible.builtin.user:
     name: devops
-    state: present</code></pre>
+    state: present</code></pre></div>
 
 <p>
     <code>ansible.builtin.user</code> identifies the module.
@@ -245,7 +275,7 @@ pre code {
     Specifies the username that Ansible should manage.
 </p>
 
-<pre><code>name: devops</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>name: devops</code></pre></div>
 
 <p>
     In this example, Ansible manages an account named
@@ -276,7 +306,7 @@ pre code {
     Every Linux user has a UID that identifies the account internally.
 </p>
 
-<pre><code>uid: 1050</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>uid: 1050</code></pre></div>
 
 <p>
     In this example, the user is assigned UID 1050.
@@ -291,7 +321,7 @@ pre code {
     This is commonly used to store the user's full name or role.
 </p>
 
-<pre><code>comment: "DevOps Engineer"</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>comment: "DevOps Engineer"</code></pre></div>
 
 <p>
     The comment is stored in the user account information
@@ -304,7 +334,7 @@ pre code {
     Specifies the home directory path for the user.
 </p>
 
-<pre><code>home: /home/devops</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>home: /home/devops</code></pre></div>
 
 <p>
     The home directory is the user's personal directory.
@@ -319,7 +349,7 @@ pre code {
     when the account is created.
 </p>
 
-<pre><code>create_home: true</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>create_home: true</code></pre></div>
 
 <p>
     When set to <code>true</code>, Ansible creates the home
@@ -337,7 +367,7 @@ pre code {
     Specifies the login shell assigned to the user.
 </p>
 
-<pre><code>shell: /bin/bash</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>shell: /bin/bash</code></pre></div>
 
 <p>
     This assigns Bash as the user's login shell.
@@ -349,7 +379,7 @@ pre code {
     You can also assign a non-login shell:
 </p>
 
-<pre><code>shell: /usr/sbin/nologin</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>shell: /usr/sbin/nologin</code></pre></div>
 
 <p>
     A non-login shell prevents the account from starting a normal
@@ -363,9 +393,9 @@ pre code {
     Specifies the supplementary groups to which the user should belong.
 </p>
 
-<pre><code>groups:
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>groups:
   - developers
-  - monitoring</code></pre>
+  - monitoring</code></pre></div>
 
 <p>
     This assigns the user to the supplementary groups
@@ -385,10 +415,10 @@ pre code {
     or replace the existing supplementary group list.
 </p>
 
-<pre><code>groups:
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>groups:
   - developers
   - monitoring
-append: true</code></pre>
+append: true</code></pre></div>
 
 <p>
     With <code>append: true</code>, the specified groups are added
@@ -409,7 +439,7 @@ append: true</code></pre>
     plain-text password.
 </p>
 
-<pre><code>password: "$6$example_encrypted_password_hash"</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>password: "$6$example_encrypted_password_hash"</code></pre></div>
 
 <p>
     The value above is only an illustrative placeholder.
@@ -428,7 +458,7 @@ append: true</code></pre>
     Controls whether the user's password is locked.
 </p>
 
-<pre><code>password_lock: true</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>password_lock: true</code></pre></div>
 
 <p>
     A locked password prevents password-based authentication
@@ -443,8 +473,8 @@ append: true</code></pre>
     files are removed when deleting the account.
 </p>
 
-<pre><code>state: absent
-remove: true</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>state: absent
+remove: true</code></pre></div>
 
 <p>
     When used with <code>state: absent</code>, this requests removal
@@ -464,7 +494,7 @@ remove: true</code></pre>
     In this example, you will create a user named devops.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create Linux User
   hosts: localhost
   connection: local
@@ -476,7 +506,7 @@ remove: true</code></pre>
         name: devops
         state: present
         shell: /bin/bash
-        create_home: true</code></pre>
+        create_home: true</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -518,7 +548,7 @@ remove: true</code></pre>
     Create <code>create-user-details.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create User with Specific Details
   hosts: localhost
   connection: local
@@ -533,7 +563,7 @@ remove: true</code></pre>
         home: /home/appadmin
         create_home: true
         shell: /bin/bash
-        state: present</code></pre>
+        state: present</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -573,7 +603,7 @@ remove: true</code></pre>
     Create <code>create-multiple-users.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create Multiple Linux Users
   hosts: localhost
   connection: local
@@ -589,7 +619,7 @@ remove: true</code></pre>
       loop:
         - developer1
         - developer2
-        - tester1</code></pre>
+        - tester1</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -629,7 +659,7 @@ remove: true</code></pre>
     Create <code>modify-user.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Modify Existing Linux User
   hosts: localhost
   connection: local
@@ -641,7 +671,7 @@ remove: true</code></pre>
         name: devops
         comment: "Senior DevOps Engineer"
         shell: /bin/bash
-        state: present</code></pre>
+        state: present</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -676,7 +706,7 @@ remove: true</code></pre>
     Create <code>assign-user-groups.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Assign User to Supplementary Groups
   hosts: localhost
   connection: local
@@ -690,7 +720,7 @@ remove: true</code></pre>
           - adm
           - sudo
         append: true
-        state: present</code></pre>
+        state: present</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -728,7 +758,7 @@ remove: true</code></pre>
     Create <code>create-service-user.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create Application Service Account
   hosts: localhost
   connection: local
@@ -741,7 +771,7 @@ remove: true</code></pre>
         system: true
         create_home: false
         shell: /usr/sbin/nologin
-        state: present</code></pre>
+        state: present</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -777,7 +807,7 @@ remove: true</code></pre>
     Create <code>delete-user.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Delete Linux User
   hosts: localhost
   connection: local
@@ -787,7 +817,7 @@ remove: true</code></pre>
     - name: Remove developer1 user
       ansible.builtin.user:
         name: developer1
-        state: absent</code></pre>
+        state: absent</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -818,7 +848,7 @@ remove: true</code></pre>
 
 <p>Check the user account:</p>
 
-<pre><code>id devops</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>id devops</code></pre></div>
 
 <p>
     This displays the UID, primary group and supplementary
@@ -827,7 +857,7 @@ remove: true</code></pre>
 
 <p>View the user's account entry:</p>
 
-<pre><code>getent passwd devops</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>getent passwd devops</code></pre></div>
 
 <p>
     This displays the account information, including username,
@@ -836,7 +866,7 @@ remove: true</code></pre>
 
 <p>Check the home directory:</p>
 
-<pre><code>ls -ld /home/devops</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ls -ld /home/devops</code></pre></div>
 
 <p>
     This displays the directory details and ownership.
@@ -871,8 +901,8 @@ remove: true</code></pre>
 
 <h3>Step 1: Create the Project Directory</h3>
 
-<pre><code>mkdir -p linux-user-management
-cd linux-user-management</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>mkdir -p linux-user-management
+cd linux-user-management</code></pre></div>
 
 <h3>Step 2: Create the Main Playbook</h3>
 
@@ -880,7 +910,7 @@ cd linux-user-management</code></pre>
     Create a file named <code>user-management.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Linux Application User Management
   hosts: localhost
   connection: local
@@ -914,7 +944,7 @@ cd linux-user-management</code></pre>
         system: true
         create_home: false
         shell: /usr/sbin/nologin
-        state: present</code></pre>
+        state: present</code></pre></div>
 
 <h3>Step 3: Understand the Project Playbook</h3>
 
@@ -944,11 +974,11 @@ cd linux-user-management</code></pre>
     Validate the YAML syntax and playbook structure.
 </p>
 
-<pre><code>ansible-playbook user-management.yml --syntax-check</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook user-management.yml --syntax-check</code></pre></div>
 
 <h3>Step 5: Execute the Playbook</h3>
 
-<pre><code>ansible-playbook user-management.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook user-management.yml</code></pre></div>
 
 <p>
     Ansible executes the three tasks and ensures that all four
@@ -957,21 +987,21 @@ cd linux-user-management</code></pre>
 
 <h3>Step 6: Verify the Administrator Account</h3>
 
-<pre><code>id appadmin
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>id appadmin
 getent passwd appadmin
-ls -ld /home/appadmin</code></pre>
+ls -ld /home/appadmin</code></pre></div>
 
 <h3>Step 7: Verify Developer Accounts</h3>
 
-<pre><code>id developer1
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>id developer1
 id developer2
 
 getent passwd developer1
-getent passwd developer2</code></pre>
+getent passwd developer2</code></pre></div>
 
 <h3>Step 8: Verify the Service Account</h3>
 
-<pre><code>getent passwd appservice</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>getent passwd appservice</code></pre></div>
 
 <p>
     Check that the service account uses
@@ -984,7 +1014,7 @@ getent passwd developer2</code></pre>
     Run the same playbook again:
 </p>
 
-<pre><code>ansible-playbook user-management.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook user-management.yml</code></pre></div>
 
 <p>
     Since the requested accounts and their attributes are already
@@ -1237,6 +1267,41 @@ function toggleVideo() {
     } else {
         wrapper.classList.add("hidden");
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

@@ -41,6 +41,36 @@ td { color:#cbd5e1; }
 .project { background:#172033; border:1px solid #334155; border-radius:8px; padding:18px; margin-top:20px; }
 .why { background:#451f0b; border:1px solid #92400e; border-radius:10px; padding:24px; margin-top:40px; }
 .why h2 { color:#fbbf24; margin-top:0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -81,14 +111,14 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
 
 <h2>2. Basic Syntax</h2>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Main playbook
   hosts: ansible-client
   become: true
 
   tasks:
     - name: Include additional tasks
-      ansible.builtin.include_tasks: tasks.yml</code></pre>
+      ansible.builtin.include_tasks: tasks.yml</code></pre></div>
 
 <p>In this example, Ansible loads and executes the tasks defined in <code>tasks.yml</code>.</p>
 
@@ -127,7 +157,7 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
 
 <p><strong>setup_tasks.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create application directory
   ansible.builtin.file:
     path: /opt/myapp
@@ -144,7 +174,7 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
   ansible.builtin.copy:
     dest: /opt/myapp/info.txt
     content: "Application configured using Ansible\n"
-    mode: '0644'</code></pre>
+    mode: '0644'</code></pre></div>
 
 <p>This file contains three tasks. It does not contain a play definition.</p>
 
@@ -154,14 +184,14 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
 
 <p><strong>main.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure application directories
   hosts: ansible-client
   become: true
 
   tasks:
     - name: Run application setup tasks
-      ansible.builtin.include_tasks: setup_tasks.yml</code></pre>
+      ansible.builtin.include_tasks: setup_tasks.yml</code></pre></div>
 
 <p>When the main playbook runs, Ansible includes and executes all three tasks from <code>setup_tasks.yml</code> on the target host.</p>
 
@@ -169,11 +199,11 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
 
 <p>Run the playbook from your Ansible controller:</p>
 
-<pre><code>ansible-playbook main.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook main.yml</code></pre></div>
 
 <p>To check the result, create another playbook named <code>verify.yml</code>.</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Verify application setup
   hosts: ansible-client
   become: true
@@ -194,11 +224,11 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
 
     - name: Display application information
       ansible.builtin.debug:
-        var: app_info.stdout</code></pre>
+        var: app_info.stdout</code></pre></div>
 
 <p>Execute the verification playbook:</p>
 
-<pre><code>ansible-playbook verify.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook verify.yml</code></pre></div>
 
 <h2>7. Include Multiple Task Files</h2>
 
@@ -206,15 +236,15 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
 
 <p>Example directory structure:</p>
 
-<pre><code>ansible-project/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-project/
 ├── main.yml
 ├── users.yml
 ├── directories.yml
-└── packages.yml</code></pre>
+└── packages.yml</code></pre></div>
 
 <p><strong>main.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure Ubuntu server
   hosts: ansible-client
   become: true
@@ -227,7 +257,7 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
       ansible.builtin.include_tasks: directories.yml
 
     - name: Install packages
-      ansible.builtin.include_tasks: packages.yml</code></pre>
+      ansible.builtin.include_tasks: packages.yml</code></pre></div>
 
 <p>Each included file contains its own list of tasks. Ansible executes the included task lists in the order they are included.</p>
 
@@ -235,7 +265,7 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
 
 <p>You can use the <code>when</code> condition with <code>include_tasks</code> to decide whether a task file should be included.</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Conditional task inclusion
   hosts: ansible-client
   become: true
@@ -243,7 +273,7 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
   tasks:
     - name: Include Ubuntu configuration tasks
       ansible.builtin.include_tasks: ubuntu_tasks.yml
-      when: ansible_facts['distribution'] == "Ubuntu"</code></pre>
+      when: ansible_facts['distribution'] == "Ubuntu"</code></pre></div>
 
 <p>In this example, Ansible includes <code>ubuntu_tasks.yml</code> only when the target host's distribution is Ubuntu.</p>
 
@@ -297,15 +327,15 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
 
 <p><strong>Directory structure:</strong></p>
 
-<pre><code>application-project/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>application-project/
 ├── main.yml
 ├── directories.yml
 ├── files.yml
-└── permissions.yml</code></pre>
+└── permissions.yml</code></pre></div>
 
 <p><strong>directories.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create application directory
   ansible.builtin.file:
     path: /opt/webapp
@@ -314,32 +344,32 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
 - name: Create configuration directory
   ansible.builtin.file:
     path: /opt/webapp/config
-    state: directory</code></pre>
+    state: directory</code></pre></div>
 
 <p><strong>files.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create application configuration
   ansible.builtin.copy:
     dest: /opt/webapp/config/app.conf
     content: |
       APP_NAME=LearningLabs
       APP_ENV=development
-    mode: '0644'</code></pre>
+    mode: '0644'</code></pre></div>
 
 <p><strong>permissions.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Set application directory permissions
   ansible.builtin.file:
     path: /opt/webapp
     state: directory
     mode: '0755'
-    recurse: true</code></pre>
+    recurse: true</code></pre></div>
 
 <p><strong>main.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure web application
   hosts: ansible-client
   become: true
@@ -352,19 +382,19 @@ The <code>include_tasks</code> module allows you to include tasks from another Y
       ansible.builtin.include_tasks: files.yml
 
     - name: Configure permissions
-      ansible.builtin.include_tasks: permissions.yml</code></pre>
+      ansible.builtin.include_tasks: permissions.yml</code></pre></div>
 
 <p><strong>Execute:</strong></p>
 
-<pre><code>ansible-playbook main.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook main.yml</code></pre></div>
 
 <h3>Expected Result</h3>
 
 <p>The target Ubuntu container should contain:</p>
 
-<pre><code>/opt/webapp/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>/opt/webapp/
 └── config/
-    └── app.conf</code></pre>
+    └── app.conf</code></pre></div>
 
 <p>The configuration file should contain the application name and environment values defined in <code>files.yml</code>.</p>
 </div>
@@ -406,6 +436,41 @@ function toggleVideo() {
     } else {
         video.style.display = "none";
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

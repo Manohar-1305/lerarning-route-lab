@@ -81,6 +81,36 @@ td { color: #cbd5e1; }
     margin-top: 40px;
 }
 .why h2 { color: #fbbf24; margin-top: 0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -123,7 +153,7 @@ service only when Ansible detects a change.
 
 <h2>2. Basic Handler Syntax</h2>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate handlers
   hosts: ansible-client
@@ -141,7 +171,7 @@ service only when Ansible detects a change.
     - name: Reload application
       ansible.builtin.debug:
         msg: "Application reload handler executed"
-</pre>
+</pre></div>
 
 <p>
 This playbook contains two main sections:
@@ -169,7 +199,7 @@ The <code>notify</code> keyword connects a normal task to a handler.
 The value of <code>notify</code> must match the handler name.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 tasks:
   - name: Update configuration
     ansible.builtin.copy:
@@ -181,7 +211,7 @@ handlers:
   - name: Restart application
     ansible.builtin.debug:
       msg: "Restart handler triggered"
-</pre>
+</pre></div>
 
 <p>
 In this example:
@@ -207,7 +237,7 @@ Handlers normally execute at the end of the current play, after
 the regular tasks have completed.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Handler execution order
   hosts: ansible-client
@@ -233,7 +263,7 @@ the regular tasks have completed.
     - name: Apply configuration
       ansible.builtin.debug:
         msg: "Handler executed after normal tasks"
-</pre>
+</pre></div>
 
 <p>
 The execution order is:
@@ -273,7 +303,7 @@ handler should be triggered.
 Consider this example:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate handler change detection
   hosts: ansible-client
@@ -291,7 +321,7 @@ Consider this example:
     - name: Reload application
       ansible.builtin.debug:
         msg: "Configuration changed. Reload required."
-</pre>
+</pre></div>
 
 <p>
 Run this playbook for the first time. Ansible creates the file
@@ -335,7 +365,7 @@ notify the same handler during one play, Ansible normally executes
 that handler only once per host.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Multiple notifications
   hosts: ansible-client
@@ -358,7 +388,7 @@ that handler only once per host.
     - name: Reload application
       ansible.builtin.debug:
         msg: "Application reload executed once"
-</pre>
+</pre></div>
 
 <p>
 If both files change, both tasks notify the same handler.
@@ -383,7 +413,7 @@ services after configuration changes.
 For example, on a server running Nginx with systemd:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Configure Nginx
   hosts: ansible-client
@@ -402,7 +432,7 @@ For example, on a server running Nginx with systemd:
       ansible.builtin.service:
         name: nginx
         state: restarted
-</pre>
+</pre></div>
 
 <p>
 When the configuration changes, Ansible notifies the handler.
@@ -441,7 +471,7 @@ you want Ansible to execute a handler.
 
 <p><strong>Create this playbook:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Application configuration management
   hosts: ansible-client
@@ -473,13 +503,13 @@ you want Ansible to execute a handler.
       ansible.builtin.command:
         cmd: /usr/bin/printf "Application configuration reload triggered\n"
       changed_when: false
-</pre>
+</pre></div>
 
 <p><strong>Run from ansible-controller:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-handler.yml
-</pre>
+</pre></div>
 
 <p><strong>Test the behavior:</strong></p>
 
@@ -559,5 +589,40 @@ function toggleVideo() {
     }
 }
 </script>
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
+</script>
+
 </body>
 </html>

@@ -81,6 +81,36 @@ td { color: #cbd5e1; }
     margin-top: 40px;
 }
 .why h2 { color: #fbbf24; margin-top: 0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -138,7 +168,7 @@ about the deployment attempt.
 
 <h2>2. Basic Syntax</h2>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate always
   hosts: ansible-client
@@ -155,7 +185,7 @@ about the deployment attempt.
         - name: Execute final task
           ansible.builtin.debug:
             msg: "Always section executed"
-</pre>
+</pre></div>
 
 <p>
 The <code>always</code> section is defined at the same indentation
@@ -168,7 +198,7 @@ level as <code>block</code> and <code>rescue</code>.
 Consider a block containing a normal task and an always task.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate execution flow
   hosts: ansible-client
@@ -189,7 +219,7 @@ Consider a block containing a normal task and an always task.
         - name: Final task
           ansible.builtin.debug:
             msg: "Always task executed"
-</pre>
+</pre></div>
 
 <p>
 The execution order is:
@@ -229,7 +259,7 @@ One of the most useful features of <code>always</code> is that
 it can execute even when a task inside the block fails.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate always after failure
   hosts: ansible-client
@@ -254,7 +284,7 @@ it can execute even when a task inside the block fails.
         - name: Final execution message
           ansible.builtin.debug:
             msg: "Always section executed after failure"
-</pre>
+</pre></div>
 
 <p>
 The execution flow is:
@@ -290,7 +320,7 @@ In this arrangement:
     <li><code>always</code> contains final operations.</li>
 </ul>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate block rescue always
   hosts: ansible-client
@@ -312,7 +342,7 @@ In this arrangement:
         - name: Record final execution
           ansible.builtin.debug:
             msg: "Final execution section completed"
-</pre>
+</pre></div>
 
 <p>
 The execution order is:
@@ -358,7 +388,7 @@ For example, a deployment process may create a temporary file.
 You can remove it in the always section.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Temporary file cleanup
   hosts: ansible-client
@@ -387,7 +417,7 @@ You can remove it in the always section.
         - name: Display cleanup result
           ansible.builtin.debug:
             msg: "Temporary file cleanup completed"
-</pre>
+</pre></div>
 
 <p>
 The temporary file is removed after the block execution, whether
@@ -408,7 +438,7 @@ You can use the always section to record when an automation workflow
 reaches its final stage.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Record application execution
   hosts: ansible-client
@@ -438,7 +468,7 @@ reaches its final stage.
         - name: Display execution timestamp
           ansible.builtin.debug:
             msg: "Execution reached final stage at {{ execution_time.stdout }}"
-</pre>
+</pre></div>
 
 <p>
 The timestamp command executes in the always section after the
@@ -478,7 +508,7 @@ The always section contains normal Ansible tasks. If a task inside
 always fails, Ansible treats that failure normally.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate always failure
   hosts: ansible-client
@@ -499,7 +529,7 @@ always fails, Ansible treats that failure normally.
     - name: Final playbook task
       ansible.builtin.debug:
         msg: "This task will not execute after the always failure"
-</pre>
+</pre></div>
 
 <p>
 The block succeeds, but the always task fails. The final task
@@ -538,7 +568,7 @@ You are preparing an application deployment. The playbook must:
 
 <p><strong>Create this playbook:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Application deployment with cleanup
   hosts: ansible-client
@@ -591,13 +621,13 @@ You are preparing an application deployment. The playbook must:
     - name: Display final workflow status
       ansible.builtin.debug:
         msg: "Application workflow completed"
-</pre>
+</pre></div>
 
 <p><strong>Run from ansible-controller:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-always.yml
-</pre>
+</pre></div>
 
 <p><strong>Expected behavior:</strong></p>
 
@@ -683,5 +713,40 @@ function toggleVideo() {
     }
 }
 </script>
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
+</script>
+
 </body>
 </html>

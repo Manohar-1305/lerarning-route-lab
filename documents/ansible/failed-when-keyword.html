@@ -78,6 +78,36 @@ td { color: #cbd5e1; }
     margin-top: 40px;
 }
 .why h2 { color: #fbbf24; margin-top: 0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -116,14 +146,14 @@ The <code>failed_when</code> keyword lets you override that default
 failure decision using a condition.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Check a directory
   ansible.builtin.command:
     cmd: test -d /tmp/learning-labs
   register: directory_result
   changed_when: false
   failed_when: directory_result.rc != 0
-</pre>
+</pre></div>
 
 <p>
 In this example:
@@ -158,13 +188,13 @@ The condition is evaluated using the result returned by the task.
 
 <h2>3. Basic Syntax</h2>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Task name
   ansible.builtin.command:
     cmd: your-command
   register: command_result
   failed_when: command_result.rc != 0
-</pre>
+</pre></div>
 
 <p>
 You can use registered result attributes such as:
@@ -200,7 +230,7 @@ A command can return exit code zero but still produce output that your
 automation considers an error. You can define that condition explicitly.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate failed_when with output
   hosts: ansible-client
@@ -213,7 +243,7 @@ automation considers an error. You can define that condition explicitly.
       register: output_result
       changed_when: false
       failed_when: "'ERROR' in output_result.stdout"
-</pre>
+</pre></div>
 
 <p>
 The command returns <code>ERROR</code>. The condition evaluates to true,
@@ -229,7 +259,7 @@ checking whether an optional directory exists can return code 1 when
 the directory is absent.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Check an optional directory
   hosts: ansible-client
@@ -246,7 +276,7 @@ the directory is absent.
     - name: Display check result
       ansible.builtin.debug:
         msg: "Return code: {{ optional_directory_result.rc }}"
-</pre>
+</pre></div>
 
 <p>
 Here:
@@ -271,7 +301,7 @@ separate list entries, Ansible combines them using logical AND.
 All conditions must be true for the task to be marked as failed.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Check command result
   ansible.builtin.command:
     cmd: /usr/bin/printf ERROR
@@ -280,7 +310,7 @@ All conditions must be true for the task to be marked as failed.
   failed_when:
     - result.rc == 0
     - "'ERROR' in result.stdout"
-</pre>
+</pre></div>
 
 <p>
 The task fails only when both conditions are true.
@@ -290,9 +320,9 @@ The task fails only when both conditions are true.
 If you want logical OR, write the expression explicitly:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 failed_when: result.rc != 0 or "'ERROR' in result.stdout"
-</pre>
+</pre></div>
 
 <div class="warning">
 <strong>Remember:</strong> Separate entries in a
@@ -348,7 +378,7 @@ fail if the output contains the word <code>FAILED</code>.
 
 <p><strong>Create this playbook:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Application status validation
   hosts: ansible-client
@@ -365,13 +395,13 @@ fail if the output contains the word <code>FAILED</code>.
     - name: Display application status
       ansible.builtin.debug:
         msg: "{{ application_status.stdout }}"
-</pre>
+</pre></div>
 
 <p><strong>Run from ansible-controller:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-status.yml
-</pre>
+</pre></div>
 
 <p><strong>Expected behavior:</strong></p>
 <ul>
@@ -446,5 +476,40 @@ function toggleVideo() {
     }
 }
 </script>
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
+</script>
+
 </body>
 </html>

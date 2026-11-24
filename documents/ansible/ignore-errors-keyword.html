@@ -81,6 +81,36 @@ td { color: #cbd5e1; }
     margin-top: 40px;
 }
 .why h2 { color: #fbbf24; margin-top: 0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -117,12 +147,12 @@ When you use <code>ignore_errors: true</code>, Ansible records the task
 as failed but continues with the next task.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Run a task that may fail
   ansible.builtin.command:
     cmd: /bin/false
   ignore_errors: true
-</pre>
+</pre></div>
 
 <p>
 The command <code>/bin/false</code> returns a non-zero exit code.
@@ -132,7 +162,7 @@ the error is being ignored for execution flow.
 
 <h2>2. Basic Syntax</h2>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate ignore_errors
   hosts: ansible-client
@@ -147,7 +177,7 @@ the error is being ignored for execution flow.
     - name: Continue after failure
       ansible.builtin.debug:
         msg: "This task executes after the failed task"
-</pre>
+</pre></div>
 
 <p>
 The first task fails, but the second task still executes.
@@ -187,7 +217,7 @@ Imagine that your automation checks for an optional configuration file.
 If the file does not exist, you still want the remaining tasks to run.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Check optional configuration
   hosts: ansible-client
@@ -210,7 +240,7 @@ If the file does not exist, you still want the remaining tasks to run.
         path: /tmp/application
         state: directory
         mode: '0755'
-</pre>
+</pre></div>
 
 <p>
 If <code>/tmp/application.conf</code> does not exist:
@@ -230,7 +260,7 @@ You can use <code>ignore_errors</code> on an individual task and
 continue with several subsequent tasks.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Continue after an optional operation
   hosts: ansible-client
@@ -255,7 +285,7 @@ continue with several subsequent tasks.
     - name: Display completion message
       ansible.builtin.debug:
         msg: "Remaining tasks completed"
-</pre>
+</pre></div>
 
 <p>
 The optional operation fails, but the remaining tasks execute.
@@ -282,25 +312,25 @@ The optional operation fails, but the remaining tasks execute.
 Example using <code>ignore_errors</code>:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Run command
   ansible.builtin.command:
     cmd: /bin/false
   ignore_errors: true
-</pre>
+</pre></div>
 
 <p>
 Example using <code>failed_when</code>:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Run command
   ansible.builtin.command:
     cmd: /bin/false
   register: command_result
   changed_when: false
   failed_when: command_result.rc == 0
-</pre>
+</pre></div>
 
 <p>
 In the second example, the task is not marked as failed because
@@ -327,7 +357,7 @@ created even if the file check fails.
 
 <p><strong>Create this playbook:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Optional configuration validation
   hosts: ansible-client
@@ -359,13 +389,13 @@ created even if the file check fails.
     - name: Display completion
       ansible.builtin.debug:
         msg: "Deployment preparation completed"
-</pre>
+</pre></div>
 
 <p><strong>Run from ansible-controller:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook optional-config.yml
-</pre>
+</pre></div>
 
 <p><strong>Expected behavior:</strong></p>
 <ul>
@@ -434,5 +464,40 @@ function toggleVideo() {
     }
 }
 </script>
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
+</script>
+
 </body>
 </html>

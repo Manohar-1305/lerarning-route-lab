@@ -81,6 +81,36 @@ td { color: #cbd5e1; }
     margin-top: 40px;
 }
 .why h2 { color: #fbbf24; margin-top: 0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -136,7 +166,7 @@ inside one block.
 
 <h2>2. Basic Syntax</h2>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate block
   hosts: ansible-client
@@ -156,7 +186,7 @@ inside one block.
         - name: Task 3
           ansible.builtin.debug:
             msg: "Third task"
-</pre>
+</pre></div>
 
 <p>
 The tasks inside the block execute sequentially, just like normal
@@ -169,7 +199,7 @@ Ansible tasks.
 Consider a block containing three tasks:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 tasks:
   - name: Application setup
     block:
@@ -186,7 +216,7 @@ tasks:
       - name: Display completion
         ansible.builtin.debug:
           msg: "Application setup completed"
-</pre>
+</pre></div>
 
 <p>
 Ansible executes the tasks in this order:
@@ -228,7 +258,7 @@ For example, you can apply <code>become</code> to the block instead
 of repeating it in every task.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Block with privilege escalation
   hosts: ansible-client
@@ -254,7 +284,7 @@ of repeating it in every task.
             content: "APP_ENV=production\n"
             dest: /opt/myapp/app.conf
             mode: '0644'
-</pre>
+</pre></div>
 
 <p>
 The privilege escalation setting applies to the tasks inside the block.
@@ -268,7 +298,7 @@ You can define variables at the block level. Tasks inside the block
 can use those variables.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Block with variables
   hosts: ansible-client
@@ -298,7 +328,7 @@ can use those variables.
         - name: Display configuration location
           ansible.builtin.debug:
             msg: "Configuration created at {{ app_directory }}/app.conf"
-</pre>
+</pre></div>
 
 <p>
 The variables defined at the block level are available to the tasks
@@ -316,7 +346,7 @@ You can also apply a condition to a block using the
 The condition is evaluated for the tasks inside the block.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Conditional block
   hosts: ansible-client
@@ -342,7 +372,7 @@ The condition is evaluated for the tasks inside the block.
         - name: Display deployment message
           ansible.builtin.debug:
             msg: "Application deployment tasks executed"
-</pre>
+</pre></div>
 
 <p>
 If <code>deploy_application</code> is true, the block tasks execute.
@@ -356,7 +386,7 @@ You can assign a tag to a block. The tag is inherited by the tasks
 inside that block.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Block with tags
   hosts: ansible-client
@@ -380,15 +410,15 @@ inside that block.
         - name: Display completion
           ansible.builtin.debug:
             msg: "Application configuration completed"
-</pre>
+</pre></div>
 
 <p>
 You can run the tagged block from <code>ansible-controller</code>:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-block.yml --tags application_setup
-</pre>
+</pre></div>
 
 <p>
 This executes the tasks associated with the specified tag.
@@ -406,7 +436,7 @@ For example, if the second task fails, Ansible normally stops
 executing the remaining tasks in that block for the affected host.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Block failure demonstration
   hosts: ansible-client
@@ -426,7 +456,7 @@ executing the remaining tasks in that block for the affected host.
         - name: Third task
           ansible.builtin.debug:
             msg: "Third task executed"
-</pre>
+</pre></div>
 
 <p>
 The first task executes. The second task fails. The third task
@@ -452,7 +482,7 @@ be grouped under one block.
 
 <p><strong>Create this playbook:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Prepare application environment
   hosts: ansible-client
@@ -498,13 +528,13 @@ be grouped under one block.
             cmd: test -f "{{ app_directory }}/app.conf"
           changed_when: false
 
-</pre>
+</pre></div>
 
 <p><strong>Run from ansible-controller:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-block.yml
-</pre>
+</pre></div>
 
 <p><strong>Expected behavior:</strong></p>
 
@@ -577,5 +607,40 @@ function toggleVideo() {
     }
 }
 </script>
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
+</script>
+
 </body>
 </html>

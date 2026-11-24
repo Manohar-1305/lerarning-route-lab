@@ -148,6 +148,36 @@ th {
 td {
     color: #cbd5e1;
 }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 
@@ -202,7 +232,7 @@ the task fails and displays an error message.
 
 <h2>2. How Does the Assert Module Work?</h2>
 
-<pre><code>             Ansible Controller
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>             Ansible Controller
              ------------------
                     |
                     |
@@ -222,7 +252,7 @@ the task fails and displays an error message.
           SUCCESS        FAILURE
              |             |
              v             v
-       Continue Tasks   Stop Execution</code></pre>
+       Continue Tasks   Stop Execution</code></pre></div>
 
 <p>
 The Assert module evaluates one or more expressions. Every expression
@@ -236,7 +266,7 @@ The basic syntax uses the <code>that</code> parameter to define
 the conditions that must be satisfied.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate application configuration
   hosts: ansible-client
   become: true
@@ -245,7 +275,7 @@ the conditions that must be satisfied.
     - name: Validate application port
       ansible.builtin.assert:
         that:
-          - application_port == 8080</code></pre>
+          - application_port == 8080</code></pre></div>
 
 <p>
 In this example, Ansible checks whether
@@ -290,7 +320,7 @@ value.
 
 <p><strong>Playbook: assert-variable.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate application variable
   hosts: ansible-client
   become: true
@@ -304,7 +334,7 @@ value.
         that:
           - application_name == "learning-labs"
         success_msg: "Application name is valid."
-        fail_msg: "Application name is incorrect."</code></pre>
+        fail_msg: "Application name is incorrect."</code></pre></div>
 
 <p>
 If the variable contains the expected value, the task succeeds.
@@ -320,7 +350,7 @@ All expressions must be true for the task to succeed.
 
 <p><strong>Playbook: assert-multiple.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate multiple application settings
   hosts: ansible-client
   become: true
@@ -338,7 +368,7 @@ All expressions must be true for the task to succeed.
           - application_port == 8080
           - application_environment == "production"
         success_msg: "All application settings are valid."
-        fail_msg: "One or more application settings are invalid."</code></pre>
+        fail_msg: "One or more application settings are invalid."</code></pre></div>
 
 <p>
 If even one condition is false, the assertion task fails.
@@ -353,7 +383,7 @@ You can check whether it has been defined before using it.
 
 <p><strong>Playbook: assert-defined.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate required variables
   hosts: ansible-client
   become: true
@@ -367,7 +397,7 @@ You can check whether it has been defined before using it.
         that:
           - application_name is defined
         success_msg: "Application name is defined."
-        fail_msg: "Application name is missing."</code></pre>
+        fail_msg: "Application name is missing."</code></pre></div>
 
 <p>
 The Jinja2 test <code>is defined</code> checks whether a variable
@@ -383,7 +413,7 @@ For example, an application port should be an integer.
 
 <p><strong>Playbook: assert-datatype.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate variable data types
   hosts: ansible-client
   become: true
@@ -397,7 +427,7 @@ For example, an application port should be an integer.
         that:
           - application_port is integer
         success_msg: "Application port is an integer."
-        fail_msg: "Application port must be an integer."</code></pre>
+        fail_msg: "Application port must be an integer."</code></pre></div>
 
 <h2>9. Validate a Numeric Range</h2>
 
@@ -408,7 +438,7 @@ acceptable range.
 
 <p><strong>Playbook: assert-range.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate application port range
   hosts: ansible-client
   become: true
@@ -423,7 +453,7 @@ acceptable range.
           - application_port >= 1
           - application_port <= 65535
         success_msg: "Application port is within the valid range."
-        fail_msg: "Application port must be between 1 and 65535."</code></pre>
+        fail_msg: "Application port must be between 1 and 65535."</code></pre></div>
 
 <h2>10. Validate a Linux Operating System</h2>
 
@@ -434,7 +464,7 @@ operating-system-specific tasks.
 
 <p><strong>Playbook: assert-os.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate operating system
   hosts: ansible-client
   become: true
@@ -445,7 +475,7 @@ operating-system-specific tasks.
         that:
           - ansible_distribution == "Ubuntu"
         success_msg: "Target operating system is Ubuntu."
-        fail_msg: "This playbook requires Ubuntu."</code></pre>
+        fail_msg: "This playbook requires Ubuntu."</code></pre></div>
 
 <p>
 The variable <code>ansible_distribution</code> is an Ansible fact
@@ -460,7 +490,7 @@ You can validate the available memory before deploying an application.
 
 <p><strong>Playbook: assert-memory.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate available memory
   hosts: ansible-client
   become: true
@@ -471,7 +501,7 @@ You can validate the available memory before deploying an application.
         that:
           - ansible_memtotal_mb >= 1024
         success_msg: "Memory requirement satisfied."
-        fail_msg: "At least 1 GB of total memory is required."</code></pre>
+        fail_msg: "At least 1 GB of total memory is required."</code></pre></div>
 
 <p>
 The fact <code>ansible_memtotal_mb</code> represents total detected
@@ -487,7 +517,7 @@ make assertion results easier to understand.
 
 <p><strong>Playbook: assert-messages.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate deployment requirements
   hosts: ansible-client
   become: true
@@ -501,7 +531,7 @@ make assertion results easier to understand.
         that:
           - deployment_environment in ["development", "testing", "production"]
         success_msg: "Deployment environment is supported."
-        fail_msg: "Unsupported deployment environment."</code></pre>
+        fail_msg: "Unsupported deployment environment."</code></pre></div>
 
 <h2>13. Suppress Assertion Output Using Quiet</h2>
 
@@ -512,7 +542,7 @@ output. Assertion failures are still reported.
 
 <p><strong>Playbook: assert-quiet.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate configuration quietly
   hosts: ansible-client
   become: true
@@ -525,7 +555,7 @@ output. Assertion failures are still reported.
       ansible.builtin.assert:
         that:
           - application_port == 8080
-        quiet: true</code></pre>
+        quiet: true</code></pre></div>
 
 <h2>14. Practical Project: Validate Application Deployment Requirements</h2>
 
@@ -552,7 +582,7 @@ deployment requirements.
 
 <strong>Project playbook: validate-deployment.yml</strong>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate application deployment requirements
   hosts: ansible-client
   become: true
@@ -602,7 +632,7 @@ deployment requirements.
 
     - name: Display validation completion
       ansible.builtin.debug:
-        msg: "All deployment prerequisites have passed."</code></pre>
+        msg: "All deployment prerequisites have passed."</code></pre></div>
 
 </div>
 
@@ -674,6 +704,41 @@ function toggleVideo() {
     } else {
         wrapper.style.display = "none";
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

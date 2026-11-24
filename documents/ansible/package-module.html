@@ -160,6 +160,36 @@ pre code {
     background: #523a29;
     color: #ffd3a8;
 }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 
@@ -226,10 +256,10 @@ pre code {
     The basic structure of the Package module looks like this:
 </p>
 
-<pre><code>- name: Install a package
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>- name: Install a package
   ansible.builtin.package:
     name: curl
-    state: present</code></pre>
+    state: present</code></pre></div>
 
 <p>
     <code>ansible.builtin.package</code> identifies the module.
@@ -248,14 +278,14 @@ pre code {
 
 <p>Example with a single package:</p>
 
-<pre><code>name: curl</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>name: curl</code></pre></div>
 
 <p>Example with multiple packages:</p>
 
-<pre><code>name:
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>name:
   - curl
   - wget
-  - unzip</code></pre>
+  - unzip</code></pre></div>
 
 <p>
     When a list is provided, Ansible applies the requested state
@@ -296,11 +326,11 @@ pre code {
     a supported package manager.
 </p>
 
-<pre><code>- name: Install curl using APT
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>- name: Install curl using APT
   ansible.builtin.package:
     name: curl
     state: present
-    use: apt</code></pre>
+    use: apt</code></pre></div>
 
 <p>
     Since this lab uses Ubuntu, <code>apt</code> selects the APT
@@ -323,7 +353,7 @@ pre code {
     Package module.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Install Curl
   hosts: all
   become: true
@@ -332,7 +362,7 @@ pre code {
     - name: Ensure curl is installed
       ansible.builtin.package:
         name: curl
-        state: present</code></pre>
+        state: present</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -372,7 +402,7 @@ pre code {
     Create <code>install-multiple-packages.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Install Multiple Packages
   hosts: all
   become: true
@@ -386,7 +416,7 @@ pre code {
           - unzip
           - tree
           - htop
-        state: present</code></pre>
+        state: present</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -414,7 +444,7 @@ pre code {
     Create <code>remove-package.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Remove Package
   hosts: all
   become: true
@@ -423,7 +453,7 @@ pre code {
     - name: Remove curl
       ansible.builtin.package:
         name: curl
-        state: absent</code></pre>
+        state: absent</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -452,7 +482,7 @@ pre code {
     Create <code>latest-package.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Install Latest Curl Version
   hosts: all
   become: true
@@ -461,7 +491,7 @@ pre code {
     - name: Ensure curl is at the latest available version
       ansible.builtin.package:
         name: curl
-        state: latest</code></pre>
+        state: latest</code></pre></div>
 
 <h3>Understanding the Playbook</h3>
 
@@ -491,10 +521,10 @@ pre code {
 
 <p>Consider this task:</p>
 
-<pre><code>- name: Ensure curl is installed
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>- name: Ensure curl is installed
   ansible.builtin.package:
     name: curl
-    state: present</code></pre>
+    state: present</code></pre></div>
 
 <p>
     When curl is not installed, Ansible installs it and reports
@@ -521,10 +551,10 @@ pre code {
 
 <h3>Package Module</h3>
 
-<pre><code>- name: Install curl
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>- name: Install curl
   ansible.builtin.package:
     name: curl
-    state: present</code></pre>
+    state: present</code></pre></div>
 
 <p>
     The Package module provides a generic interface. It is useful
@@ -534,12 +564,12 @@ pre code {
 
 <h3>APT Module</h3>
 
-<pre><code>- name: Install curl and refresh package cache
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>- name: Install curl and refresh package cache
   ansible.builtin.apt:
     name: curl
     state: present
     update_cache: true
-    cache_valid_time: 3600</code></pre>
+    cache_valid_time: 3600</code></pre></div>
 
 <p>
     The APT module is designed specifically for Debian-based
@@ -583,8 +613,8 @@ pre code {
 
 <h3>Step 1: Create the Project Directory</h3>
 
-<pre><code>mkdir -p ubuntu-base-setup
-cd ubuntu-base-setup</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>mkdir -p ubuntu-base-setup
+cd ubuntu-base-setup</code></pre></div>
 
 <h3>Step 2: Create the Inventory File</h3>
 
@@ -592,9 +622,9 @@ cd ubuntu-base-setup</code></pre>
     Create a file named <code>inventory.ini</code>.
 </p>
 
-<pre><code>[ubuntu_servers]
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>[ubuntu_servers]
 192.168.1.101 ansible_user=ubuntu
-192.168.1.102 ansible_user=ubuntu</code></pre>
+192.168.1.102 ansible_user=ubuntu</code></pre></div>
 
 <p>
     Replace the example IP addresses and username with the
@@ -607,7 +637,7 @@ cd ubuntu-base-setup</code></pre>
     Create a file named <code>ubuntu-base-setup.yml</code>.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure Ubuntu Base Software
   hosts: all
   become: true
@@ -624,7 +654,7 @@ cd ubuntu-base-setup</code></pre>
           - htop
           - git
           - vim
-        state: present</code></pre>
+        state: present</code></pre></div>
 
 <h3>Step 4: Understand the Project Playbook</h3>
 
@@ -660,7 +690,7 @@ cd ubuntu-base-setup</code></pre>
     Check the playbook syntax before executing it.
 </p>
 
-<pre><code>ansible-playbook -i inventory.ini ubuntu-base-setup.yml --syntax-check</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook -i inventory.ini ubuntu-base-setup.yml --syntax-check</code></pre></div>
 
 <p>
     If the YAML syntax and playbook structure are valid,
@@ -669,7 +699,7 @@ cd ubuntu-base-setup</code></pre>
 
 <h3>Step 6: Execute the Playbook</h3>
 
-<pre><code>ansible-playbook -i inventory.ini ubuntu-base-setup.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook -i inventory.ini ubuntu-base-setup.yml</code></pre></div>
 
 <p>
     Ansible connects to the managed servers and ensures that
@@ -682,7 +712,7 @@ cd ubuntu-base-setup</code></pre>
     Run the same playbook again:
 </p>
 
-<pre><code>ansible-playbook -i inventory.ini ubuntu-base-setup.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook -i inventory.ini ubuntu-base-setup.yml</code></pre></div>
 
 <p>
     Since the packages are already installed, the installation
@@ -864,6 +894,41 @@ function toggleVideo() {
     } else {
         wrapper.classList.add("hidden");
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

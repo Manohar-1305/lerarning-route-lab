@@ -203,7 +203,37 @@
                 padding: 12px;
             }
         }
-    </style>
+    
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
+</style>
 </head>
 
 <body>
@@ -303,7 +333,7 @@
         <li>The generated file is deployed to ansible-client.</li>
     </ol>
 
-    <pre><code>Ansible Controller
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>Ansible Controller
        |
        |-- templates/app.conf.j2
        |
@@ -321,7 +351,7 @@ Generated Configuration File
 ansible-client
        |
        v
-/tmp/ansible-template-lab/app.conf</code></pre>
+/tmp/ansible-template-lab/app.conf</code></pre></div>
 
     <h2>4. Basic Template Example</h2>
 
@@ -330,24 +360,24 @@ ansible-client
         inside your Ansible project on the controller.
     </p>
 
-    <pre><code>ansible-project/
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-project/
 ├── application.yml
 └── templates/
-    └── app.conf.j2</code></pre>
+    └── app.conf.j2</code></pre></div>
 
     <h3>Step 1: Create the Template File</h3>
 
     <p>Create <code>templates/app.conf.j2</code>:</p>
 
-    <pre><code>APP_NAME={{ app_name }}
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME={{ app_name }}
 APP_PORT={{ app_port }}
-APP_ENV={{ app_environment }}</code></pre>
+APP_ENV={{ app_environment }}</code></pre></div>
 
     <h3>Step 2: Create the Playbook</h3>
 
     <p>Create <code>application.yml</code>:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Deploy application configuration
   hosts: ansible-client
   become: true
@@ -368,7 +398,7 @@ APP_ENV={{ app_environment }}</code></pre>
       ansible.builtin.template:
         src: templates/app.conf.j2
         dest: /tmp/ansible-template-lab/app.conf
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
     <h3>Step 3: Expected Output</h3>
 
@@ -377,9 +407,9 @@ APP_ENV={{ app_environment }}</code></pre>
         creates the following file on ansible-client:
     </p>
 
-    <pre><code>APP_NAME=learning-labs
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME=learning-labs
 APP_PORT=8080
-APP_ENV=production</code></pre>
+APP_ENV=production</code></pre></div>
 
     <h2>5. Important Template Module Parameters</h2>
 
@@ -455,14 +485,14 @@ APP_ENV=production</code></pre>
 
     <p>Template: <code>templates/server.conf.j2</code></p>
 
-    <pre><code>SERVER_NAME={{ server_name }}
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>SERVER_NAME={{ server_name }}
 SERVER_IP={{ server_ip }}
 SERVER_PORT={{ server_port }}
-ENVIRONMENT={{ environment }}</code></pre>
+ENVIRONMENT={{ environment }}</code></pre></div>
 
     <p>Playbook:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure server settings
   hosts: ansible-client
   become: true
@@ -478,14 +508,14 @@ ENVIRONMENT={{ environment }}</code></pre>
       ansible.builtin.template:
         src: templates/server.conf.j2
         dest: /tmp/ansible-template-lab/server.conf
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
     <p>Generated file:</p>
 
-    <pre><code>SERVER_NAME=app-server
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>SERVER_NAME=app-server
 SERVER_IP=192.168.1.20
 SERVER_PORT=8080
-ENVIRONMENT=production</code></pre>
+ENVIRONMENT=production</code></pre></div>
 
     <h2>7. Using Conditional Statements</h2>
 
@@ -496,7 +526,7 @@ ENVIRONMENT=production</code></pre>
 
     <p>Template: <code>templates/app.conf.j2</code></p>
 
-    <pre><code>APP_NAME={{ app_name }}
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME={{ app_name }}
 APP_PORT={{ app_port }}
 
 {% if environment == "production" %}
@@ -505,11 +535,11 @@ LOG_LEVEL=WARNING
 {% else %}
 APP_DEBUG=true
 LOG_LEVEL=DEBUG
-{% endif %}</code></pre>
+{% endif %}</code></pre></div>
 
     <p>Playbook:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Generate environment-specific configuration
   hosts: ansible-client
   become: true
@@ -524,7 +554,7 @@ LOG_LEVEL=DEBUG
       ansible.builtin.template:
         src: templates/app.conf.j2
         dest: /tmp/ansible-template-lab/app.conf
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
     <p>
         When the environment is production, the generated file
@@ -540,16 +570,16 @@ LOG_LEVEL=DEBUG
 
     <p>Template: <code>templates/servers.conf.j2</code></p>
 
-    <pre><code>{% for server in servers %}
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>{% for server in servers %}
 SERVER={{ server.name }}
 IP={{ server.ip }}
 PORT={{ server.port }}
 
-{% endfor %}</code></pre>
+{% endfor %}</code></pre></div>
 
     <p>Playbook:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Generate server configuration
   hosts: ansible-client
   become: true
@@ -573,11 +603,11 @@ PORT={{ server.port }}
       ansible.builtin.template:
         src: templates/servers.conf.j2
         dest: /tmp/ansible-template-lab/servers.conf
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
     <p>Generated file:</p>
 
-    <pre><code>SERVER=web01
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>SERVER=web01
 IP=192.168.1.10
 PORT=8080
 
@@ -587,7 +617,7 @@ PORT=8081
 
 SERVER=web03
 IP=192.168.1.12
-PORT=8082</code></pre>
+PORT=8082</code></pre></div>
 
     <h2>9. Using Ansible Facts in Templates</h2>
 
@@ -598,15 +628,15 @@ PORT=8082</code></pre>
 
     <p>Template: <code>templates/system-info.conf.j2</code></p>
 
-    <pre><code>HOSTNAME={{ ansible_hostname }}
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>HOSTNAME={{ ansible_hostname }}
 OPERATING_SYSTEM={{ ansible_distribution }}
 OS_VERSION={{ ansible_distribution_version }}
 ARCHITECTURE={{ ansible_architecture }}
-IP_ADDRESS={{ ansible_default_ipv4.address }}</code></pre>
+IP_ADDRESS={{ ansible_default_ipv4.address }}</code></pre></div>
 
     <p>Playbook:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Generate system information
   hosts: ansible-client
   become: true
@@ -617,7 +647,7 @@ IP_ADDRESS={{ ansible_default_ipv4.address }}</code></pre>
       ansible.builtin.template:
         src: templates/system-info.conf.j2
         dest: /tmp/ansible-template-lab/system-info.conf
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
     <div class="info-box">
         <strong>Note:</strong>
@@ -633,7 +663,7 @@ IP_ADDRESS={{ ansible_default_ipv4.address }}</code></pre>
         previous destination file before deploying a new rendered file.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Deploy configuration with backup
   hosts: ansible-client
   become: true
@@ -644,7 +674,7 @@ IP_ADDRESS={{ ansible_default_ipv4.address }}</code></pre>
         src: templates/app.conf.j2
         dest: /tmp/ansible-template-lab/app.conf
         backup: true
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
     <h2>11. Validating a Rendered Template</h2>
 
@@ -653,7 +683,7 @@ IP_ADDRESS={{ ansible_default_ipv4.address }}</code></pre>
         file before Ansible replaces the destination file.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate generated configuration
   hosts: ansible-client
   become: true
@@ -664,7 +694,7 @@ IP_ADDRESS={{ ansible_default_ipv4.address }}</code></pre>
         src: templates/app.conf.j2
         dest: /tmp/ansible-template-lab/app.conf
         validate: '/usr/bin/test -s %s'
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
     <p>
         This example checks that the rendered file is not empty.
@@ -714,16 +744,16 @@ IP_ADDRESS={{ ansible_default_ipv4.address }}</code></pre>
 
     <h3>Step 1: Create the Project Structure</h3>
 
-    <pre><code>ansible-template-project/
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-template-project/
 ├── application.yml
 └── templates/
-    └── application.conf.j2</code></pre>
+    └── application.conf.j2</code></pre></div>
 
     <h3>Step 2: Create the Jinja2 Template</h3>
 
     <p>Create <code>templates/application.conf.j2</code>:</p>
 
-    <pre><code># Application Configuration
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code># Application Configuration
 
 APP_NAME={{ app_name }}
 APP_PORT={{ app_port }}
@@ -750,13 +780,13 @@ SERVER_PORT={{ server.port }}
 
 HOSTNAME={{ ansible_hostname }}
 OS={{ ansible_distribution }}
-OS_VERSION={{ ansible_distribution_version }}</code></pre>
+OS_VERSION={{ ansible_distribution_version }}</code></pre></div>
 
     <h3>Step 3: Create the Playbook</h3>
 
     <p>Create <code>application.yml</code>:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Deploy dynamic application configuration
   hosts: ansible-client
   become: true
@@ -799,7 +829,7 @@ OS_VERSION={{ ansible_distribution_version }}</code></pre>
 
     - name: Display deployment result
       ansible.builtin.debug:
-        msg: "Application configuration deployed successfully."</code></pre>
+        msg: "Application configuration deployed successfully."</code></pre></div>
 
     <h3>Step 4: Expected Output</h3>
 
@@ -809,7 +839,7 @@ OS_VERSION={{ ansible_distribution_version }}</code></pre>
         and target system information.
     </p>
 
-    <pre><code># Application Configuration
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code># Application Configuration
 
 APP_NAME=learning-labs
 APP_PORT=8080
@@ -836,7 +866,7 @@ SERVER_PORT=8083
 
 HOSTNAME=ansible-client
 OS=Ubuntu
-OS_VERSION=24.04</code></pre>
+OS_VERSION=24.04</code></pre></div>
 
     <p>
         The actual hostname and operating system values depend on
@@ -847,7 +877,7 @@ OS_VERSION=24.04</code></pre>
 
     <p>Create <code>verify-application.yml</code>:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Verify generated application configuration
   hosts: ansible-client
   become: true
@@ -860,7 +890,7 @@ OS_VERSION=24.04</code></pre>
 
     - name: Display generated configuration
       ansible.builtin.debug:
-        msg: "{{ generated_config.content | b64decode }}"</code></pre>
+        msg: "{{ generated_config.content | b64decode }}"</code></pre></div>
 
     <h3>Step 6: Test Idempotency</h3>
 
@@ -1012,6 +1042,41 @@ OS_VERSION=24.04</code></pre>
             button.textContent = "▶ Watch Video";
         }
     }
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
 </script>
 
 </body>

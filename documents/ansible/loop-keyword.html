@@ -81,6 +81,36 @@ td { color: #cbd5e1; }
     margin-top: 40px;
 }
 .why h2 { color: #fbbf24; margin-top: 0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -114,7 +144,7 @@ Imagine that you need to create five directories on a Linux server.
 Without a loop, you would write five separate tasks.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 tasks:
   - name: Create directory 1
     ansible.builtin.file:
@@ -130,7 +160,7 @@ tasks:
     ansible.builtin.file:
       path: /opt/app3
       state: directory
-</pre>
+</pre></div>
 
 <p>
 This approach becomes difficult to maintain when the number of items
@@ -143,7 +173,7 @@ Using <code>loop</code>, you can achieve the same result with one task.
 
 <h2>2. Basic Syntax</h2>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Task description
   ansible.builtin.module_name:
     parameter: value
@@ -151,7 +181,7 @@ Using <code>loop</code>, you can achieve the same result with one task.
     - item1
     - item2
     - item3
-</pre>
+</pre></div>
 
 <p>
 Ansible executes the task once for each item in the list.
@@ -160,7 +190,7 @@ The current item is available through the variable <code>item</code>.
 
 <h2>3. Example: Create Multiple Directories</h2>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Create application directories
   hosts: ansible-client
@@ -177,7 +207,7 @@ The current item is available through the variable <code>item</code>.
         - logs
         - backups
         - configuration
-</pre>
+</pre></div>
 
 <p>
 Ansible executes the file module four times:
@@ -201,7 +231,7 @@ Ansible executes the file module four times:
 You can use the same loop to create multiple Linux users.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Create multiple Linux users
   hosts: ansible-client
@@ -216,7 +246,7 @@ You can use the same loop to create multiple Linux users.
         - devuser
         - testuser
         - deployuser
-</pre>
+</pre></div>
 
 <p>
 The user module executes three times, creating each user if the account
@@ -229,7 +259,7 @@ does not already exist.
 You can use a loop to install multiple packages using the APT module.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Install multiple packages
   hosts: ansible-client
@@ -246,7 +276,7 @@ You can use a loop to install multiple packages using the APT module.
         - wget
         - vim
         - tree
-</pre>
+</pre></div>
 
 <p>
 The APT task executes once for each package.
@@ -266,7 +296,7 @@ behavior to each item.
 You can also use loops with the command module.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Display multiple messages
   hosts: ansible-client
@@ -281,7 +311,7 @@ You can also use loops with the command module.
         - backend
         - database
       changed_when: false
-</pre>
+</pre></div>
 
 <p>
 The command executes three times, once for each application name.
@@ -293,7 +323,7 @@ The command executes three times, once for each application name.
 You can use loops to check whether multiple files exist.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Check application files
   hosts: ansible-client
@@ -308,7 +338,7 @@ You can use loops to check whether multiple files exist.
         - /etc/passwd
         - /etc/group
       changed_when: false
-</pre>
+</pre></div>
 
 <p>
 Each file is checked separately. If any file does not exist,
@@ -323,12 +353,12 @@ The variable <code>item</code> represents the current value being
 processed by the loop.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 loop:
   - frontend
   - backend
   - database
-</pre>
+</pre></div>
 
 <p>
 During execution, Ansible assigns these values to
@@ -382,7 +412,7 @@ using loops.
 
 <p><strong>Create this playbook:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Prepare application environment
   hosts: ansible-client
@@ -421,13 +451,13 @@ using loops.
     - name: Display completion message
       ansible.builtin.debug:
         msg: "Application environment preparation completed"
-</pre>
+</pre></div>
 
 <p><strong>Run from ansible-controller:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-environment.yml
-</pre>
+</pre></div>
 
 <p><strong>Expected behavior:</strong></p>
 
@@ -498,5 +528,40 @@ function toggleVideo() {
     }
 }
 </script>
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
+</script>
+
 </body>
 </html>

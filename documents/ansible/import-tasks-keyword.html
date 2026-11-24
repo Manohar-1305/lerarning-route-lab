@@ -41,6 +41,36 @@ td { color:#cbd5e1; }
 .project { background:#172033; border:1px solid #334155; border-radius:8px; padding:18px; margin-top:20px; }
 .why { background:#451f0b; border:1px solid #92400e; border-radius:10px; padding:24px; margin-top:40px; }
 .why h2 { color:#fbbf24; margin-top:0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -80,14 +110,14 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
 
 <h2>2. Basic Syntax</h2>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Main playbook
   hosts: ansible-client
   become: true
 
   tasks:
     - name: Import additional tasks
-      ansible.builtin.import_tasks: tasks.yml</code></pre>
+      ansible.builtin.import_tasks: tasks.yml</code></pre></div>
 
 <p>Here, Ansible imports the tasks defined in <code>tasks.yml</code> as part of the main playbook.</p>
 
@@ -126,7 +156,7 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
 
 <p><strong>application_tasks.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create application directory
   ansible.builtin.file:
     path: /opt/import-demo
@@ -145,7 +175,7 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
   ansible.builtin.file:
     path: /opt/import-demo/logs
     state: directory
-    mode: '0755'</code></pre>
+    mode: '0755'</code></pre></div>
 
 <p>This file contains three tasks that will be imported into the main playbook.</p>
 
@@ -155,14 +185,14 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
 
 <p><strong>main.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure application
   hosts: ansible-client
   become: true
 
   tasks:
     - name: Import application tasks
-      ansible.builtin.import_tasks: application_tasks.yml</code></pre>
+      ansible.builtin.import_tasks: application_tasks.yml</code></pre></div>
 
 <p>When Ansible processes the playbook, it incorporates the imported tasks into the play.</p>
 
@@ -170,11 +200,11 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
 
 <p>Run the playbook from your Ansible controller:</p>
 
-<pre><code>ansible-playbook main.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook main.yml</code></pre></div>
 
 <p>To verify the result, create a separate playbook named <code>verify.yml</code>.</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Verify application configuration
   hosts: ansible-client
   become: true
@@ -195,11 +225,11 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
 
     - name: Display configuration
       ansible.builtin.debug:
-        var: config_output.stdout</code></pre>
+        var: config_output.stdout</code></pre></div>
 
 <p>Execute the verification playbook:</p>
 
-<pre><code>ansible-playbook verify.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook verify.yml</code></pre></div>
 
 <h2>7. Import Multiple Task Files</h2>
 
@@ -207,15 +237,15 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
 
 <p>Example directory structure:</p>
 
-<pre><code>ansible-project/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-project/
 ├── main.yml
 ├── directories.yml
 ├── configuration.yml
-└── permissions.yml</code></pre>
+└── permissions.yml</code></pre></div>
 
 <p><strong>main.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure application server
   hosts: ansible-client
   become: true
@@ -228,7 +258,7 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
       ansible.builtin.import_tasks: configuration.yml
 
     - name: Import permission tasks
-      ansible.builtin.import_tasks: permissions.yml</code></pre>
+      ansible.builtin.import_tasks: permissions.yml</code></pre></div>
 
 <p>Ansible imports the task lists in the order they appear in the playbook.</p>
 
@@ -238,7 +268,7 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
 
 <p><strong>main.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Configure application
   hosts: ansible-client
   become: true
@@ -249,11 +279,11 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
 
   tasks:
     - name: Import application tasks
-      ansible.builtin.import_tasks: application_tasks.yml</code></pre>
+      ansible.builtin.import_tasks: application_tasks.yml</code></pre></div>
 
 <p><strong>application_tasks.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create application directory
   ansible.builtin.file:
     path: "{{ application_path }}"
@@ -265,7 +295,7 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
     dest: "{{ application_path }}/info.txt"
     content: |
       Application: {{ application_name }}
-    mode: '0644'</code></pre>
+    mode: '0644'</code></pre></div>
 
 <p>The imported tasks can access variables defined in the main play.</p>
 
@@ -273,7 +303,7 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
 
 <p>You can apply a <code>when</code> condition to an imported task file.</p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Conditional task import
   hosts: ansible-client
   become: true
@@ -281,7 +311,7 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
   tasks:
     - name: Import Ubuntu tasks
       ansible.builtin.import_tasks: ubuntu_tasks.yml
-      when: ansible_facts['distribution'] == "Ubuntu"</code></pre>
+      when: ansible_facts['distribution'] == "Ubuntu"</code></pre></div>
 
 <p><strong>Important difference:</strong> With static imports, the condition is applied to each imported task. Each task evaluates the condition when it executes.</p>
 
@@ -337,35 +367,35 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
 
 <p><strong>Directory structure:</strong></p>
 
-<pre><code>import-project/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>import-project/
 ├── main.yml
 ├── directories.yml
 ├── config.yml
-└── logs.yml</code></pre>
+└── logs.yml</code></pre></div>
 
 <p><strong>directories.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create application directory
   ansible.builtin.file:
     path: /opt/import-project
     state: directory
-    mode: '0755'</code></pre>
+    mode: '0755'</code></pre></div>
 
 <p><strong>config.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create application configuration
   ansible.builtin.copy:
     dest: /opt/import-project/application.conf
     content: |
       APPLICATION=LearningLabs
       ENVIRONMENT=lab
-    mode: '0644'</code></pre>
+    mode: '0644'</code></pre></div>
 
 <p><strong>logs.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create application log directory
   ansible.builtin.file:
     path: /opt/import-project/logs
@@ -376,11 +406,11 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
   ansible.builtin.copy:
     dest: /opt/import-project/logs/application.log
     content: "Application initialized\n"
-    mode: '0644'</code></pre>
+    mode: '0644'</code></pre></div>
 
 <p><strong>main.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Deploy application structure
   hosts: ansible-client
   become: true
@@ -393,20 +423,20 @@ The <code>import_tasks</code> module allows you to import tasks from another YAM
       ansible.builtin.import_tasks: config.yml
 
     - name: Import log tasks
-      ansible.builtin.import_tasks: logs.yml</code></pre>
+      ansible.builtin.import_tasks: logs.yml</code></pre></div>
 
 <p><strong>Execute:</strong></p>
 
-<pre><code>ansible-playbook main.yml</code></pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-playbook main.yml</code></pre></div>
 
 <h3>Expected Result</h3>
 
 <p>The target Ubuntu container should contain:</p>
 
-<pre><code>/opt/import-project/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>/opt/import-project/
 ├── application.conf
 └── logs/
-    └── application.log</code></pre>
+    └── application.log</code></pre></div>
 
 <p>The configuration and log files should contain the content defined in their respective task files.</p>
 </div>
@@ -447,6 +477,41 @@ function toggleVideo() {
     } else {
         video.style.display = "none";
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

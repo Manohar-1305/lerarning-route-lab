@@ -81,6 +81,36 @@ td { color: #cbd5e1; }
     margin-top: 40px;
 }
 .why h2 { color: #fbbf24; margin-top: 0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -128,7 +158,7 @@ satisfied or the retry limit is reached.
 
 <h2>2. Basic Syntax</h2>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Wait until condition is satisfied
   ansible.builtin.command:
     cmd: your-command
@@ -136,7 +166,7 @@ satisfied or the retry limit is reached.
   until: result.rc == 0
   retries: 5
   delay: 3
-</pre>
+</pre></div>
 
 <p>The main options are:</p>
 
@@ -177,7 +207,7 @@ not present, the command returns a non-zero exit code and Ansible
 retries the task.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Wait for a file
   hosts: ansible-client
@@ -196,7 +226,7 @@ retries the task.
     - name: Display success message
       ansible.builtin.debug:
         msg: "Application ready file detected"
-</pre>
+</pre></div>
 
 <p>
 Ansible checks the file, waits three seconds between unsuccessful
@@ -211,7 +241,7 @@ A common DevOps use case is waiting for an application API to respond.
 You can use the URI module to check an HTTP endpoint.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Wait for application API
   hosts: ansible-client
@@ -227,7 +257,7 @@ You can use the URI module to check an HTTP endpoint.
       until: api_response.status == 200
       retries: 10
       delay: 5
-</pre>
+</pre></div>
 
 <p>
 This task checks the health endpoint repeatedly. It completes when
@@ -251,7 +281,7 @@ check to succeed.
 You can also use command output as the condition.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Wait for expected application output
   hosts: ansible-client
@@ -266,7 +296,7 @@ You can also use command output as the condition.
       until: "'RUNNING' in app_status.stdout"
       retries: 5
       delay: 2
-</pre>
+</pre></div>
 
 <p>
 The command always returns <code>STARTING</code>, so the condition
@@ -284,11 +314,11 @@ This demonstrates how the output of a task can control retry behavior.
 Consider this configuration:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 retries: 4
 delay: 5
 until: result.rc == 0
-</pre>
+</pre></div>
 
 <p>
 The execution behaves as follows:
@@ -353,7 +383,7 @@ fail, the task is marked as failed.
 Example using <code>loop</code>:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Display application names
   ansible.builtin.debug:
     msg: "{{ item }}"
@@ -361,13 +391,13 @@ Example using <code>loop</code>:
     - frontend
     - backend
     - database
-</pre>
+</pre></div>
 
 <p>
 Example using <code>until</code>:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Wait for application
   ansible.builtin.command:
     cmd: test -f /tmp/application.ready
@@ -376,7 +406,7 @@ Example using <code>until</code>:
   until: result.rc == 0
   retries: 5
   delay: 3
-</pre>
+</pre></div>
 
 <p>
 A loop processes multiple values. An until condition repeats an
@@ -396,7 +426,7 @@ Your playbook must wait until that file exists.
 
 <p><strong>Create this playbook:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Application readiness check
   hosts: ansible-client
@@ -420,13 +450,13 @@ Your playbook must wait until that file exists.
       ansible.builtin.command:
         cmd: cat /tmp/application.ready
       changed_when: false
-</pre>
+</pre></div>
 
 <p><strong>Run from ansible-controller:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-readiness.yml
-</pre>
+</pre></div>
 
 <p><strong>Prepare the lab:</strong></p>
 
@@ -436,9 +466,9 @@ ansible-client through a separate test process or another playbook.
 For example, the file can contain:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 Application is ready
-</pre>
+</pre></div>
 
 <p><strong>Expected behavior:</strong></p>
 <ul>
@@ -525,5 +555,40 @@ function toggleVideo() {
     }
 }
 </script>
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
+</script>
+
 </body>
 </html>

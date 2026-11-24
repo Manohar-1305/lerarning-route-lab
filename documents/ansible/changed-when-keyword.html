@@ -135,6 +135,36 @@ th {
 }
 
 td { color: #cbd5e1; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 
@@ -222,7 +252,7 @@ Ansible commonly reports the following task statuses:
 
 <h2>3. How Does changed_when Work?</h2>
 
-<pre><code>             Ansible Controller
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>             Ansible Controller
              ------------------
                     |
                     v
@@ -242,7 +272,7 @@ Ansible commonly reports the following task statuses:
         Report Changed   Report OK
                     |
                     v
-             Continue Playbook</code></pre>
+             Continue Playbook</code></pre></div>
 
 <p>
 Ansible evaluates the expression configured under
@@ -267,7 +297,7 @@ a non-idempotent command idempotent.
 The keyword is written at the task level, alongside the module.
 </p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Basic changed_when example
   hosts: ansible-client
   become: true
@@ -276,7 +306,7 @@ The keyword is written at the task level, alongside the module.
     - name: Execute a command
       ansible.builtin.command:
         cmd: hostname
-      changed_when: false</code></pre>
+      changed_when: false</code></pre></div>
 
 <p>
 The hostname command executes, but Ansible reports the task as
@@ -292,7 +322,7 @@ do not modify the managed host.
 
 <p><strong>Playbook: changed-when-false.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Execute read-only commands
   hosts: ansible-client
   become: true
@@ -316,7 +346,7 @@ do not modify the managed host.
     - name: Get current date
       ansible.builtin.command:
         cmd: date
-      changed_when: false</code></pre>
+      changed_when: false</code></pre></div>
 
 <p>
 These commands retrieve information without intentionally changing
@@ -332,7 +362,7 @@ You can explicitly make a task report a change by setting
 
 <p><strong>Playbook: changed-when-true.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Force changed status
   hosts: ansible-client
   become: true
@@ -341,7 +371,7 @@ You can explicitly make a task report a change by setting
     - name: Execute hostname command
       ansible.builtin.command:
         cmd: hostname
-      changed_when: true</code></pre>
+      changed_when: true</code></pre></div>
 
 <p>
 Even though the hostname command does not modify the system,
@@ -365,7 +395,7 @@ the result returned by a command.
 
 <p><strong>Playbook: changed-when-register.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Determine change status from command output
   hosts: ansible-client
   become: true
@@ -380,7 +410,7 @@ the result returned by a command.
 
     - name: Display directory status
       ansible.builtin.debug:
-        msg: "Directory check return code: {{ directory_result.rc }}"</code></pre>
+        msg: "Directory check return code: {{ directory_result.rc }}"</code></pre></div>
 
 <p>
 The directory check is read-only. It is always reported as unchanged,
@@ -396,7 +426,7 @@ the output contains a particular value.
 
 <p><strong>Playbook: changed-when-stdout.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Determine change status using output
   hosts: ansible-client
   become: true
@@ -406,7 +436,7 @@ the output contains a particular value.
       ansible.builtin.command:
         cmd: echo "CONFIGURATION_UPDATED"
       register: command_result
-      changed_when: "'CONFIGURATION_UPDATED' in command_result.stdout"</code></pre>
+      changed_when: "'CONFIGURATION_UPDATED' in command_result.stdout"</code></pre></div>
 
 <p>
 If the command output contains <code>CONFIGURATION_UPDATED</code>,
@@ -428,7 +458,7 @@ whether Ansible should report a change.
 
 <p><strong>Playbook: changed-when-rc.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Determine status using return code
   hosts: ansible-client
   become: true
@@ -439,7 +469,7 @@ whether Ansible should report a change.
         cmd: test -d /tmp/learning-labs
       register: directory_result
       changed_when: directory_result.rc == 0
-      failed_when: false</code></pre>
+      failed_when: false</code></pre></div>
 
 <p>
 The task reports changed when the directory exists and unchanged
@@ -461,7 +491,7 @@ the task to report changed.
 
 <p><strong>Playbook: changed-when-multiple.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Evaluate multiple change conditions
   hosts: ansible-client
   become: true
@@ -473,7 +503,7 @@ the task to report changed.
       register: application_result
       changed_when:
         - "'APP_UPDATED' in application_result.stdout"
-        - application_result.rc == 0</code></pre>
+        - application_result.rc == 0</code></pre></div>
 
 <p>
 Both conditions must be true for Ansible to report the task
@@ -488,7 +518,7 @@ The keyword also works with the Shell module.
 
 <p><strong>Playbook: changed-when-shell.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Control Shell task status
   hosts: ansible-client
   become: true
@@ -502,7 +532,7 @@ The keyword also works with the Shell module.
 
     - name: Display process count
       ansible.builtin.debug:
-        msg: "Process count: {{ process_result.stdout }}"</code></pre>
+        msg: "Process count: {{ process_result.stdout }}"</code></pre></div>
 
 <p>
 The command collects information without intentionally changing
@@ -523,7 +553,7 @@ idempotency. It only controls how Ansible reports the result.
 
 <p><strong>Example: A command that creates a file</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create report file
   hosts: ansible-client
   become: true
@@ -532,7 +562,7 @@ idempotency. It only controls how Ansible reports the result.
     - name: Create report if it does not exist
       ansible.builtin.command:
         cmd: touch /tmp/ansible-report.txt
-        creates: /tmp/ansible-report.txt</code></pre>
+        creates: /tmp/ansible-report.txt</code></pre></div>
 
 <p>
 The Command module's <code>creates</code> parameter skips the
@@ -570,7 +600,7 @@ accurately reporting read-only tasks as unchanged.
 
 <strong>Project playbook: system-information.yml</strong>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Collect Linux system information
   hosts: ansible-client
   become: true
@@ -608,7 +638,7 @@ accurately reporting read-only tasks as unchanged.
           - "Memory information:"
           - "{{ memory_result.stdout }}"
           - "Root filesystem:"
-          - "{{ disk_result.stdout }}"</code></pre>
+          - "{{ disk_result.stdout }}"</code></pre></div>
 
 </div>
 
@@ -682,6 +712,41 @@ function toggleVideo() {
     } else {
         wrapper.style.display = "none";
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>

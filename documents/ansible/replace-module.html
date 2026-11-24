@@ -203,7 +203,37 @@
                 padding: 12px;
             }
         }
-    </style>
+    
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
+</style>
 </head>
 
 <body>
@@ -258,10 +288,10 @@
 
     <p>Consider this configuration file:</p>
 
-    <pre><code>APP_NAME=learning-labs
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME=learning-labs
 APP_PORT=5000
 APP_ENV=development
-APP_DEBUG=true</code></pre>
+APP_DEBUG=true</code></pre></div>
 
     <p>
         Suppose you want to replace the application port from
@@ -270,10 +300,10 @@ APP_DEBUG=true</code></pre>
 
     <p>The replace module searches for the matching text and updates it.</p>
 
-    <pre><code>APP_NAME=learning-labs
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME=learning-labs
 APP_PORT=8080
 APP_ENV=development
-APP_DEBUG=true</code></pre>
+APP_DEBUG=true</code></pre></div>
 
     <p>
         You can also replace multiple occurrences of the same text
@@ -282,7 +312,7 @@ APP_DEBUG=true</code></pre>
 
     <h2>3. Basic Playbook Structure</h2>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Replace configuration values
   hosts: ansible-client
   become: true
@@ -292,7 +322,7 @@ APP_DEBUG=true</code></pre>
       ansible.builtin.replace:
         path: /tmp/app.conf
         regexp: 'APP_PORT=5000'
-        replace: 'APP_PORT=8080'</code></pre>
+        replace: 'APP_PORT=8080'</code></pre></div>
 
     <p>Important fields:</p>
 
@@ -370,7 +400,7 @@ APP_DEBUG=true</code></pre>
 
     <p>Create <code>replace-port.yml</code>:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Update application port
   hosts: ansible-client
   become: true
@@ -380,15 +410,15 @@ APP_DEBUG=true</code></pre>
       ansible.builtin.replace:
         path: /tmp/app.conf
         regexp: 'APP_PORT=5000'
-        replace: 'APP_PORT=8080'</code></pre>
+        replace: 'APP_PORT=8080'</code></pre></div>
 
     <p>Before execution:</p>
 
-    <pre><code>APP_PORT=5000</code></pre>
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_PORT=5000</code></pre></div>
 
     <p>After execution:</p>
 
-    <pre><code>APP_PORT=8080</code></pre>
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_PORT=8080</code></pre></div>
 
     <h2>6. Replacing Values Using Regular Expressions</h2>
 
@@ -403,7 +433,7 @@ APP_DEBUG=true</code></pre>
         port value.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Update application port dynamically
   hosts: ansible-client
   become: true
@@ -413,7 +443,7 @@ APP_DEBUG=true</code></pre>
       ansible.builtin.replace:
         path: /tmp/app.conf
         regexp: '^APP_PORT=.*$'
-        replace: 'APP_PORT=8080'</code></pre>
+        replace: 'APP_PORT=8080'</code></pre></div>
 
     <p>
         This replaces the complete matching line, whether the existing
@@ -466,13 +496,13 @@ APP_DEBUG=true</code></pre>
 
     <p>Suppose the file contains:</p>
 
-    <pre><code>SERVER=old-server
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>SERVER=old-server
 BACKUP_SERVER=old-server
-MONITOR_SERVER=old-server</code></pre>
+MONITOR_SERVER=old-server</code></pre></div>
 
     <p>Playbook:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Update server references
   hosts: ansible-client
   become: true
@@ -482,13 +512,13 @@ MONITOR_SERVER=old-server</code></pre>
       ansible.builtin.replace:
         path: /tmp/servers.conf
         regexp: 'old-server'
-        replace: 'new-server'</code></pre>
+        replace: 'new-server'</code></pre></div>
 
     <p>Result:</p>
 
-    <pre><code>SERVER=new-server
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>SERVER=new-server
 BACKUP_SERVER=new-server
-MONITOR_SERVER=new-server</code></pre>
+MONITOR_SERVER=new-server</code></pre></div>
 
     <h2>8. Removing Matching Text</h2>
 
@@ -499,13 +529,13 @@ MONITOR_SERVER=new-server</code></pre>
 
     <p>Suppose the file contains:</p>
 
-    <pre><code>APP_NAME=learning-labs
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME=learning-labs
 APP_DEBUG=true
-APP_PORT=8080</code></pre>
+APP_PORT=8080</code></pre></div>
 
     <p>Playbook:</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Remove debug configuration
   hosts: ansible-client
   become: true
@@ -515,12 +545,12 @@ APP_PORT=8080</code></pre>
       ansible.builtin.replace:
         path: /tmp/app.conf
         regexp: '^APP_DEBUG=.*\n?'
-        replace: ''</code></pre>
+        replace: ''</code></pre></div>
 
     <p>Result:</p>
 
-    <pre><code>APP_NAME=learning-labs
-APP_PORT=8080</code></pre>
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME=learning-labs
+APP_PORT=8080</code></pre></div>
 
     <div class="warning-box">
         <strong>Important:</strong>
@@ -538,20 +568,20 @@ APP_PORT=8080</code></pre>
 
     <p>Consider this file:</p>
 
-    <pre><code>[application]
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>[application]
 PORT=5000
 ENV=development
 
 [database]
 PORT=5432
-HOST=localhost</code></pre>
+HOST=localhost</code></pre></div>
 
     <p>
         Suppose you want to change the application port without changing
         the database port.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Update application section
   hosts: ansible-client
   become: true
@@ -562,17 +592,17 @@ HOST=localhost</code></pre>
         path: /tmp/app.conf
         regexp: '^PORT=5000$'
         replace: 'PORT=8080'
-        before: '^\[database\]'</code></pre>
+        before: '^\[database\]'</code></pre></div>
 
     <p>Result:</p>
 
-    <pre><code>[application]
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>[application]
 PORT=8080
 ENV=development
 
 [database]
 PORT=5432
-HOST=localhost</code></pre>
+HOST=localhost</code></pre></div>
 
     <p>
         The <code>before</code> parameter limits the operation to
@@ -586,7 +616,7 @@ HOST=localhost</code></pre>
         before replacing its content.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Update configuration with backup
   hosts: ansible-client
   become: true
@@ -597,7 +627,7 @@ HOST=localhost</code></pre>
         path: /tmp/app.conf
         regexp: '^APP_ENV=.*$'
         replace: 'APP_ENV=production'
-        backup: true</code></pre>
+        backup: true</code></pre></div>
 
     <h2>11. Validating a File Before Applying Changes</h2>
 
@@ -607,7 +637,7 @@ HOST=localhost</code></pre>
         the original file.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Validate configuration before applying
   hosts: ansible-client
   become: true
@@ -618,7 +648,7 @@ HOST=localhost</code></pre>
         path: /tmp/app.conf
         regexp: '^APP_PORT=.*$'
         replace: 'APP_PORT=8080'
-        validate: '/usr/bin/test -s %s'</code></pre>
+        validate: '/usr/bin/test -s %s'</code></pre></div>
 
     <p>
         This example checks that the temporary file is not empty.
@@ -633,7 +663,7 @@ HOST=localhost</code></pre>
         produces the same desired result without unnecessary changes.
     </p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Ensure application port
   hosts: ansible-client
   become: true
@@ -643,7 +673,7 @@ HOST=localhost</code></pre>
       ansible.builtin.replace:
         path: /tmp/app.conf
         regexp: '^APP_PORT=.*$'
-        replace: 'APP_PORT=8080'</code></pre>
+        replace: 'APP_PORT=8080'</code></pre></div>
 
     <ul>
         <li>First execution: The existing port value is replaced.</li>
@@ -675,7 +705,7 @@ HOST=localhost</code></pre>
 
     <p>Create <code>application-migration.yml</code> on the controller.</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Migrate application configuration
   hosts: ansible-client
   become: true
@@ -744,11 +774,11 @@ HOST=localhost</code></pre>
 
     - name: Display completion message
       ansible.builtin.debug:
-        msg: "Application configuration migration completed."</code></pre>
+        msg: "Application configuration migration completed."</code></pre></div>
 
     <h3>Step 2: Expected Configuration</h3>
 
-    <pre><code>APP_NAME=learning-labs
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME=learning-labs
 APP_PORT=8080
 APP_ENV=production
 SERVER=new-server
@@ -756,13 +786,13 @@ BACKUP_SERVER=new-server
 
 [database]
 DB_HOST=127.0.0.1
-DB_PORT=5432</code></pre>
+DB_PORT=5432</code></pre></div>
 
     <h3>Step 3: Verify the Configuration</h3>
 
     <p>Create <code>verify-config.yml</code> on the controller.</p>
 
-    <pre><code>---
+    <div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Verify migrated configuration
   hosts: ansible-client
   become: true
@@ -775,7 +805,7 @@ DB_PORT=5432</code></pre>
 
     - name: Display final configuration
       ansible.builtin.debug:
-        msg: "{{ config_content.content | b64decode }}"</code></pre>
+        msg: "{{ config_content.content | b64decode }}"</code></pre></div>
 
     <h3>Step 4: Test Idempotency</h3>
 
@@ -916,6 +946,41 @@ DB_PORT=5432</code></pre>
             button.textContent = "▶ Watch Video";
         }
     }
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
 </script>
 
 </body>

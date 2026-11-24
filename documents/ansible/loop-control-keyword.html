@@ -81,6 +81,36 @@ td { color: #cbd5e1; }
     margin-top: 40px;
 }
 .why h2 { color: #fbbf24; margin-top: 0; }
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 <body>
@@ -130,7 +160,7 @@ This is where <code>loop_control</code> is useful.
 
 <h2>2. Basic Syntax</h2>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Task description
   ansible.builtin.module_name:
     parameter: "{{ item }}"
@@ -140,7 +170,7 @@ This is where <code>loop_control</code> is useful.
     - value3
   loop_control:
     label: "{{ item }}"
-</pre>
+</pre></div>
 
 <p>
 The <code>loop_control</code> section is placed at the same indentation
@@ -158,7 +188,7 @@ loop iteration in the task output.
 Consider a loop containing application configuration details:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Configure applications
   hosts: ansible-client
@@ -182,7 +212,7 @@ Consider a loop containing application configuration details:
           owner: root
       loop_control:
         label: "{{ item.name }}"
-</pre>
+</pre></div>
 
 <p>
 Here, each loop item is a dictionary containing multiple fields.
@@ -194,11 +224,11 @@ dictionary.
 The task output identifies iterations using labels such as:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 frontend
 backend
 database
-</pre>
+</pre></div>
 
 <div class="note">
 <strong>Important:</strong> The <code>label</code> option changes only
@@ -218,7 +248,7 @@ The <code>loop_var</code> option allows you to use a different variable
 name.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Configure application directories
   hosts: ansible-client
@@ -236,7 +266,7 @@ name.
         - database
       loop_control:
         loop_var: application
-</pre>
+</pre></div>
 
 <p>
 Instead of using <code>item</code>, the task now uses
@@ -277,7 +307,7 @@ index in a variable.
 The index starts at zero.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Display loop indexes
   hosts: ansible-client
@@ -293,24 +323,24 @@ The index starts at zero.
         - database
       loop_control:
         index_var: app_index
-</pre>
+</pre></div>
 
 <p>
 The output messages will contain these indexes:
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 Index 0: frontend
 Index 1: backend
 Index 2: database
-</pre>
+</pre></div>
 
 <p>
 If you want numbering to start from one, you can add one to the
 index when displaying it.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 - name: Display human-readable numbering
   ansible.builtin.debug:
     msg: "Application {{ app_index + 1 }}: {{ item }}"
@@ -320,7 +350,7 @@ index when displaying it.
     - database
   loop_control:
     index_var: app_index
-</pre>
+</pre></div>
 
 <h2>6. Add a Delay Between Iterations Using pause</h2>
 
@@ -329,7 +359,7 @@ The <code>pause</code> option introduces a delay between loop iterations.
 The value is specified in seconds.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Process applications with a delay
   hosts: ansible-client
@@ -345,7 +375,7 @@ The value is specified in seconds.
         - database
       loop_control:
         pause: 3
-</pre>
+</pre></div>
 
 <p>
 Ansible waits three seconds between consecutive iterations.
@@ -365,7 +395,7 @@ You can combine multiple options under the same
 <code>loop_control</code> section.
 </p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Demonstrate multiple loop controls
   hosts: ansible-client
@@ -386,7 +416,7 @@ You can combine multiple options under the same
         index_var: app_index
         label: "{{ app_name }}"
         pause: 1
-</pre>
+</pre></div>
 
 <p>
 This task:
@@ -445,7 +475,7 @@ You need to create directories and display their iteration numbers.
 
 <p><strong>Create this playbook:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ---
 - name: Configure application components
   hosts: ansible-client
@@ -478,13 +508,13 @@ You need to create directories and display their iteration numbers.
         loop_var: component
         index_var: component_index
         label: "{{ component }}"
-</pre>
+</pre></div>
 
 <p><strong>Run from ansible-controller:</strong></p>
 
-<pre>
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre>
 ansible-playbook application-components.yml
-</pre>
+</pre></div>
 
 <p><strong>Expected behavior:</strong></p>
 
@@ -555,5 +585,40 @@ function toggleVideo() {
     }
 }
 </script>
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    }
+}
+</script>
+
 </body>
 </html>

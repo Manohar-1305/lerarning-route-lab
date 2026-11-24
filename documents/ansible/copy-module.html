@@ -156,6 +156,36 @@ ul, ol {
     padding-left: 25px;
 }
 
+
+/* Copy button for every code block */
+.code-box {
+    position: relative;
+}
+.code-box > .copy-button {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font: 12px Arial, sans-serif;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.code-box > .copy-button:hover {
+    background: #334155;
+    opacity: 1;
+}
+.code-box > pre {
+    padding-top: 46px;
+}
+
 </style>
 </head>
 
@@ -202,7 +232,7 @@ from the controller machine to remote managed hosts.
 
 <h2>2. How Does the Copy Module Work?</h2>
 
-<pre><code>                  Ansible Controller
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>                  Ansible Controller
                   ------------------
                   Source file
                   /project/files/app.conf
@@ -213,7 +243,7 @@ from the controller machine to remote managed hosts.
                          v
                   Managed Host
                   -------------
-                  /tmp/app.conf</code></pre>
+                  /tmp/app.conf</code></pre></div>
 
 <p>
 The source file is read from the Ansible controller and transferred
@@ -287,20 +317,20 @@ the controller to the managed host.
 
 <p><strong>Project structure on the controller:</strong></p>
 
-<pre><code>ansible-project/
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>ansible-project/
 ├── files/
 │   └── app.conf
-└── copy-file.yml</code></pre>
+└── copy-file.yml</code></pre></div>
 
 <p><strong>Source file: files/app.conf</strong></p>
 
-<pre><code>APP_NAME=learning-labs
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>APP_NAME=learning-labs
 APP_PORT=8080
-APP_ENV=development</code></pre>
+APP_ENV=development</code></pre></div>
 
 <p><strong>Playbook: copy-file.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Copy configuration file
   hosts: ansible-client
   become: true
@@ -312,7 +342,7 @@ APP_ENV=development</code></pre>
         dest: /tmp/app.conf
         owner: root
         group: root
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
 <p>
 The source path is relative to the playbook project. The destination
@@ -329,7 +359,7 @@ managed host.
 
 <p><strong>Playbook: create-file.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Create application configuration
   hosts: ansible-client
   become: true
@@ -344,7 +374,7 @@ managed host.
         dest: /tmp/application.conf
         owner: root
         group: root
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
 <h2>6. Set File Permissions</h2>
 
@@ -355,7 +385,7 @@ a file.
 
 <p><strong>Playbook: copy-permissions.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Copy file with specific permissions
   hosts: ansible-client
   become: true
@@ -369,7 +399,7 @@ a file.
         dest: /tmp/database.conf
         owner: root
         group: root
-        mode: '0600'</code></pre>
+        mode: '0600'</code></pre></div>
 
 <div class="warning-box">
 <strong>Important:</strong>
@@ -387,7 +417,7 @@ parameter can preserve its previous version before Ansible replaces it.
 
 <p><strong>Playbook: copy-backup.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Copy file with backup
   hosts: ansible-client
   become: true
@@ -401,7 +431,7 @@ parameter can preserve its previous version before Ansible replaces it.
           APP_ENV=production
         dest: /tmp/application.conf
         backup: true
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
 <h2>8. Copy a File from One Remote Location to Another</h2>
 
@@ -412,7 +442,7 @@ file is already present on the managed host.
 
 <p><strong>Playbook: remote-copy.yml</strong></p>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Copy file within managed host
   hosts: ansible-client
   become: true
@@ -423,7 +453,7 @@ file is already present on the managed host.
         src: /tmp/application.conf
         dest: /tmp/application-backup.conf
         remote_src: true
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
 <h2>9. Practical Project: Deploy Application Configuration</h2>
 
@@ -449,7 +479,7 @@ using the Ansible Copy module.
 
 <strong>Project playbook: deploy-application.yml</strong>
 
-<pre><code>---
+<div class="code-box"><button type="button" class="copy-button" onclick="copyCode(this)" aria-label="Copy code">⧉ Copy</button><pre><code>---
 - name: Deploy application configuration
   hosts: ansible-client
   become: true
@@ -487,7 +517,7 @@ using the Ansible Copy module.
         backup: true
         owner: root
         group: root
-        mode: '0644'</code></pre>
+        mode: '0644'</code></pre></div>
 
 </div>
 
@@ -544,6 +574,41 @@ function toggleVideo() {
     } else {
         wrapper.style.display = "none";
         button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+
+<script>
+async function copyCode(button) {
+    const codeBox = button.closest('.code-box');
+    const code = codeBox.querySelector('pre').innerText;
+    const originalText = button.innerText;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(code);
+        } else {
+            const temporaryTextarea = document.createElement('textarea');
+            temporaryTextarea.value = code;
+            temporaryTextarea.style.position = 'fixed';
+            temporaryTextarea.style.opacity = '0';
+            document.body.appendChild(temporaryTextarea);
+            temporaryTextarea.select();
+            const copied = document.execCommand('copy');
+            temporaryTextarea.remove();
+            if (!copied) throw new Error('Copy failed');
+        }
+
+        button.innerText = '✓ Copied';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
+    } catch (error) {
+        button.innerText = 'Copy failed';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 1500);
     }
 }
 </script>
