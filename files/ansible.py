@@ -71,6 +71,8 @@ for noisy_logger in (
     "paramiko.transport",
     "werkzeug",
     "engineio",
+    "engineio.server",
+    "engineio.socket",
     "socketio",
     "socketio.server",
 ):
