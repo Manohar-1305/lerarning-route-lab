@@ -1,0 +1,621 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible rescue Keyword</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+.warning {
+    background: #451a03;
+    border-left: 4px solid #f59e0b;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+th, td { border: 1px solid #334155; padding: 10px; text-align: left; }
+th { background: #1e293b; color: #93c5fd; }
+td { color: #cbd5e1; }
+.video-container { margin: 24px 0; }
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 10px;
+    display: block;
+}
+.video-button {
+    display: block;
+    background: #16a34a;
+    color: white;
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+.project {
+    background: #172033;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    margin-top: 20px;
+}
+.why {
+    background: #451f0b;
+    border: 1px solid #92400e;
+    border-radius: 10px;
+    padding: 24px;
+    margin-top: 40px;
+}
+.why h2 { color: #fbbf24; margin-top: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible rescue Keyword</h1>
+
+<p>
+The <strong>rescue</strong> section allows you to execute recovery tasks
+when a task inside an Ansible block fails. It is used to handle errors
+and perform corrective actions instead of immediately stopping the
+automation workflow.
+</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. What Is rescue?</h2>
+
+<p>
+In the previous lesson, you learned how to group tasks using the
+<code>block</code> keyword.
+</p>
+
+<p>
+A block can contain several tasks. If one of those tasks fails,
+Ansible normally stops executing the remaining tasks in that block.
+</p>
+
+<p>
+The <code>rescue</code> section provides an alternative execution path.
+When a task inside the block fails, Ansible skips the remaining normal
+tasks in that block and executes the tasks defined under
+<code>rescue</code>.
+</p>
+
+<h2>2. Basic Syntax</h2>
+
+<pre>
+---
+- name: Demonstrate rescue
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application deployment
+      block:
+        - name: Execute operation
+          ansible.builtin.command:
+            cmd: /bin/false
+
+      rescue:
+        - name: Handle failure
+          ansible.builtin.debug:
+            msg: "The operation failed. Executing recovery tasks."
+</pre>
+
+<p>
+The playbook contains two main sections:
+</p>
+
+<ul>
+    <li><code>block</code>: Contains the normal tasks.</li>
+    <li><code>rescue</code>: Contains the recovery tasks executed when a block task fails.</li>
+</ul>
+
+<h2>3. Understanding Execution Flow</h2>
+
+<p>
+Consider a block containing three tasks:
+</p>
+
+<pre>
+tasks:
+  - name: Application deployment
+    block:
+      - name: First task
+        ansible.builtin.debug:
+          msg: "First task executed"
+
+      - name: Second task
+        ansible.builtin.command:
+          cmd: /bin/false
+
+      - name: Third task
+        ansible.builtin.debug:
+          msg: "Third task executed"
+
+    rescue:
+      - name: Recovery task
+        ansible.builtin.debug:
+          msg: "Recovery executed"
+</pre>
+
+<p>
+The execution order is:
+</p>
+
+<table>
+<tr>
+    <th>Order</th>
+    <th>Task</th>
+    <th>Result</th>
+</tr>
+<tr>
+    <td>1</td>
+    <td>First task</td>
+    <td>Executed successfully</td>
+</tr>
+<tr>
+    <td>2</td>
+    <td>Second task</td>
+    <td>Failed</td>
+</tr>
+<tr>
+    <td>3</td>
+    <td>Third task</td>
+    <td>Skipped</td>
+</tr>
+<tr>
+    <td>4</td>
+    <td>Recovery task</td>
+    <td>Executed</td>
+</tr>
+</table>
+
+<p>
+Once the second task fails, Ansible skips the remaining normal tasks
+inside the block and moves to the rescue section.
+</p>
+
+<h2>4. Example: Handle a Failed Application Operation</h2>
+
+<p>
+Imagine that an application deployment command fails. Instead of
+stopping immediately, you want to display a recovery message.
+</p>
+
+<pre>
+---
+- name: Application deployment recovery
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Deploy application
+      block:
+        - name: Execute deployment command
+          ansible.builtin.command:
+            cmd: /bin/false
+
+        - name: Display deployment success
+          ansible.builtin.debug:
+            msg: "Application deployed successfully"
+
+      rescue:
+        - name: Display deployment failure
+          ansible.builtin.debug:
+            msg: "Deployment failed. Recovery process started."
+</pre>
+
+<p>
+Because the deployment command fails:
+</p>
+
+<ul>
+    <li>The deployment command is marked as failed.</li>
+    <li>The success message task is skipped.</li>
+    <li>The rescue section executes.</li>
+    <li>The recovery message is displayed.</li>
+</ul>
+
+<h2>5. Perform Actual Recovery Operations</h2>
+
+<p>
+The rescue section is not limited to displaying messages. You can
+perform actual corrective operations.
+</p>
+
+<p>
+For example, if an application directory is missing, you can create
+it as part of the recovery process.
+</p>
+
+<pre>
+---
+- name: Recover application directory
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application preparation
+      block:
+        - name: Check application directory
+          ansible.builtin.command:
+            cmd: test -d /opt/application
+          changed_when: false
+
+        - name: Display directory status
+          ansible.builtin.debug:
+            msg: "Application directory exists"
+
+      rescue:
+        - name: Create missing application directory
+          ansible.builtin.file:
+            path: /opt/application
+            state: directory
+            mode: '0755'
+
+        - name: Display recovery result
+          ansible.builtin.debug:
+            msg: "Application directory created during recovery"
+</pre>
+
+<p>
+If the directory does not exist, the check task fails and the rescue
+section creates the directory.
+</p>
+
+<p>
+The directory creation task is an actual recovery operation, not
+just a status message.
+</p>
+
+<h2>6. Access Failure Information Inside rescue</h2>
+
+<p>
+Ansible provides information about the failed task through the
+special variable <code>ansible_failed_task</code>.
+</p>
+
+<p>
+You can use this variable to identify which task failed.
+</p>
+
+<pre>
+---
+- name: Display failed task information
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application operation
+      block:
+        - name: Execute operation
+          ansible.builtin.command:
+            cmd: /bin/false
+
+      rescue:
+        - name: Display failed task name
+          ansible.builtin.debug:
+            msg: "Failed task: {{ ansible_failed_task.name }}"
+</pre>
+
+<p>
+The variable <code>ansible_failed_task</code> contains information
+about the task that triggered the rescue section.
+</p>
+
+<p>
+You can also access the result of the failed task using
+<code>ansible_failed_result</code>.
+</p>
+
+<pre>
+- name: Display failure details
+  ansible.builtin.debug:
+    msg: "Return code: {{ ansible_failed_result.rc }}"
+</pre>
+
+<p>
+For command tasks, the return code is available through
+<code>ansible_failed_result.rc</code>.
+</p>
+
+<div class="note">
+<strong>Important:</strong> These special variables are available
+inside the rescue section for handling the failure. The attributes
+available depend on the module that failed.
+</div>
+
+<h2>7. What Happens After rescue Succeeds?</h2>
+
+<p>
+When all tasks in the rescue section complete successfully,
+Ansible considers the original block failure to have been handled.
+The play can continue with subsequent tasks.
+</p>
+
+<pre>
+---
+- name: Continue after recovery
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application operation
+      block:
+        - name: Execute failing operation
+          ansible.builtin.command:
+            cmd: /bin/false
+
+      rescue:
+        - name: Handle failure
+          ansible.builtin.debug:
+            msg: "Failure handled successfully"
+
+    - name: Continue automation
+      ansible.builtin.debug:
+        msg: "Automation continued after recovery"
+</pre>
+
+<p>
+The execution flow is:
+</p>
+
+<ol>
+    <li>The command fails.</li>
+    <li>The rescue section executes.</li>
+    <li>The recovery task succeeds.</li>
+    <li>The next normal task executes.</li>
+</ol>
+
+<div class="warning">
+<strong>Important:</strong> A successful rescue does not mean the
+original operation succeeded. It means Ansible considers the failure
+handled and allows the play to continue. The original task remains
+failed in the execution history.
+</div>
+
+<h2>8. What Happens If rescue Also Fails?</h2>
+
+<p>
+If a task inside the rescue section fails, Ansible normally marks
+the play as failed for that host and stops executing subsequent
+tasks for that host.
+</p>
+
+<pre>
+---
+- name: Demonstrate rescue failure
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application operation
+      block:
+        - name: Original operation
+          ansible.builtin.command:
+            cmd: /bin/false
+
+      rescue:
+        - name: Recovery operation
+          ansible.builtin.command:
+            cmd: /bin/false
+
+    - name: Task after recovery
+      ansible.builtin.debug:
+        msg: "This task will not execute if rescue fails"
+</pre>
+
+<p>
+Both the original operation and the recovery operation fail.
+Therefore, the final task is not executed.
+</p>
+
+<h2>9. Important Rules About rescue</h2>
+
+<ul>
+    <li><code>rescue</code> must be associated with a <code>block</code>.</li>
+    <li>Rescue tasks execute when a task inside the block fails.</li>
+    <li>Remaining normal tasks in the failed block are skipped.</li>
+    <li>Rescue tasks execute sequentially.</li>
+    <li><code>ansible_failed_task</code> identifies the failed task.</li>
+    <li><code>ansible_failed_result</code> provides the failed task result.</li>
+    <li>If rescue succeeds, Ansible allows the play to continue.</li>
+    <li>If rescue fails, the failure is not considered recovered.</li>
+</ul>
+
+<div class="note">
+<strong>Important limitation:</strong> Rescue does not handle every
+possible failure. Unreachable hosts and invalid task definitions,
+such as syntax errors, do not trigger the rescue section in the same
+way as ordinary task failures.
+</div>
+
+<h2>10. Practical Lab: Recover From an Application Deployment Failure</h2>
+
+<div class="project">
+<h3>Scenario</h3>
+
+<p>
+You are deploying an application on <code>ansible-client</code>.
+The deployment operation fails. Your playbook must create a recovery
+directory, record the failure details, and continue with the remaining
+automation.
+</p>
+
+<p><strong>Create this playbook:</strong></p>
+
+<pre>
+---
+- name: Application deployment recovery lab
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Application deployment
+      block:
+
+        - name: Execute application deployment
+          ansible.builtin.command:
+            cmd: /bin/false
+
+        - name: Display deployment success
+          ansible.builtin.debug:
+            msg: "Application deployment completed"
+
+      rescue:
+
+        - name: Create recovery directory
+          ansible.builtin.file:
+            path: /opt/application-recovery
+            state: directory
+            mode: '0755'
+
+        - name: Record failed task
+          ansible.builtin.copy:
+            content: |
+              Failed task: {{ ansible_failed_task.name }}
+              Return code: {{ ansible_failed_result.rc }}
+            dest: /opt/application-recovery/failure.log
+            mode: '0644'
+
+        - name: Display recovery message
+          ansible.builtin.debug:
+            msg: "Recovery information recorded"
+
+    - name: Continue automation
+      ansible.builtin.debug:
+        msg: "Automation continued after recovery"
+</pre>
+
+<p><strong>Run from ansible-controller:</strong></p>
+
+<pre>
+ansible-playbook application-recovery.yml
+</pre>
+
+<p><strong>Expected behavior:</strong></p>
+
+<ul>
+    <li>The application deployment command fails.</li>
+    <li>The rescue section executes.</li>
+    <li>The recovery directory is created.</li>
+    <li>The failure details are written to <code>/opt/application-recovery/failure.log</code>.</li>
+    <li>The recovery message is displayed.</li>
+    <li>The final task executes because rescue succeeds.</li>
+</ul>
+
+</div>
+
+<h2>11. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the <code>rescue</code> keyword.</li>
+    <li>Handling failures inside a block.</li>
+    <li>Executing recovery tasks.</li>
+    <li>Accessing failed task information.</li>
+    <li>Using <code>ansible_failed_task</code>.</li>
+    <li>Using <code>ansible_failed_result</code>.</li>
+    <li>Continuing automation after successful recovery.</li>
+    <li>Understanding what happens when rescue itself fails.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use the Ansible rescue Keyword?</h2>
+
+<p>
+In real DevOps environments, automation can fail during application
+deployment, configuration management, package installation, or
+infrastructure provisioning. Simply stopping the playbook may leave
+the environment in an incomplete state.
+</p>
+
+<p>
+The <code>rescue</code> keyword provides a recovery mechanism.
+When a task inside a block fails, Ansible can execute corrective
+operations such as creating missing directories, recording failure
+details, restoring configuration, or performing cleanup.
+</p>
+
+<p>
+For example, if an application deployment fails, a rescue section
+can record the error, prepare a recovery directory, and perform
+the necessary corrective actions.
+</p>
+
+<p>
+This makes automation more resilient because the playbook can
+respond to expected operational failures instead of immediately
+abandoning the workflow.
+</p>
+
+<p>
+However, rescue should not hide critical failures. Recovery tasks
+must perform meaningful corrective actions, and the automation
+must still make the failure visible to operators.
+</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+</body>
+</html>
