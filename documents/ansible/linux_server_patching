@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ansible Ubuntu Patching</title>
+<title>Ansible Ubuntu Server Patching</title>
 
 <style>
 * { box-sizing: border-box; }
@@ -52,8 +52,6 @@ code { color: #86efac; }
     margin: 10px 0;
 }
 
-.video-button:hover { background: #15803d; }
-
 .video-container {
     max-width: 850px;
     margin: 10px 0 20px;
@@ -69,7 +67,7 @@ code { color: #86efac; }
     display: block;
 }
 
-.note, .warning, .project {
+.note, .warning {
     padding: 12px;
     margin: 14px 0;
     border-radius: 5px;
@@ -85,21 +83,16 @@ code { color: #86efac; }
     border-left: 4px solid #f59e0b;
 }
 
-.project {
-    background: #172554;
-    border-left: 4px solid #60a5fa;
-}
-
 li { margin-bottom: 6px; }
 </style>
 </head>
 
 <body>
 
-<h1>Ansible Ubuntu Patching</h1>
+<h1>Ansible Ubuntu Server Patching</h1>
 
 <p>
-Learn how to update Ubuntu packages, install available security and software updates, and check whether a system requires a restart using Ansible.
+Learn how to automate Ubuntu server patching using Ansible.
 </p>
 
 <button type="button" class="video-button" id="videoButton">
@@ -109,47 +102,21 @@ Learn how to update Ubuntu packages, install available security and software upd
 <div class="video-container" id="videoContainer">
     <iframe
         src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
-        title="Ansible Ubuntu Patching Tutorial"
+        title="Ansible Ubuntu Server Patching"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen>
     </iframe>
 </div>
 
-<h2>1. What Is Linux Patching?</h2>
+<h2>1. What Is Server Patching?</h2>
 
 <p>
-Patching means installing updates to fix security issues, bugs and software problems in an operating system.
+Server patching means installing available operating system updates to fix security vulnerabilities, bugs and software issues.
 </p>
 
-<p>Ubuntu uses the APT package manager to manage software updates.</p>
+<p>Ubuntu uses APT to manage software packages.</p>
 
-<p>Check available updates manually:</p>
-
-<pre>sudo apt update</pre>
-
-<p>Install available package updates:</p>
-
-<pre>sudo apt upgrade -y</pre>
-
-<p>
-Ansible allows you to perform these operations on managed systems using a playbook instead of running commands manually.
-</p>
-
-<h2>2. Check Ansible Connectivity</h2>
-
-<p>
-Before patching, verify that Ansible can connect to the managed host.
-</p>
-
-<pre>
-ansible ansible-client -m ansible.builtin.ping
-</pre>
-
-<p>
-A successful response confirms that Ansible can communicate with the managed host.
-</p>
-
-<h2>3. Create Your First Patching Playbook</h2>
+<h2>2. Create the Patching Playbook</h2>
 
 <p>Create a playbook:</p>
 
@@ -159,7 +126,7 @@ A successful response confirms that Ansible can communicate with the managed hos
 
 <pre>
 ---
-- name: Ubuntu System Patching
+- name: Ubuntu Server Patching
   hosts: ansible-client
   become: true
 
@@ -168,7 +135,7 @@ A successful response confirms that Ansible can communicate with the managed hos
       ansible.builtin.apt:
         update_cache: true
 
-    - name: Upgrade installed packages
+    - name: Install available server patches
       ansible.builtin.apt:
         upgrade: dist
 </pre>
@@ -180,243 +147,133 @@ Esc
 :wq
 </pre>
 
-<p>
-<strong>Explanation:</strong>
-</p>
+<p><strong>Explanation:</strong></p>
 
 <ul>
-<li><code>hosts</code> specifies the managed host.</li>
-<li><code>become: true</code> runs tasks with elevated privileges.</li>
-<li><code>ansible.builtin.apt</code> manages Ubuntu packages.</li>
-<li><code>update_cache: true</code> refreshes the package information.</li>
-<li><code>upgrade: dist</code> upgrades installed packages and handles dependency changes.</li>
+<li><code>hosts</code> specifies the Ubuntu server to patch.</li>
+<li><code>become: true</code> runs tasks with administrative privileges.</li>
+<li><code>update_cache: true</code> refreshes available package information.</li>
+<li><code>upgrade: dist</code> installs available package updates and handles dependency changes.</li>
 </ul>
 
-<h2>4. Execute the Patching Playbook</h2>
+<h2>3. Validate the Playbook</h2>
 
-<p>Check the playbook for syntax errors:</p>
+<p>Check for syntax errors:</p>
 
 <pre>
 ansible-playbook --syntax-check ubuntu-patching.yml
 </pre>
 
-<p>Execute the patching playbook:</p>
+<h2>4. Execute Server Patching</h2>
+
+<p>Run the playbook:</p>
 
 <pre>
 ansible-playbook ubuntu-patching.yml
 </pre>
 
 <p>
-Ansible refreshes the package cache and installs available updates on the managed host.
+Ansible connects to the server, refreshes the package information and installs available updates.
 </p>
 
-<h2>5. Check Available Updates</h2>
+<h2>5. Check Whether a Reboot Is Required</h2>
 
 <p>
-You can check whether updates are available before installing them.
+Some updates, particularly kernel updates, require a server reboot before they take full effect.
 </p>
 
 <p>Add this task under the existing <code>tasks</code> section:</p>
 
 <pre>
-    - name: Check available package updates
-      ansible.builtin.command:
-        cmd: apt list --upgradable
-      register: available_updates
-      changed_when: false
-
-    - name: Display available updates
-      ansible.builtin.debug:
-        var: available_updates.stdout_lines
-</pre>
-
-<p>
-The command lists packages that have newer versions available. The debug task displays the result.
-</p>
-
-<h2>6. Clean Unused Packages</h2>
-
-<p>
-After patching, you can remove packages that were installed as dependencies but are no longer required.
-</p>
-
-<p>Add this task to the playbook:</p>
-
-<pre>
-    - name: Remove unused packages
-      ansible.builtin.apt:
-        autoremove: true
-</pre>
-
-<p>
-The <code>autoremove</code> option removes packages APT considers unnecessary.
-</p>
-
-<div class="warning">
-Review package removal carefully before using autoremove on important systems.
-</div>
-
-<h2>7. Check Whether a Restart Is Required</h2>
-
-<p>
-Some updates require a system restart before they take full effect. Ubuntu can indicate this through the <code>/var/run/reboot-required</code> file.
-</p>
-
-<p>Add these tasks:</p>
-
-<pre>
-    - name: Check whether restart is required
+    - name: Check whether reboot is required
       ansible.builtin.stat:
         path: /var/run/reboot-required
       register: reboot_status
 
-    - name: Display restart status
+    - name: Display reboot requirement
       ansible.builtin.debug:
-        msg: "A system restart is required."
+        msg: "Server reboot is required."
       when: reboot_status.stat.exists
-
-    - name: Display no-restart status
-      ansible.builtin.debug:
-        msg: "No system restart is required."
-      when: not reboot_status.stat.exists
 </pre>
 
 <p>
-The stat module checks whether the file exists. Ansible displays the appropriate message based on the result.
+Ansible checks whether the reboot-required file exists and displays the result.
 </p>
 
-<div class="note">
-This playbook only reports whether a restart is required. It does not restart the system automatically.
-</div>
-
-<h2>8. Real-Time Project: Ubuntu Patching Automation</h2>
-
-<div class="project">
-<strong>Project objective</strong>
+<h2>6. Complete Server Patching Playbook</h2>
 
 <p>
-Build a complete Ansible playbook that checks available updates, patches Ubuntu, removes unused packages and reports whether a system restart is required.
+Use this complete playbook to patch the server and automatically reboot it when required.
 </p>
-</div>
-
-<h3>Step 1: Create the project playbook</h3>
-
-<pre>vi ubuntu-maintenance.yml</pre>
-
-<h3>Step 2: Add the complete playbook</h3>
 
 <pre>
 ---
-- name: Ubuntu Patching and Maintenance
+- name: Ubuntu Server Patching
   hosts: ansible-client
   become: true
 
   tasks:
 
-    - name: Refresh APT package cache
+    - name: Update APT package cache
       ansible.builtin.apt:
         update_cache: true
-        cache_valid_time: 3600
 
-    - name: Check available package updates
-      ansible.builtin.command:
-        cmd: apt list --upgradable
-      register: available_updates
-      changed_when: false
-
-    - name: Display available updates
-      ansible.builtin.debug:
-        var: available_updates.stdout_lines
-
-    - name: Upgrade installed packages
+    - name: Install available server patches
       ansible.builtin.apt:
         upgrade: dist
-      register: patch_result
 
-    - name: Remove unused packages
-      ansible.builtin.apt:
-        autoremove: true
-
-    - name: Clean downloaded package files
-      ansible.builtin.apt:
-        autoclean: true
-
-    - name: Check whether restart is required
+    - name: Check whether reboot is required
       ansible.builtin.stat:
         path: /var/run/reboot-required
       register: reboot_status
 
-    - name: Display patching result
-      ansible.builtin.debug:
-        msg: "Ubuntu patching completed."
-
-    - name: Display restart requirement
-      ansible.builtin.debug:
-        msg: "A system restart is required."
+    - name: Reboot server when required
+      ansible.builtin.reboot:
+        reboot_timeout: 600
+        msg: "Reboot initiated after Ubuntu patching."
       when: reboot_status.stat.exists
-
-    - name: Display no-restart status
-      ansible.builtin.debug:
-        msg: "No system restart is required."
-      when: not reboot_status.stat.exists
 </pre>
 
-<h3>Step 3: Validate the playbook</h3>
-
-<pre>
-ansible-playbook --syntax-check ubuntu-maintenance.yml
-</pre>
-
-<h3>Step 4: Execute the playbook</h3>
-
-<pre>
-ansible-playbook ubuntu-maintenance.yml
-</pre>
-
-<h3>Step 5: Verify installed package updates</h3>
-
-<p>Check the package information:</p>
-
-<pre>
-ansible ansible-client -m ansible.builtin.command -a 'apt list --upgradable'
-</pre>
-
-<p>
-If no updates are available, the output will indicate that no packages can be upgraded.
-</p>
-
-<h3>Step 6: Run the playbook again</h3>
-
-<pre>
-ansible-playbook ubuntu-maintenance.yml
-</pre>
-
-<p>
-The second execution checks the system again. If packages are already up to date, there should be no additional package upgrades.
-</p>
-
-<h2>9. What This Lab Covers</h2>
+<p><strong>Explanation:</strong></p>
 
 <ul>
-<li>Understanding Ubuntu package updates.</li>
-<li>Checking Ansible connectivity.</li>
-<li>Using the Ansible APT module.</li>
-<li>Refreshing package repositories.</li>
-<li>Upgrading installed packages.</li>
-<li>Checking available updates.</li>
-<li>Removing unused packages.</li>
-<li>Cleaning downloaded package files.</li>
-<li>Checking whether a restart is required.</li>
-<li>Building an automated Ubuntu patching playbook.</li>
+<li>Updates the APT package cache.</li>
+<li>Installs available server patches.</li>
+<li>Checks whether a reboot is required.</li>
+<li>Reboots the server only when required.</li>
+<li>Waits up to 600 seconds for the server to return.</li>
 </ul>
 
-<p>
-<strong>Final outcome:</strong> Automate Ubuntu package patching and maintenance using Ansible.
-</p>
+<h2>7. Execute the Complete Playbook</h2>
 
-<div class="note">
-<strong>Important:</strong> Patching can change installed software and dependencies. Test the playbook before using it on production systems. Review application compatibility and restart requirements before scheduling maintenance.
+<p>Validate the syntax:</p>
+
+<pre>
+ansible-playbook --syntax-check ubuntu-patching.yml
+</pre>
+
+<p>Start server patching:</p>
+
+<pre>
+ansible-playbook ubuntu-patching.yml
+</pre>
+
+<div class="warning">
+Patching can interrupt running applications. Perform production patching during an approved maintenance window and ensure the server can safely reboot before enabling automatic reboot.
 </div>
+
+<h2>8. What This Lab Covers</h2>
+
+<ul>
+<li>Ubuntu server patching.</li>
+<li>Updating APT package repositories.</li>
+<li>Installing available security and software updates.</li>
+<li>Automating patching with Ansible.</li>
+<li>Checking reboot requirements.</li>
+<li>Automatically rebooting a patched server when required.</li>
+</ul>
+
+<p><strong>Final outcome:</strong> Automate Ubuntu server patching and reboot management using Ansible.</p>
 
 <script>
 (() => {
