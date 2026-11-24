@@ -1,0 +1,1044 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible Group Module</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 25px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+h1, h2, h3 {
+    color: #f8fafc;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+h2 {
+    margin-top: 35px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #334155;
+}
+
+h3 {
+    margin-top: 25px;
+    color: #93c5fd;
+}
+
+p, li {
+    color: #cbd5e1;
+}
+
+code {
+    color: #86efac;
+    background: #1e293b;
+    padding: 3px 6px;
+    border-radius: 4px;
+}
+
+pre {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    color: #86efac;
+    line-height: 1.6;
+}
+
+pre code {
+    padding: 0;
+    background: transparent;
+    color: inherit;
+}
+
+.note {
+    background: #1e293b;
+    border-left: 4px solid #38bdf8;
+    padding: 12px 16px;
+    margin: 18px 0;
+    border-radius: 4px;
+}
+
+.warning {
+    background: #292524;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 16px;
+    margin: 18px 0;
+    border-radius: 4px;
+}
+
+.video-container {
+    margin: 25px 0;
+}
+
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 8px;
+}
+
+.video-toggle {
+    margin-bottom: 12px;
+    padding: 9px 16px;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.video-toggle:hover {
+    background: #15803d;
+}
+
+.hidden {
+    display: none;
+}
+
+.task {
+    margin: 20px 0;
+    padding: 15px;
+    background: #172033;
+    border: 1px solid #334155;
+    border-radius: 8px;
+}
+
+.task h3 {
+    margin-top: 0;
+}
+
+/* Detailed explanation box */
+
+.why-module-box {
+    background: #3b2b1f;
+    border: 1px solid #8b5e3c;
+    border-left: 5px solid #c08457;
+    border-radius: 8px;
+    padding: 22px;
+    margin-top: 35px;
+}
+
+.why-module-box h2 {
+    color: #f0c49b;
+    border-bottom: 1px solid #795237;
+    margin-top: 0;
+}
+
+.why-module-box h3 {
+    color: #e8b98f;
+    margin-top: 22px;
+}
+
+.why-module-box p,
+.why-module-box li {
+    color: #f1dfce;
+}
+
+.why-module-box code {
+    background: #523a29;
+    color: #ffd3a8;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Ansible Group Module</h1>
+
+<p>
+    In this lab, you will learn how to manage Linux groups using
+    the Ansible Group module. You will create groups, assign
+    specific group IDs, create system groups and remove groups
+    through Ansible playbooks.
+</p>
+
+<p>
+    At the end, you will build a practical project that automates
+    Linux group management for different application teams.
+</p>
+
+<div class="video-container">
+    <button class="video-toggle" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+
+    <div id="videoWrapper">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible Group Module"
+            allowfullscreen>
+        </iframe>
+    </div>
+</div>
+
+<h2>1. What Is the Group Module?</h2>
+
+<p>
+    Linux uses groups to organize user accounts and manage
+    access to files, directories and other system resources.
+</p>
+
+<p>
+    Every Linux user has a primary group and can also belong
+    to additional supplementary groups.
+</p>
+
+<p>
+    Instead of assigning permissions individually to multiple
+    users, administrators can assign users to a group and
+    manage permissions for that group.
+</p>
+
+<p>
+    Ansible provides the
+    <code>ansible.builtin.group</code> module to create,
+    modify and remove Linux groups.
+</p>
+
+<p>
+    The fully qualified module name is:
+</p>
+
+<pre><code>ansible.builtin.group</code></pre>
+
+<h2>2. Understanding Linux Groups</h2>
+
+<p>
+    Consider an organization with three teams:
+</p>
+
+<ul>
+    <li>Developers who work on application source code.</li>
+    <li>Administrators who manage server operations.</li>
+    <li>Testers who access testing-related files.</li>
+</ul>
+
+<p>
+    Instead of managing access for every user individually,
+    an administrator can create three Linux groups:
+</p>
+
+<pre><code>developers
+administrators
+testers</code></pre>
+
+<p>
+    Users can then be assigned to the appropriate groups.
+    File and directory permissions can be configured using
+    group ownership.
+</p>
+
+<p>
+    For example, a directory owned by the developers group
+    can be configured to allow members of that group to
+    access its contents according to the assigned permissions.
+</p>
+
+<h2>3. Group Module Syntax</h2>
+
+<p>
+    The basic structure of the Group module looks like this:
+</p>
+
+<pre><code>- name: Create a Linux group
+  ansible.builtin.group:
+    name: developers
+    state: present</code></pre>
+
+<p>
+    <code>ansible.builtin.group</code> identifies the module.
+    The <code>name</code> parameter specifies the group,
+    and <code>state</code> defines whether the group should
+    exist or be absent.
+</p>
+
+<h2>4. Important Group Module Parameters</h2>
+
+<h3>name</h3>
+
+<p>
+    Specifies the name of the Linux group that Ansible
+    should manage.
+</p>
+
+<pre><code>name: developers</code></pre>
+
+<p>
+    In this example, Ansible manages a group named
+    <code>developers</code>.
+</p>
+
+<h3>state</h3>
+
+<p>
+    Specifies the desired state of the group.
+</p>
+
+<ul>
+    <li><code>present</code> – Ensures that the group exists.</li>
+    <li><code>absent</code> – Ensures that the group is removed.</li>
+</ul>
+
+<p>
+    When <code>state: present</code> is used, Ansible creates
+    the group if it does not already exist.
+</p>
+
+<p>
+    If the group already exists, Ansible checks whether
+    the requested attributes need to be changed.
+</p>
+
+<h3>gid</h3>
+
+<p>
+    Specifies the numeric Group ID assigned to the Linux group.
+</p>
+
+<pre><code>gid: 2001</code></pre>
+
+<p>
+    Every Linux group has a numeric GID. The operating system
+    uses this identifier internally to represent group ownership.
+</p>
+
+<p>
+    In this example, Ansible requests GID 2001 for the group.
+</p>
+
+<p>
+    The requested GID must not already be assigned to another
+    group. Otherwise, group creation can fail.
+</p>
+
+<h3>system</h3>
+
+<p>
+    Specifies whether the group should be created as a system group.
+</p>
+
+<pre><code>system: true</code></pre>
+
+<p>
+    A system group is generally used for operating system
+    services and applications rather than regular users.
+</p>
+
+<p>
+    The operating system selects a GID from its configured
+    system group range when one is not explicitly provided.
+</p>
+
+<p>
+    This is useful when creating groups for application
+    services that require dedicated group identities.
+</p>
+
+<h3>force</h3>
+
+<p>
+    Controls whether a group can be forcibly removed.
+</p>
+
+<pre><code>state: absent
+force: true</code></pre>
+
+<p>
+    This parameter is relevant when deleting a group.
+    It requests forced removal where supported by the
+    underlying system tools.
+</p>
+
+<div class="warning">
+    Use forced group deletion carefully. Check whether users
+    or files still depend on the group before removing it.
+</div>
+
+<h2>5. Create a Single Group</h2>
+
+<p>
+    Create a playbook named <code>create-group.yml</code>.
+    In this example, you will create a group named developers.
+</p>
+
+<pre><code>---
+- name: Create Linux Group
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Create developers group
+      ansible.builtin.group:
+        name: developers
+        state: present</code></pre>
+
+<h3>Understanding the Playbook</h3>
+
+<p>
+    <code>hosts: localhost</code> targets the local Ubuntu system.
+</p>
+
+<p>
+    <code>connection: local</code> tells Ansible to execute
+    the tasks locally.
+</p>
+
+<p>
+    <code>become: true</code> enables administrative privileges
+    because creating Linux groups requires elevated permissions.
+</p>
+
+<p>
+    <code>name: developers</code> specifies the group to create.
+</p>
+
+<p>
+    <code>state: present</code> ensures that the developers
+    group exists.
+</p>
+
+<h2>6. Create a Group with a Specific GID</h2>
+
+<p>
+    You can assign a specific numeric Group ID when creating
+    a Linux group.
+</p>
+
+<p>
+    Create <code>create-group-gid.yml</code>.
+</p>
+
+<pre><code>---
+- name: Create Group with Specific GID
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Create application group
+      ansible.builtin.group:
+        name: appgroup
+        gid: 2001
+        state: present</code></pre>
+
+<h3>Understanding the Playbook</h3>
+
+<p>
+    <code>name: appgroup</code> specifies the Linux group name.
+</p>
+
+<p>
+    <code>gid: 2001</code> requests Group ID 2001.
+</p>
+
+<p>
+    <code>state: present</code> ensures that the group exists.
+</p>
+
+<p>
+    Assigning a consistent GID can be useful when group
+    ownership needs to be consistent across multiple servers.
+</p>
+
+<div class="note">
+    Before assigning a fixed GID, verify that it is available
+    on every target system.
+</div>
+
+<h2>7. Create Multiple Groups</h2>
+
+<p>
+    Ansible allows you to create multiple groups using a loop.
+    This is useful when configuring different teams or applications.
+</p>
+
+<p>
+    Create <code>create-multiple-groups.yml</code>.
+</p>
+
+<pre><code>---
+- name: Create Multiple Linux Groups
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Create team groups
+      ansible.builtin.group:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - developers
+        - testers
+        - administrators
+        - monitoring</code></pre>
+
+<h3>Understanding the Playbook</h3>
+
+<p>
+    <code>loop</code> allows the same task to execute
+    for each value in the list.
+</p>
+
+<p>
+    <code>item</code> represents the current group name
+    being processed.
+</p>
+
+<p>
+    Ansible creates the following four groups:
+</p>
+
+<ul>
+    <li>developers</li>
+    <li>testers</li>
+    <li>administrators</li>
+    <li>monitoring</li>
+</ul>
+
+<p>
+    The same task is reused for every group instead of
+    writing four separate tasks.
+</p>
+
+<h2>8. Create a System Group</h2>
+
+<p>
+    Applications and services sometimes require dedicated
+    Linux groups. You can create these using the
+    <code>system</code> parameter.
+</p>
+
+<p>
+    Create <code>create-system-group.yml</code>.
+</p>
+
+<pre><code>---
+- name: Create Application System Group
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Create application system group
+      ansible.builtin.group:
+        name: appservice
+        system: true
+        state: present</code></pre>
+
+<h3>Understanding the Playbook</h3>
+
+<p>
+    <code>name: appservice</code> specifies the group name.
+</p>
+
+<p>
+    <code>system: true</code> requests a system group.
+</p>
+
+<p>
+    <code>state: present</code> ensures that the group exists.
+</p>
+
+<p>
+    System groups are commonly used to organize application
+    service accounts and assign group ownership to application
+    resources.
+</p>
+
+<h2>9. Remove a Group</h2>
+
+<p>
+    The Group module can also remove an existing Linux group.
+</p>
+
+<p>
+    Create <code>remove-group.yml</code>.
+</p>
+
+<pre><code>---
+- name: Remove Linux Group
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Remove testers group
+      ansible.builtin.group:
+        name: testers
+        state: absent</code></pre>
+
+<h3>Understanding the Playbook</h3>
+
+<p>
+    <code>name: testers</code> identifies the group to remove.
+</p>
+
+<p>
+    <code>state: absent</code> requests removal of the group.
+</p>
+
+<p>
+    The group should not have dependent users or resources
+    that still require its ownership and membership.
+</p>
+
+<div class="warning">
+    Removing a group does not automatically delete the user
+    accounts that belong to it. Check group dependencies and
+    file ownership before removing an existing group.
+</div>
+
+<h2>10. Verify Linux Groups</h2>
+
+<p>
+    After executing a playbook, you can inspect the group
+    information to confirm that the group was created.
+</p>
+
+<h3>Check a Specific Group</h3>
+
+<pre><code>getent group developers</code></pre>
+
+<p>
+    This displays the group entry, including its name,
+    password field, GID and listed supplementary members.
+</p>
+
+<h3>Display All Groups</h3>
+
+<pre><code>getent group</code></pre>
+
+<p>
+    This displays the group entries available through
+    the system's configured group databases.
+</p>
+
+<h3>Check a Group's GID</h3>
+
+<pre><code>getent group appgroup</code></pre>
+
+<p>
+    The output includes the numeric GID assigned to appgroup.
+</p>
+
+<h3>Check a User's Group Membership</h3>
+
+<pre><code>id devops</code></pre>
+
+<p>
+    This displays the user's UID, primary GID and
+    supplementary group memberships.
+</p>
+
+<h2>11. Practical Project: Linux Team Group Management</h2>
+
+<p>
+    In this project, you will automate Linux group management
+    for different teams in an organization.
+</p>
+
+<p>
+    The organization has developers, testers, administrators
+    and monitoring teams. Each team requires a dedicated
+    Linux group.
+</p>
+
+<p>
+    You will create all the groups through one Ansible playbook
+    and assign specific GIDs to selected groups.
+</p>
+
+<h3>Project Requirements</h3>
+
+<ul>
+    <li>Create a developers group with GID 2101.</li>
+    <li>Create a testers group with GID 2102.</li>
+    <li>Create an administrators group with GID 2103.</li>
+    <li>Create a monitoring group with GID 2104.</li>
+    <li>Create an application system group named appservice.</li>
+    <li>Ensure all requested groups exist.</li>
+    <li>Verify the group names and GIDs after execution.</li>
+</ul>
+
+<h3>Step 1: Create the Project Directory</h3>
+
+<pre><code>mkdir -p linux-group-management
+cd linux-group-management</code></pre>
+
+<h3>Step 2: Create the Main Playbook</h3>
+
+<p>
+    Create a file named <code>group-management.yml</code>.
+</p>
+
+<pre><code>---
+- name: Linux Team Group Management
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+
+    - name: Create developers group
+      ansible.builtin.group:
+        name: developers
+        gid: 2101
+        state: present
+
+    - name: Create testers group
+      ansible.builtin.group:
+        name: testers
+        gid: 2102
+        state: present
+
+    - name: Create administrators group
+      ansible.builtin.group:
+        name: administrators
+        gid: 2103
+        state: present
+
+    - name: Create monitoring group
+      ansible.builtin.group:
+        name: monitoring
+        gid: 2104
+        state: present
+
+    - name: Create application system group
+      ansible.builtin.group:
+        name: appservice
+        system: true
+        state: present</code></pre>
+
+<h3>Step 3: Understand the Project Playbook</h3>
+
+<p>
+    The playbook contains five tasks.
+</p>
+
+<p>
+    The first four tasks create regular Linux groups for
+    developers, testers, administrators and monitoring.
+</p>
+
+<p>
+    Each group receives a specific GID so that its numeric
+    identity is explicitly defined.
+</p>
+
+<p>
+    The fifth task creates an application system group using
+    <code>system: true</code>.
+</p>
+
+<p>
+    All tasks use <code>state: present</code>, ensuring that
+    the requested groups exist.
+</p>
+
+<h3>Step 4: Validate the Playbook</h3>
+
+<p>
+    Validate the YAML syntax and playbook structure.
+</p>
+
+<pre><code>ansible-playbook group-management.yml --syntax-check</code></pre>
+
+<h3>Step 5: Execute the Playbook</h3>
+
+<pre><code>ansible-playbook group-management.yml</code></pre>
+
+<p>
+    Ansible executes each task and creates the required
+    Linux groups.
+</p>
+
+<h3>Step 6: Verify the Created Groups</h3>
+
+<pre><code>getent group developers
+getent group testers
+getent group administrators
+getent group monitoring
+getent group appservice</code></pre>
+
+<h3>Step 7: Execute the Playbook Again</h3>
+
+<p>
+    Run the same playbook again:
+</p>
+
+<pre><code>ansible-playbook group-management.yml</code></pre>
+
+<p>
+    Since the requested groups already exist with the
+    expected configuration, Ansible should report
+    <code>ok</code> for tasks that do not require changes.
+</p>
+
+<div class="note">
+    <strong>Project completed:</strong>
+    You have automated Linux team group management using
+    the Ansible Group module.
+</div>
+
+<h2>What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding Linux users and groups.</li>
+    <li>Understanding the Ansible Group module.</li>
+    <li>Creating Linux groups.</li>
+    <li>Assigning specific GIDs.</li>
+    <li>Creating multiple groups using loops.</li>
+    <li>Creating system groups.</li>
+    <li>Removing Linux groups.</li>
+    <li>Verifying group information.</li>
+    <li>Understanding group membership and group ownership.</li>
+    <li>Building a Linux team group management project.</li>
+</ul>
+
+<!-- Detailed explanation box -->
+
+<div class="why-module-box">
+
+<h2>Why Do We Use the Ansible Group Module?</h2>
+
+<p>
+    Linux groups provide a way to organize user accounts
+    and manage access to shared resources. Instead of assigning
+    permissions individually to every user, administrators
+    can organize users into groups and manage permissions
+    at the group level.
+</p>
+
+<p>
+    In organizations with multiple Linux servers, group
+    management can become repetitive. Administrators may
+    need to create the same groups, assign specific GIDs
+    and maintain consistent group configurations across
+    different systems.
+</p>
+
+<p>
+    The Ansible Group module automates these operations
+    through playbooks.
+</p>
+
+<h3>1. Centralized Group Management</h3>
+
+<p>
+    Consider an organization with 50 Ubuntu servers.
+    Every server requires developers, testers and administrators
+    groups.
+</p>
+
+<p>
+    Without automation, an administrator would need to
+    create these groups manually on every server.
+</p>
+
+<p>
+    With the Ansible Group module, the administrator can
+    define the required groups in one playbook and apply
+    the configuration to all selected servers.
+</p>
+
+<p>
+    This reduces repetitive manual work and simplifies
+    group administration.
+</p>
+
+<h3>2. Consistent Group IDs Across Servers</h3>
+
+<p>
+    Every Linux group has a numeric Group ID. The operating
+    system uses this GID to identify group ownership of
+    files and directories.
+</p>
+
+<p>
+    When multiple servers share files or storage, inconsistent
+    GIDs can cause ownership and access problems.
+</p>
+
+<p>
+    For example, the developers group may use GID 2101 on
+    one server but GID 2201 on another server.
+</p>
+
+<p>
+    Explicitly managing GIDs helps maintain consistent group
+    identities across systems where shared ownership is required.
+</p>
+
+<h3>3. Simplified Permission Management</h3>
+
+<p>
+    Linux file permissions can be assigned to the owner,
+    group and other users.
+</p>
+
+<p>
+    By creating groups, administrators can manage access
+    for multiple users through a common group identity.
+</p>
+
+<p>
+    For example, developers can belong to the developers
+    group, and a shared project directory can be assigned
+    to that group.
+</p>
+
+<p>
+    This allows permissions to be managed at the group
+    level rather than individually for every developer.
+</p>
+
+<h3>4. Team-Based Access Organization</h3>
+
+<p>
+    Different teams have different responsibilities.
+    Developers may need access to application source files,
+    testers may need access to testing resources, and
+    administrators may need access to operational resources.
+</p>
+
+<p>
+    The Group module helps create and maintain these
+    team-specific groups.
+</p>
+
+<p>
+    When combined with the User module, Ansible can create
+    user accounts and assign them to the appropriate groups.
+</p>
+
+<h3>5. Application Service Groups</h3>
+
+<p>
+    Applications and services may require dedicated Linux
+    groups to manage access to application files and resources.
+</p>
+
+<p>
+    A system group can provide a separate group identity
+    for an application service.
+</p>
+
+<p>
+    The <code>system: true</code> parameter allows Ansible
+    to request the creation of a system group.
+</p>
+
+<p>
+    This helps separate application-related identities
+    from regular user groups.
+</p>
+
+<h3>6. Automated Group Removal</h3>
+
+<p>
+    Groups that are no longer required may need to be removed
+    as part of infrastructure maintenance.
+</p>
+
+<p>
+    The Group module supports group removal through
+    <code>state: absent</code>.
+</p>
+
+<p>
+    Before deleting a group, administrators should verify
+    whether users or files still depend on it.
+</p>
+
+<h3>7. Idempotency and Repeatable Automation</h3>
+
+<p>
+    Ansible checks whether the requested group already exists
+    before creating it.
+</p>
+
+<p>
+    If the group exists with the requested configuration,
+    Ansible does not need to recreate it.
+</p>
+
+<p>
+    If the group is missing, Ansible creates it.
+</p>
+
+<p>
+    This makes group management repeatable and reduces
+    unnecessary changes during repeated playbook executions.
+</p>
+
+<h3>8. Why Is This Important for a DevOps Engineer?</h3>
+
+<p>
+    DevOps engineers frequently manage application servers,
+    development environments, shared directories and
+    service accounts.
+</p>
+
+<p>
+    These environments require consistent user and group
+    configurations to control access to system resources.
+</p>
+
+<p>
+    Understanding the Group module helps automate group
+    creation, maintain consistent GIDs and organize
+    team-based access across Linux infrastructure.
+</p>
+
+<p>
+    When combined with the User, File and Copy modules,
+    it becomes possible to automate a complete Linux
+    access and directory configuration workflow.
+</p>
+
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const wrapper = document.getElementById("videoWrapper");
+    const button = document.getElementById("videoToggle");
+
+    if (wrapper.classList.contains("hidden")) {
+        wrapper.classList.remove("hidden");
+        button.textContent = "✕ Hide Video";
+    } else {
+        wrapper.classList.add("hidden");
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
