@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible Inventory Variables</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+.container { max-width: 1000px; margin: auto; }
+h1 { color: #60a5fa; font-size: 30px; }
+h2 { color: #93c5fd; margin-top: 32px; }
+h3 { color: #c4b5fd; margin-top: 24px; }
+p, li { color: #cbd5e1; }
+pre {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: #a7f3d0;
+}
+code { color: #a7f3d0; }
+.note {
+    background: #172554;
+    border-left: 4px solid #3b82f6;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+.warning {
+    background: #451a03;
+    border-left: 4px solid #f59e0b;
+    padding: 14px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+table { width:100%; border-collapse:collapse; margin:18px 0; }
+th,td { border:1px solid #334155; padding:10px; text-align:left; }
+th { background:#1e293b; color:#93c5fd; }
+td { color:#cbd5e1; }
+.video-container { margin:24px 0; }
+.video-container iframe {
+    width:100%;
+    aspect-ratio:16 / 9;
+    border:0;
+    border-radius:10px;
+    display:block;
+}
+.video-button {
+    display:block;
+    background:#16a34a;
+    color:white;
+    border:0;
+    border-radius:6px;
+    padding:10px 16px;
+    cursor:pointer;
+    font-size:14px;
+    margin-bottom:12px;
+}
+.project {
+    background:#172033;
+    border:1px solid #334155;
+    border-radius:8px;
+    padding:18px;
+    margin-top:20px;
+}
+.why {
+    background:#451f0b;
+    border:1px solid #92400e;
+    border-radius:10px;
+    padding:24px;
+    margin-top:40px;
+}
+.why h2 { color:#fbbf24; margin-top:0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Ansible Inventory Variables</h1>
+
+<p>Inventory variables allow you to define configuration values for managed hosts and groups directly in separate variable files.</p>
+
+<p>Instead of placing every variable inside an inventory file or playbook, you can organize them using <code>group_vars</code> and <code>host_vars</code>.</p>
+
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <iframe id="lessonVideo"
+        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+        title="Ansible Tutorial"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>1. What Are Inventory Variables?</h2>
+
+<p>Inventory variables are values assigned to hosts or groups. Ansible makes these values available when executing playbooks against the matching hosts.</p>
+
+<p>There are two important locations:</p>
+
+<table>
+<tr>
+<th>Directory</th>
+<th>Purpose</th>
+</tr>
+<tr>
+<td><code>group_vars/</code></td>
+<td>Stores variables shared by hosts belonging to a group.</td>
+</tr>
+<tr>
+<td><code>host_vars/</code></td>
+<td>Stores variables specific to an individual host.</td>
+</tr>
+</table>
+
+<h2>2. Understanding the Project Structure</h2>
+
+<p>We will use the existing <code>ansible-client</code> managed host.</p>
+
+<p>Create the following project structure on the Ansible controller:</p>
+
+<pre>
+ansible-inventory-lab/
+├── inventory.yml
+├── inventory-vars.yml
+├── group_vars/
+│   └── lab.yml
+└── host_vars/
+    └── ansible-client.yml
+</pre>
+
+<p>Each file has a separate responsibility:</p>
+
+<ul>
+<li><code>inventory.yml</code> defines the managed host and its group.</li>
+<li><code>group_vars/lab.yml</code> defines variables shared by the lab group.</li>
+<li><code>host_vars/ansible-client.yml</code> defines variables specifically for ansible-client.</li>
+<li><code>inventory-vars.yml</code> is the playbook that uses these variables.</li>
+</ul>
+
+<h2>3. Create the Inventory File</h2>
+
+<p>Create the project directory and move into it:</p>
+
+<pre>
+mkdir -p ansible-inventory-lab/group_vars
+mkdir -p ansible-inventory-lab/host_vars
+cd ansible-inventory-lab
+</pre>
+
+<p>Create the inventory file:</p>
+
+<pre>
+vi inventory.yml
+</pre>
+
+<p>Add the following configuration:</p>
+
+<pre>
+---
+all:
+  children:
+    lab:
+      hosts:
+        ansible-client:
+          ansible_user: root
+          ansible_connection: ssh
+          ansible_port: 22
+</pre>
+
+<p>Save the file using <code>:wq</code>.</p>
+
+<h2>4. Configure Group Variables</h2>
+
+<p>Group variables apply to every host belonging to the specified inventory group.</p>
+
+<p>Create the group variable file:</p>
+
+<pre>
+vi group_vars/lab.yml
+</pre>
+
+<p>Add the following variables:</p>
+
+<pre>
+---
+environment: training
+application_name: learning-labs
+application_port: 8080
+package_name: curl
+</pre>
+
+<p>Save the file using <code>:wq</code>.</p>
+
+<h3>Understanding the Variables</h3>
+
+<table>
+<tr>
+<th>Variable</th>
+<th>Value</th>
+<th>Purpose</th>
+</tr>
+<tr>
+<td><code>environment</code></td>
+<td>training</td>
+<td>Identifies the environment.</td>
+</tr>
+<tr>
+<td><code>application_name</code></td>
+<td>learning-labs</td>
+<td>Defines the application name.</td>
+</tr>
+<tr>
+<td><code>application_port</code></td>
+<td>8080</td>
+<td>Defines the application port.</td>
+</tr>
+<tr>
+<td><code>package_name</code></td>
+<td>curl</td>
+<td>Defines the package to install.</td>
+</tr>
+</table>
+
+<h2>5. Configure Host Variables</h2>
+
+<p>Host variables apply only to the specific managed host. They can override values inherited from its inventory groups.</p>
+
+<p>Create the host variable file:</p>
+
+<pre>
+vi host_vars/ansible-client.yml
+</pre>
+
+<p>Add the following configuration:</p>
+
+<pre>
+---
+environment: development
+server_role: application-server
+server_owner: devops-team
+</pre>
+
+<p>Save the file using <code>:wq</code>.</p>
+
+<div class="note">
+<strong>Important:</strong> The <code>environment</code> variable is defined in both the group and host variable files. Since host variables have higher precedence than group variables, the effective value for <code>ansible-client</code> will be <code>development</code>.
+</div>
+
+<h2>6. Understand Variable Precedence</h2>
+
+<p>When the same variable is defined at multiple inventory levels, Ansible uses variable precedence rules to determine the effective value.</p>
+
+<p>For the inventory variables covered in this lesson:</p>
+
+<table>
+<tr>
+<th>Variable source</th>
+<th>Precedence</th>
+</tr>
+<tr>
+<td>Group variables</td>
+<td>Lower</td>
+</tr>
+<tr>
+<td>Host variables</td>
+<td>Higher</td>
+</tr>
+</table>
+
+<p>For example:</p>
+
+<pre>
+# group_vars/lab.yml
+
+environment: training
+</pre>
+
+<pre>
+# host_vars/ansible-client.yml
+
+environment: development
+</pre>
+
+<p>Effective value:</p>
+
+<pre>
+environment: development
+</pre>
+
+<p>This is the inventory-level precedence relationship. Ansible has additional precedence levels involving playbook variables, task variables, extra variables, and other sources.</p>
+
+<h2>7. Create a Playbook to Use Inventory Variables</h2>
+
+<p>Create the playbook:</p>
+
+<pre>
+vi inventory-vars.yml
+</pre>
+
+<p>Add the following content:</p>
+
+<pre>
+---
+- name: Demonstrate Inventory Variables
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Display environment
+      ansible.builtin.debug:
+        msg: "Environment: {{ environment }}"
+
+    - name: Display application name
+      ansible.builtin.debug:
+        msg: "Application: {{ application_name }}"
+
+    - name: Display application port
+      ansible.builtin.debug:
+        msg: "Application Port: {{ application_port }}"
+
+    - name: Display server role
+      ansible.builtin.debug:
+        msg: "Server Role: {{ server_role }}"
+
+    - name: Display server owner
+      ansible.builtin.debug:
+        msg: "Server Owner: {{ server_owner }}"
+
+    - name: Install package defined in group variables
+      ansible.builtin.apt:
+        name: "{{ package_name }}"
+        state: present
+        update_cache: true
+</pre>
+
+<h3>What Happens During Execution?</h3>
+
+<ol>
+<li>Ansible reads <code>inventory.yml</code>.</li>
+<li>Ansible identifies <code>ansible-client</code> as a member of the <code>lab</code> group.</li>
+<li>Ansible loads variables from <code>group_vars/lab.yml</code>.</li>
+<li>Ansible loads variables from <code>host_vars/ansible-client.yml</code>.</li>
+<li>Host-level <code>environment</code> overrides the group-level value.</li>
+<li>The playbook uses the resolved variables to execute its tasks.</li>
+</ol>
+
+<h2>8. Execute the Playbook</h2>
+
+<pre>
+ansible-playbook -i inventory.yml inventory-vars.yml
+</pre>
+
+<p>Command breakdown:</p>
+
+<table>
+<tr>
+<th>Option / Argument</th>
+<th>Meaning</th>
+</tr>
+<tr>
+<td><code>ansible-playbook</code></td>
+<td>Runs an Ansible playbook.</td>
+</tr>
+<tr>
+<td><code>-i</code></td>
+<td>Specifies the inventory source.</td>
+</tr>
+<tr>
+<td><code>inventory.yml</code></td>
+<td>The YAML inventory file.</td>
+</tr>
+<tr>
+<td><code>inventory-vars.yml</code></td>
+<td>The playbook to execute.</td>
+</tr>
+</table>
+
+<p>The debug tasks should display values similar to:</p>
+
+<pre>
+Environment: development
+Application: learning-labs
+Application Port: 8080
+Server Role: application-server
+Server Owner: devops-team
+</pre>
+
+<p>The package installation task installs curl if it is not already installed.</p>
+
+<div class="note">
+<strong>Note:</strong> The recap and task status may differ depending on whether curl is already installed and whether the package cache needs updating.
+</div>
+
+<h2>9. Inspect Inventory Variables</h2>
+
+<p>Ansible provides the <code>ansible-inventory</code> command to inspect inventory information without executing a playbook.</p>
+
+<h3>Display the Inventory Graph</h3>
+
+<pre>
+ansible-inventory -i inventory.yml --graph
+</pre>
+
+<p>Command breakdown:</p>
+
+<ul>
+<li><code>ansible-inventory</code>: Inspects inventory data.</li>
+<li><code>-i inventory.yml</code>: Loads the specified inventory file.</li>
+<li><code>--graph</code>: Displays groups and their host relationships in a tree-like format.</li>
+</ul>
+
+<h3>Display All Inventory Data</h3>
+
+<pre>
+ansible-inventory -i inventory.yml --list
+</pre>
+
+<p>Command breakdown:</p>
+
+<ul>
+<li><code>--list</code>: Displays the inventory as JSON, including groups, hosts, and available host variables.</li>
+</ul>
+
+<h3>Display Variables for a Specific Host</h3>
+
+<pre>
+ansible-inventory -i inventory.yml --host ansible-client
+</pre>
+
+<p>Command breakdown:</p>
+
+<ul>
+<li><code>--host</code>: Displays the variables associated with a particular inventory host.</li>
+<li><code>ansible-client</code>: The inventory hostname being inspected.</li>
+</ul>
+
+<p>This command displays the resolved inventory variables for <code>ansible-client</code>. It does not connect to the managed host.</p>
+
+<h2>10. Practical Project: Environment-Specific Configuration</h2>
+
+<div class="project">
+
+<h3>Objective</h3>
+
+<p>Use group and host variables to maintain different configuration values without modifying the playbook.</p>
+
+<p><strong>Step 1:</strong> Open the group variable file.</p>
+
+<pre>
+vi group_vars/lab.yml
+</pre>
+
+<p>Change the environment value:</p>
+
+<pre>
+environment: staging
+application_name: learning-labs
+application_port: 9090
+package_name: curl
+</pre>
+
+<p><strong>Step 2:</strong> Open the host variable file.</p>
+
+<pre>
+vi host_vars/ansible-client.yml
+</pre>
+
+<p>Change the environment value:</p>
+
+<pre>
+environment: production
+server_role: application-server
+server_owner: devops-team
+</pre>
+
+<p><strong>Step 3:</strong> Execute the same playbook again.</p>
+
+<pre>
+ansible-playbook -i inventory.yml inventory-vars.yml
+</pre>
+
+<p><strong>Expected result:</strong></p>
+
+<pre>
+Environment: production
+Application: learning-labs
+Application Port: 9090
+Server Role: application-server
+Server Owner: devops-team
+</pre>
+
+<p>The playbook remains unchanged. Only the variable files have been modified.</p>
+
+<h3>Practice Tasks</h3>
+
+<ul>
+<li>Change the application name in the group variable file.</li>
+<li>Change the application port to 7070.</li>
+<li>Change the server owner in the host variable file.</li>
+<li>Run the playbook and verify the updated values.</li>
+<li>Inspect the resolved variables using <code>ansible-inventory --host</code>.</li>
+</ul>
+
+</div>
+
+<h2>11. What This Lab Covers</h2>
+
+<ul>
+<li>Inventory variables and their purpose.</li>
+<li>Group variables using <code>group_vars</code>.</li>
+<li>Host variables using <code>host_vars</code>.</li>
+<li>Host and group variable precedence.</li>
+<li>Using inventory variables inside playbooks.</li>
+<li>Inspecting variables using <code>ansible-inventory</code>.</li>
+<li>Separating configuration data from playbook logic.</li>
+</ul>
+
+<div class="why">
+<h2>Why Do We Use Ansible Inventory Variables?</h2>
+
+<p>In real-world DevOps environments, the same application is often deployed across development, staging, and production environments.</p>
+
+<p>Each environment may require different configuration values, such as application ports, package names, environment labels, server roles, and ownership details.</p>
+
+<p>Hardcoding these values inside playbooks makes maintenance difficult. Every environment change could require editing the playbook itself.</p>
+
+<p>Inventory variables separate configuration data from automation logic. Group variables allow shared configuration, while host variables provide host-specific configuration.</p>
+
+<p>This makes playbooks reusable, reduces duplication, and simplifies environment management.</p>
+
+<p><strong>Real-world example:</strong> A DevOps engineer can use the same deployment playbook for multiple environments while maintaining separate configuration values through inventory variable files.</p>
+</div>
+
+</div>
+
+<script>
+function toggleVideo() {
+    const video = document.getElementById("lessonVideo");
+    const button = document.getElementById("videoToggle");
+
+    if (video.style.display === "none") {
+        video.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        video.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
+</script>
+
+</body>
+</html>
