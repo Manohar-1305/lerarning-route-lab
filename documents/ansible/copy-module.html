@@ -1,390 +1,551 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ansible Command Module</title>
+<title>Ansible Copy Module</title>
 
 <style>
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
-    padding: 14px;
-    background: #111827;
+    padding: 30px 16px;
+    background: #0b1120;
     color: #e5e7eb;
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.7;
 }
 
-h1, h2, h3 { color: #60a5fa; }
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
 
-h1 { margin-top: 0; }
+h1, h2, h3 {
+    color: #f8fafc;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
 
 h2 {
-    margin-top: 25px;
-    border-bottom: 1px solid #374151;
-    padding-bottom: 6px;
+    margin-top: 38px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 9px;
 }
 
-p { color: #d1d5db; }
+h3 {
+    margin-top: 25px;
+    color: #93c5fd;
+}
+
+p, li {
+    color: #cbd5e1;
+}
+
+code {
+    color: #86efac;
+    background: #1e293b;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
 
 pre {
     background: #020617;
-    color: #86efac;
-    padding: 12px;
-    border-radius: 6px;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
     overflow-x: auto;
-    font-size: 13px;
+    color: #d1d5db;
     line-height: 1.6;
 }
 
-code { color: #86efac; }
-
-.video-button {
-    background: #16a34a;
-    color: white;
-    border: 0;
-    padding: 9px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin: 10px 0;
+pre code {
+    background: transparent;
+    padding: 0;
+    color: #d1d5db;
 }
-
-.video-button:hover { background: #15803d; }
 
 .video-container {
-    max-width: 850px;
-    margin: 10px 0 20px;
+    margin: 25px 0;
 }
-
-.video-container[hidden] { display: none; }
 
 .video-container iframe {
     width: 100%;
     aspect-ratio: 16 / 9;
     border: 0;
-    border-radius: 8px;
-    display: block;
+    border-radius: 10px;
 }
 
-.note, .project {
-    padding: 12px;
-    margin: 14px 0;
-    border-radius: 5px;
+.video-button {
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 10px 17px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 12px;
 }
 
-.note {
-    background: #1e293b;
-    border-left: 4px solid #3b82f6;
-}
-
-.project {
+.info-box {
     background: #172554;
-    border-left: 4px solid #60a5fa;
+    border-left: 4px solid #3b82f6;
+    padding: 16px;
+    border-radius: 7px;
+    margin: 20px 0;
 }
 
-li { margin-bottom: 6px; }
+.warning-box {
+    background: #422006;
+    border-left: 4px solid #f59e0b;
+    padding: 16px;
+    border-radius: 7px;
+    margin: 20px 0;
+}
+
+.project-box {
+    background: #132e25;
+    border-left: 4px solid #22c55e;
+    padding: 18px;
+    border-radius: 7px;
+    margin: 20px 0;
+}
+
+.why-box {
+    background: #713f12;
+    border: 1px solid #a16207;
+    padding: 24px;
+    border-radius: 10px;
+    margin-top: 45px;
+}
+
+.why-box h2 {
+    border: none;
+    margin-top: 0;
+    color: #fef3c7;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #334155;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+td {
+    color: #cbd5e1;
+}
+
+ul, ol {
+    padding-left: 25px;
+}
+
 </style>
 </head>
 
 <body>
+<div class="container">
 
-<h1>Ansible Command Module</h1>
+<h1>Ansible Copy Module</h1>
 
 <p>
-Learn how to execute Linux commands on managed hosts using Ansible.
+The Ansible Copy module transfers files from the Ansible controller
+to managed hosts. It can also create files directly on managed hosts
+using the <code>content</code> parameter.
 </p>
 
-<button type="button" class="video-button" id="videoButton">
-✕ Hide Video
-</button>
-
-<div class="video-container" id="videoContainer">
-    <iframe
-        src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
-        title="Ansible Command Module Tutorial"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen>
-    </iframe>
+<div class="video-container">
+    <button class="video-button" id="videoToggle" onclick="toggleVideo()">
+        ✕ Hide Video
+    </button>
+    <div id="videoWrapper">
+        <iframe
+            src="https://www.youtube-nocookie.com/embed/iE8y2UMWCsU?start=3&rel=0"
+            title="Ansible Copy Module Tutorial"
+            allowfullscreen>
+        </iframe>
+    </div>
 </div>
 
-<h2>1. What Is the Command Module?</h2>
+<h2>1. What Is the Copy Module?</h2>
 
 <p>
-The <code>ansible.builtin.command</code> module executes commands on managed hosts without using a shell.
+The <code>ansible.builtin.copy</code> module is used to copy files
+from the controller machine to remote managed hosts.
 </p>
+
+<p>Common use cases include:</p>
+
+<ul>
+    <li>Copying application configuration files.</li>
+    <li>Deploying scripts to remote servers.</li>
+    <li>Copying certificates and other required files.</li>
+    <li>Creating configuration files with specified content.</li>
+    <li>Setting file permissions and ownership during deployment.</li>
+</ul>
+
+<h2>2. How Does the Copy Module Work?</h2>
+
+<pre><code>                  Ansible Controller
+                  ------------------
+                  Source file
+                  /project/files/app.conf
+                         |
+                         |
+                    Ansible SSH
+                         |
+                         v
+                  Managed Host
+                  -------------
+                  /tmp/app.conf</code></pre>
 
 <p>
-It is useful for simple commands such as checking the hostname, uptime and directory contents.
+The source file is read from the Ansible controller and transferred
+to the managed host. The destination path specifies where the file
+should be placed on the managed host.
 </p>
 
-<h2>2. Execute a Command</h2>
+<h2>3. Important Parameters</h2>
 
-<p>Check how long the managed host has been running:</p>
+<table>
+<thead>
+<tr>
+    <th>Parameter</th>
+    <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td><code>src</code></td>
+    <td>Source file path on the Ansible controller.</td>
+</tr>
+<tr>
+    <td><code>dest</code></td>
+    <td>Destination path on the managed host.</td>
+</tr>
+<tr>
+    <td><code>content</code></td>
+    <td>Creates a file using the supplied text content.</td>
+</tr>
+<tr>
+    <td><code>owner</code></td>
+    <td>Sets the file owner.</td>
+</tr>
+<tr>
+    <td><code>group</code></td>
+    <td>Sets the file group.</td>
+</tr>
+<tr>
+    <td><code>mode</code></td>
+    <td>Sets file permissions.</td>
+</tr>
+<tr>
+    <td><code>backup</code></td>
+    <td>Creates a backup before replacing an existing file.</td>
+</tr>
+<tr>
+    <td><code>force</code></td>
+    <td>Controls whether an existing destination file is replaced.</td>
+</tr>
+<tr>
+    <td><code>remote_src</code></td>
+    <td>Indicates that the source file is already on the managed host.</td>
+</tr>
+<tr>
+    <td><code>directory_mode</code></td>
+    <td>Sets permissions for newly created destination directories.</td>
+</tr>
+<tr>
+    <td><code>validate</code></td>
+    <td>Runs a validation command before replacing the destination file.</td>
+</tr>
+</tbody>
+</table>
 
-<pre>
-ansible ansible-client -m ansible.builtin.command -a 'uptime'
-</pre>
+<h2>4. Copy a File to a Managed Host</h2>
 
 <p>
-Here, <code>-m</code> specifies the module and <code>-a</code> provides the command to execute.
+In this example, we copy an application configuration file from
+the controller to the managed host.
 </p>
 
-<h2>3. Check the Hostname</h2>
+<p><strong>Project structure on the controller:</strong></p>
 
-<p>Find the hostname of the managed host:</p>
+<pre><code>ansible-project/
+├── files/
+│   └── app.conf
+└── copy-file.yml</code></pre>
 
-<pre>
-ansible ansible-client -m ansible.builtin.command -a 'hostname'
-</pre>
+<p><strong>Source file: files/app.conf</strong></p>
 
-<p>This helps verify which host Ansible is managing.</p>
+<pre><code>APP_NAME=learning-labs
+APP_PORT=8080
+APP_ENV=development</code></pre>
 
-<h2>4. List Directory Contents</h2>
+<p><strong>Playbook: copy-file.yml</strong></p>
 
-<p>List files and directories inside <code>/tmp</code>:</p>
-
-<pre>
-ansible ansible-client -m ansible.builtin.command -a 'ls -la /tmp'
-</pre>
-
-<p>
-The command module executes the command directly. It does not process shell features such as pipes, redirection or wildcard expansion.
-</p>
-
-<h2>5. Create Your First Playbook</h2>
-
-<p>Create a playbook on the Ansible controller:</p>
-
-<pre>vi command-playbook.yml</pre>
-
-<p>Press <code>i</code> and add:</p>
-
-<pre>
----
-- name: Command module example
+<pre><code>---
+- name: Copy configuration file
   hosts: ansible-client
+  become: true
 
   tasks:
-    - name: Check hostname
-      ansible.builtin.command:
-        cmd: hostname
-      register: hostname_output
-      changed_when: false
-
-    - name: Display hostname
-      ansible.builtin.debug:
-        var: hostname_output.stdout
-</pre>
+    - name: Copy application configuration
+      ansible.builtin.copy:
+        src: files/app.conf
+        dest: /tmp/app.conf
+        owner: root
+        group: root
+        mode: '0644'</code></pre>
 
 <p>
-The command task executes <code>hostname</code>. The <code>register</code> keyword saves its result, and the debug task displays the hostname.
+The source path is relative to the playbook project. The destination
+path is on the managed host.
 </p>
 
-<p>Save the file:</p>
-
-<pre>Esc
-:wq</pre>
-
-<h2>6. Execute the Playbook</h2>
-
-<p>Run the playbook:</p>
-
-<pre>
-ansible-playbook command-playbook.yml
-</pre>
+<h2>5. Create a File Using the Content Parameter</h2>
 
 <p>
-Ansible executes the command on <code>ansible-client</code> and displays the hostname.
+You do not always need a separate source file. The
+<code>content</code> parameter creates a file directly on the
+managed host.
 </p>
 
-<h2>7. Use the chdir Parameter</h2>
+<p><strong>Playbook: create-file.yml</strong></p>
+
+<pre><code>---
+- name: Create application configuration
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Create application configuration file
+      ansible.builtin.copy:
+        content: |
+          APP_NAME=learning-labs
+          APP_PORT=8080
+          APP_ENV=production
+        dest: /tmp/application.conf
+        owner: root
+        group: root
+        mode: '0644'</code></pre>
+
+<h2>6. Set File Permissions</h2>
 
 <p>
-The <code>chdir</code> parameter changes the working directory before executing a command.
+The Copy module can set ownership and permissions while copying
+a file.
 </p>
 
-<p>Add this task under the existing <code>tasks</code> section:</p>
+<p><strong>Playbook: copy-permissions.yml</strong></p>
 
-<pre>
-    - name: List files in /tmp
-      ansible.builtin.command:
-        cmd: ls -la
-        chdir: /tmp
-      changed_when: false
-</pre>
+<pre><code>---
+- name: Copy file with specific permissions
+  hosts: ansible-client
+  become: true
 
-<p>Execute the playbook again:</p>
+  tasks:
+    - name: Create a protected configuration file
+      ansible.builtin.copy:
+        content: |
+          DATABASE_HOST=127.0.0.1
+          DATABASE_PORT=3306
+        dest: /tmp/database.conf
+        owner: root
+        group: root
+        mode: '0600'</code></pre>
 
-<pre>ansible-playbook command-playbook.yml</pre>
+<div class="warning-box">
+<strong>Important:</strong>
+Use quoted permission values such as <code>'0644'</code> and
+<code>'0600'</code>. This avoids YAML interpreting them as ordinary
+numbers.
+</div>
 
-<h2>8. Use the creates Parameter</h2>
+<h2>7. Create a Backup Before Replacing a File</h2>
 
 <p>
-The <code>creates</code> parameter skips a command when the specified file already exists.
+When a destination file already exists, the <code>backup</code>
+parameter can preserve its previous version before Ansible replaces it.
 </p>
 
-<p>Add this task to your playbook:</p>
+<p><strong>Playbook: copy-backup.yml</strong></p>
 
-<pre>
-    - name: Create a marker file
-      ansible.builtin.command:
-        cmd: touch /tmp/ansible-marker
-        creates: /tmp/ansible-marker
-</pre>
+<pre><code>---
+- name: Copy file with backup
+  hosts: ansible-client
+  become: true
 
-<p>Run the playbook:</p>
+  tasks:
+    - name: Update application configuration
+      ansible.builtin.copy:
+        content: |
+          APP_NAME=learning-labs
+          APP_PORT=9090
+          APP_ENV=production
+        dest: /tmp/application.conf
+        backup: true
+        mode: '0644'</code></pre>
 
-<pre>ansible-playbook command-playbook.yml</pre>
+<h2>8. Copy a File from One Remote Location to Another</h2>
 
 <p>
-The first run creates the file. Subsequent runs skip the command because the file already exists.
+The <code>remote_src</code> parameter tells Ansible that the source
+file is already present on the managed host.
 </p>
 
-<h2>9. Validate Your Playbook</h2>
+<p><strong>Playbook: remote-copy.yml</strong></p>
 
-<p>Check the playbook for syntax errors:</p>
+<pre><code>---
+- name: Copy file within managed host
+  hosts: ansible-client
+  become: true
 
-<pre>
-ansible-playbook --syntax-check command-playbook.yml
-</pre>
+  tasks:
+    - name: Copy existing remote file
+      ansible.builtin.copy:
+        src: /tmp/application.conf
+        dest: /tmp/application-backup.conf
+        remote_src: true
+        mode: '0644'</code></pre>
 
-<p>Execute it:</p>
+<h2>9. Practical Project: Deploy Application Configuration</h2>
 
-<pre>
-ansible-playbook command-playbook.yml
-</pre>
+<div class="project-box">
 
-<h2>10. Real-Time Project: Managed Host Health Report</h2>
-
-<div class="project">
-<strong>Project objective</strong>
+<h3>Project Objective</h3>
 
 <p>
-Create an Ansible playbook that collects basic system information from a managed host and displays a health report.
+Deploy configuration files for an application on the managed host
+using the Ansible Copy module.
+</p>
+
+<strong>Requirements:</strong>
+
+<ol>
+    <li>Create an application configuration file.</li>
+    <li>Deploy the configuration to <code>ansible-client</code>.</li>
+    <li>Set the owner and group to root.</li>
+    <li>Set permissions to <code>0644</code>.</li>
+    <li>Create a separate environment configuration file using the content parameter.</li>
+    <li>Deploy an updated configuration with backup enabled.</li>
+</ol>
+
+<strong>Project playbook: deploy-application.yml</strong>
+
+<pre><code>---
+- name: Deploy application configuration
+  hosts: ansible-client
+  become: true
+
+  tasks:
+    - name: Deploy application configuration
+      ansible.builtin.copy:
+        content: |
+          APP_NAME=learning-labs
+          APP_PORT=8080
+          APP_ENV=production
+        dest: /tmp/learning-labs.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create environment configuration
+      ansible.builtin.copy:
+        content: |
+          ENVIRONMENT=production
+          LOG_LEVEL=INFO
+          DEBUG=false
+        dest: /tmp/learning-labs.env
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Update configuration with backup
+      ansible.builtin.copy:
+        content: |
+          APP_NAME=learning-labs
+          APP_PORT=9090
+          APP_ENV=production
+        dest: /tmp/learning-labs.conf
+        backup: true
+        owner: root
+        group: root
+        mode: '0644'</code></pre>
+
+</div>
+
+<h2>10. What This Lab Covers</h2>
+
+<ul>
+    <li>Understanding the Ansible Copy module.</li>
+    <li>Copying files from controller to managed hosts.</li>
+    <li>Creating files using the content parameter.</li>
+    <li>Managing file ownership and permissions.</li>
+    <li>Creating backups before replacing files.</li>
+    <li>Copying files between remote locations.</li>
+    <li>Deploying application configuration through playbooks.</li>
+</ul>
+
+<div class="why-box">
+<h2>Why Do We Use the Ansible Copy Module?</h2>
+
+<p>
+In real-world infrastructure, administrators frequently need to
+deploy configuration files, scripts, certificates and application
+settings across multiple servers.
+</p>
+
+<p>
+Without automation, administrators would need to connect to each
+server individually and transfer files manually. This becomes
+time-consuming and difficult to maintain as the infrastructure grows.
+</p>
+
+<p>
+The Ansible Copy module automates this process. A single playbook
+can distribute the same configuration to multiple managed hosts,
+maintain consistent file permissions and create backups before
+replacing existing files.
+</p>
+
+<p>
+It is commonly used in application deployment, server configuration,
+infrastructure automation and configuration management.
 </p>
 </div>
 
-<h3>Step 1: Create the project playbook</h3>
-
-<pre>vi health-report.yml</pre>
-
-<p>Press <code>i</code> and add the following:</p>
-
-<pre>
----
-- name: Managed Host Health Report
-  hosts: ansible-client
-
-  tasks:
-    - name: Collect hostname
-      ansible.builtin.command:
-        cmd: hostname
-      register: host_name
-      changed_when: false
-
-    - name: Collect system uptime
-      ansible.builtin.command:
-        cmd: uptime
-      register: system_uptime
-      changed_when: false
-
-    - name: Check disk usage
-      ansible.builtin.command:
-        cmd: df -h /
-      register: disk_usage
-      changed_when: false
-
-    - name: Check memory usage
-      ansible.builtin.command:
-        cmd: free -h
-      register: memory_usage
-      changed_when: false
-
-    - name: Display health report
-      ansible.builtin.debug:
-        msg:
-          - "Hostname: {{ host_name.stdout }}"
-          - "Uptime: {{ system_uptime.stdout }}"
-          - "Disk Usage:"
-          - "{{ disk_usage.stdout }}"
-          - "Memory Usage:"
-          - "{{ memory_usage.stdout }}"
-</pre>
-
-<p>Save the file:</p>
-
-<pre>
-Esc
-:wq
-</pre>
-
-<h3>Step 2: Validate the playbook</h3>
-
-<pre>
-ansible-playbook --syntax-check health-report.yml
-</pre>
-
-<h3>Step 3: Execute the project</h3>
-
-<pre>
-ansible-playbook health-report.yml
-</pre>
-
-<h3>Step 4: Review the report</h3>
-
-<p>
-The output displays:
-</p>
-
-<ul>
-<li>Managed host hostname.</li>
-<li>System uptime.</li>
-<li>Root filesystem disk usage.</li>
-<li>Memory usage.</li>
-</ul>
-
-<p>
-You can run this playbook whenever you need a quick health report from the managed host.
-</p>
-
-<h2>11. What This Lab Covers</h2>
-
-<ul>
-<li>Understanding the Ansible Command module.</li>
-<li>Executing ad hoc commands.</li>
-<li>Creating and running Ansible playbooks.</li>
-<li>Capturing command output using register.</li>
-<li>Displaying output using debug.</li>
-<li>Using chdir and creates.</li>
-<li>Validating playbook syntax.</li>
-<li>Building a managed host health report.</li>
-</ul>
-
-<p>
-<strong>Final outcome:</strong> Execute Linux commands remotely and build a basic system health report using Ansible.
-</p>
-
-<div class="note">
-<strong>Remember:</strong> Use the Command module for simple commands. Use the Shell module when you need shell features such as pipes, redirection or variable expansion.
 </div>
 
 <script>
-(() => {
-    const button = document.getElementById("videoButton");
-    const video = document.getElementById("videoContainer");
+function toggleVideo() {
+    const wrapper = document.getElementById("videoWrapper");
+    const button = document.getElementById("videoToggle");
 
-    button.addEventListener("click", () => {
-        const isVisible = !video.hidden;
-
-        video.hidden = isVisible;
-        button.textContent = isVisible
-            ? "▶ Watch Video"
-            : "✕ Hide Video";
-    });
-})();
+    if (wrapper.style.display === "none") {
+        wrapper.style.display = "block";
+        button.textContent = "✕ Hide Video";
+    } else {
+        wrapper.style.display = "none";
+        button.textContent = "▶ Watch Video";
+    }
+}
 </script>
 
 </body>
