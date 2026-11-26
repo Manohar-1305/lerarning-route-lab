@@ -1,0 +1,786 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Learning Labs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <style>
+    :root {
+      --bg: #080d1b;
+      --panel: #111a2e;
+      --panel-light: #192743;
+      --border: #2a3c5d;
+      --text: #f1f5ff;
+      --muted: #a5b4cc;
+      --blue: #60a5fa;
+      --purple: #a78bfa;
+      --green: #34d399;
+      --red: #fb7185;
+      --orange: #fbbf24;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(ellipse at 8% 0%, rgba(37,99,235,.19), transparent 32%),
+        radial-gradient(ellipse at 92% 0%, rgba(124,58,237,.16), transparent 30%),
+        var(--bg);
+    }
+
+    .labs-page {
+      max-width: 1700px;
+      width: calc(100% - 42px);
+      margin: auto;
+      padding: 24px 0 60px;
+    }
+
+    .home-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      padding: 18px 23px;
+      background: rgba(17,26,46,.96);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 12px 35px rgba(0,0,0,.25);
+    }
+
+    .home-nav a {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .home-nav strong {
+      font-size: 19px;
+      letter-spacing: .3px;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .login-btn {
+      display: inline-block;
+      padding: 10px 17px;
+      background: #223452;
+      border: 1px solid #405779;
+      border-radius: 9px;
+      color: white;
+      font-size: 13px;
+      font-weight: 750;
+      text-decoration: none;
+      transition: .2s;
+    }
+
+    .login-btn:hover {
+      background: #304b76;
+      border-color: var(--blue);
+    }
+
+    .dashboard-heading {
+      margin: 32px 0 22px;
+    }
+
+    .dashboard-heading h1 {
+      margin: 0 0 8px;
+      font-size: clamp(27px, 4vw, 38px);
+      font-weight: 850;
+      letter-spacing: -1px;
+    }
+
+    .dashboard-heading p {
+      color: var(--muted);
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 15px;
+      margin: 25px 0 40px;
+    }
+
+    .stat-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 130px;
+      padding: 21px;
+      background: linear-gradient(145deg, #1b2b49, #111a2e);
+      border: 1px solid #304568;
+      border-radius: 15px;
+      box-shadow: 0 12px 28px rgba(0,0,0,.2);
+    }
+
+    .stat-card::after {
+      content: "";
+      position: absolute;
+      right: -30px;
+      bottom: -48px;
+      width: 105px;
+      height: 105px;
+      border-radius: 50%;
+      background: var(--glow, rgba(96,165,250,.3));
+      filter: blur(3px);
+    }
+
+    .stat-card span {
+      display: block;
+      margin-bottom: 16px;
+      color: #bdcce2;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+    }
+
+    .stat-card strong {
+      font-size: 30px;
+      font-weight: 850;
+      color: white;
+    }
+
+    .stat-card.blue { --glow: rgba(59,130,246,.35); }
+    .stat-card.green { --glow: rgba(16,185,129,.35); }
+    .stat-card.purple { --glow: rgba(139,92,246,.35); }
+    .stat-card.orange { --glow: rgba(245,158,11,.35); }
+
+    .admin-h {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin: 39px 0 16px;
+      font-size: 21px;
+      font-weight: 850;
+      letter-spacing: -.3px;
+    }
+
+    .admin-h::before {
+      content: "";
+      width: 5px;
+      height: 24px;
+      border-radius: 5px;
+      background: linear-gradient(180deg, #60a5fa, #a78bfa);
+    }
+
+    .admin-sub {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 25px 0 12px;
+      color: #e0eaff;
+    }
+
+    .admin-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: 24px;
+      background: rgba(17,26,46,.96);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 10px 28px rgba(0,0,0,.18);
+    }
+
+    .admin-table {
+      width: 100%;
+      min-width: 780px;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .admin-table th {
+      padding: 15px 14px;
+      color: #c9d8ef;
+      background: #1d2d4a;
+      border-bottom: 1px solid #3b5275;
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .75px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .admin-table td {
+      padding: 14px;
+      color: #e5edfa;
+      border-bottom: 1px solid rgba(55,76,111,.48);
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    .admin-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .admin-table tbody tr:hover {
+      background: rgba(59,130,246,.075);
+    }
+
+    .admin-table code {
+      color: #c4b5fd;
+      font-size: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 9px;
+      margin: 2px;
+      border-radius: 7px;
+      background: #263956;
+      color: #d5e5ff;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .tag.paid, .tag.active {
+      color: #6ee7b7;
+      background: rgba(5,150,105,.17);
+      border: 1px solid rgba(52,211,153,.28);
+    }
+
+    .tag.unpaid, .tag.expired {
+      color: #fda4af;
+      background: rgba(225,29,72,.14);
+      border: 1px solid rgba(251,113,133,.25);
+    }
+
+    .tag.trial {
+      color: #93c5fd;
+      background: rgba(37,99,235,.2);
+      border: 1px solid rgba(96,165,250,.3);
+    }
+
+    .tag.pending {
+      color: #fcd34d;
+      background: rgba(217,119,6,.16);
+      border: 1px solid rgba(251,191,36,.25);
+    }
+
+    .trial-info {
+      min-width: 145px;
+      line-height: 1.9;
+    }
+
+    .trial-info small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .subscription-item {
+      min-width: 185px;
+      margin: 5px 0;
+      padding: 11px;
+      background: linear-gradient(145deg, #1b2d4c, #142039);
+      border: 1px solid #344d72;
+      border-radius: 10px;
+      line-height: 1.8;
+    }
+
+    .subscription-item strong {
+      display: block;
+      color: #e0eaff;
+      font-size: 12px;
+    }
+
+    .subscription-item small {
+      display: block;
+      color: #a8bad4;
+      font-size: 11px;
+    }
+
+    .mini-btn {
+      padding: 8px 12px;
+      border: 0;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 850;
+      transition: .2s;
+    }
+
+    .mini-btn.ok {
+      color: white;
+      background: #047857;
+    }
+
+    .mini-btn.ok:hover { background: #059669; }
+
+    .mini-btn.no {
+      color: white;
+      background: #9f1239;
+    }
+
+    .mini-btn.no:hover { background: #be123c; }
+
+    .inline-form {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .empty {
+      padding: 30px !important;
+      text-align: center;
+      color: #91a5c5 !important;
+    }
+
+    .feedback-rating {
+      color: #fbbf24;
+      font-size: 17px;
+      letter-spacing: 2px;
+      white-space: nowrap;
+    }
+
+    .feedback-comment {
+      min-width: 250px;
+      max-width: 550px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.6;
+      color: #dbeafe;
+    }
+
+    .feedback-meta {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1250px) {
+      .stat-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 700px) {
+      .labs-page {
+        width: calc(100% - 22px);
+        padding-top: 12px;
+      }
+
+      .home-nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav-actions {
+        width: 100%;
+      }
+
+      .login-btn {
+        flex: 1;
+        text-align: center;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .stat-card {
+        min-height: 105px;
+        padding: 14px;
+      }
+
+      .stat-card strong {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<main class="labs-page">
+
+  <nav class="home-nav">
+    <a href="/" aria-label="Learning Labs home">
+      <strong>Learning Labs <span style="color:#60a5fa;">·</span> Admin</strong>
+    </a>
+
+    <div class="nav-actions">
+      <a class="login-btn" href="/">Home</a>
+      <a class="login-btn" href="{{ url_for('admin_logout') }}">Logout</a>
+      <a class="login-btn" href="/admin/recommendations">Lab Recommendations</a>
+    </div>
+  </nav>
+
+  <section class="dashboard-heading">
+    <h1>Admin Dashboard</h1>
+    <p>Manage users, monitor subscriptions, review payments and track learning activity.</p>
+  </section>
+
+  <section class="stat-grid">
+    <div class="stat-card blue">
+      <span>Total Users</span>
+      <strong>{{ stats.users }}</strong>
+    </div>
+
+    <div class="stat-card">
+      <span>Active in 24 Hours</span>
+      <strong>{{ stats.active }}</strong>
+    </div>
+
+    <div class="stat-card green">
+      <span>Paid Contributors</span>
+      <strong>{{ stats.payers }}</strong>
+    </div>
+
+    <div class="stat-card purple">
+      <span>Active Subscribers</span>
+      <strong>{{ stats.subscribers }}</strong>
+    </div>
+
+    <div class="stat-card blue">
+      <span>Active Free Trials</span>
+      <strong>{{ stats.trial_users }}</strong>
+    </div>
+
+    <div class="stat-card orange">
+      <span>Total Collected</span>
+      <strong>₹{{ '%.2f'|format(stats.total) }}</strong>
+    </div>
+  </section>
+
+  <h2 class="admin-h">
+    Pending Payments
+    <span class="tag pending">{{ pending|length }} pending</span>
+  </h2>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Amount</th>
+          <th>UTR</th>
+          <th>Submitted</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for p in pending %}
+        <tr>
+          <td><strong>{{ p.username }}</strong></td>
+          <td>{{ p.email }}</td>
+          <td>₹{{ '%.2f'|format(p.amount) }}</td>
+          <td><code>{{ p.utr }}</code></td>
+          <td>{{ p.created_at|ist }}</td>
+          <td>
+            <form method="post"
+                  action="{{ url_for('admin_payment', pid=p.id) }}"
+                  class="inline-form">
+              <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+              <button class="mini-btn ok" name="action" value="verified">Verify</button>
+              <button class="mini-btn no" name="action" value="rejected">Reject</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty">No pending payments.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="admin-h">Users & Subscription Access</h2>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Free Trial</th>
+          <th>Paid Subscriptions</th>
+          <th>Enrolled Labs</th>
+          <th>Currently In</th>
+          <th>Contributions</th>
+          <th>Logins</th>
+          <th>Last Login</th>
+          <th>Joined</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td><strong>{{ u.username }}</strong></td>
+          <td>{{ u.email }}</td>
+
+          <td>
+            <div class="trial-info">
+              {% if u.trial_active %}
+                <span class="tag trial">● Active Trial</span>
+                <small>Expires: {{ u.trial_expires_at|ist }}</small>
+              {% elif u.trial_used %}
+                <span class="tag expired">Expired</span>
+                <small>Expired: {{ u.trial_expires_at|ist }}</small>
+              {% else %}
+                <span class="tag unpaid">Not Used</span>
+                <small>Trial available</small>
+              {% endif %}
+            </div>
+          </td>
+
+          <td>
+            {% if u.subscriptions %}
+              {% for s in u.subscriptions %}
+                <div class="subscription-item">
+                  <strong>{{ s.lab_name|capitalize }} · {{ s.plan_days }} days</strong>
+
+                  <div>₹{{ '%.2f'|format(s.amount) }}</div>
+
+                  {% if s.is_active %}
+                    <span class="tag active">Active</span>
+                  {% elif s.status == 'PENDING' %}
+                    <span class="tag pending">Pending</span>
+                  {% else %}
+                    <span class="tag expired">{{ s.status|capitalize }}</span>
+                  {% endif %}
+
+                  <small>Expires: {{ s.expires_at|ist }}</small>
+                </div>
+              {% endfor %}
+            {% else %}
+              <span class="tag unpaid">No Subscription</span>
+            {% endif %}
+          </td>
+
+          <td>
+            {% for lab in (u.labs or '').split(',') if lab %}
+              <span class="tag">{{ lab|capitalize }}</span>
+            {% else %}
+              —
+            {% endfor %}
+          </td>
+
+          <td>
+            {% if u.current_lab %}
+              <span class="tag paid">{{ u.current_lab|capitalize }}</span>
+            {% else %}
+              —
+            {% endif %}
+          </td>
+
+          <td>
+            {% if u.paid > 0 %}
+              <span class="tag paid">₹{{ '%.2f'|format(u.paid) }}</span>
+            {% else %}
+              <span class="tag unpaid">No Contribution</span>
+            {% endif %}
+          </td>
+
+          <td>{{ u.login_count }}</td>
+          <td>{{ u.last_login|ist }}</td>
+          <td>{{ u.created_at|ist }}</td>
+
+          <td>
+            <form method="post"
+                  action="{{ url_for('admin_delete_user', user_id=u.id) }}"
+                  onsubmit="return confirm('Delete user {{ u.username|e }} and all associated records? This cannot be undone.');">
+              <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+              <button class="mini-btn no" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+
+        {% else %}
+        <tr><td colspan="11" class="empty">No users yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="admin-h">
+    Document Ratings & Feedback
+    <span class="tag">{{ document_feedback|length }} submissions</span>
+  </h2>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Lab</th>
+          <th>Document</th>
+          <th>User</th>
+          <th>Rating</th>
+          <th>Feedback</th>
+          <th>Submitted / Updated</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for item in document_feedback %}
+        <tr>
+          <td>
+            <span class="tag">{{ item.lab_name|capitalize }}</span>
+          </td>
+
+          <td>
+            <strong>{{ item.document_name }}</strong>
+          </td>
+
+          <td>
+            <strong>{{ item.username }}</strong>
+            {% if item.email %}
+              <div class="feedback-meta">{{ item.email }}</div>
+            {% endif %}
+            <div class="feedback-meta">User ID: {{ item.user_id }}</div>
+          </td>
+
+          <td>
+            <span class="feedback-rating">
+              {% for star in range(1, 6) %}
+                {{ '★' if star <= item.rating else '☆' }}
+              {% endfor %}
+            </span>
+            <div class="feedback-meta">{{ item.rating }}/5</div>
+          </td>
+
+          <td>
+            <div class="feedback-comment">
+              {{ item.feedback or 'No written feedback.' }}
+            </div>
+          </td>
+
+          <td>
+            <div class="feedback-meta">
+              {{ item.updated_at|ist }}
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="empty">No document feedback submitted yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="admin-h">Users by Lab</h2>
+
+  {% for lab, rows in by_lab|groupby('lab') %}
+    <h3 class="admin-sub">
+      {{ lab|capitalize }}
+      <span class="tag">{{ rows|length }} user{{ 's' if rows|length != 1 }}</span>
+    </h3>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Times Opened</th>
+            <th>Last Opened</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.username }}</td>
+            <td>{{ r.visits }}</td>
+            <td>{{ r.last_at|ist }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  {% else %}
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <tbody>
+          <tr><td class="empty">No lab activity yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  {% endfor %}
+
+  <h2 class="admin-h">Payment History</h2>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Amount</th>
+          <th>UTR</th>
+          <th>Status</th>
+          <th>Submitted</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for p in history %}
+        <tr>
+          <td>{{ p.username }}</td>
+          <td>₹{{ '%.2f'|format(p.amount) }}</td>
+          <td><code>{{ p.utr }}</code></td>
+          <td>
+            <span class="tag {{ 'paid' if p.status == 'verified' else 'unpaid' }}">
+              {{ p.status|capitalize }}
+            </span>
+          </td>
+          <td>{{ p.created_at|ist }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="empty">No payment history.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="admin-h">Recent Activity</h2>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Event</th>
+          <th>When</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for a in activity %}
+        <tr>
+          <td>{{ a.username }}</td>
+          <td>
+            {% if a.kind == 'login' %}
+              <span class="tag trial">Logged In</span>
+            {% else %}
+              Opened {{ a.detail|capitalize }} lab
+            {% endif %}
+          </td>
+          <td>{{ a.at|ist }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" class="empty">No activity yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</main>
+</body>
+</html>
