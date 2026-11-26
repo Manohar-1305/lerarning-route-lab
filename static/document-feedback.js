@@ -112,33 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
       opacity: .6;
       cursor: not-allowed;
     }
-
-    .df-admin-feedback {
-      margin: 12px;
-      padding: 12px;
-      background: #172333;
-      border: 1px solid #40516a;
-      border-radius: 7px;
-      overflow-x: auto;
-    }
-
-    .df-admin-feedback table {
-      width: 100%;
-      border-collapse: collapse;
-      color: #e2e8f0;
-      font-size: 12px;
-    }
-
-    .df-admin-feedback th,
-    .df-admin-feedback td {
-      padding: 8px;
-      text-align: left;
-      border-bottom: 1px solid #40516a;
-    }
-
-    .df-admin-feedback th {
-      color: #93c5fd;
-    }
   `;
 
   document.head.appendChild(style);
@@ -341,81 +314,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   loadFeedback();
-
-  async function loadAdminFeedback() {
-    try {
-      const params = new URLSearchParams({ lab });
-
-      const response = await fetch(
-        `/api/admin/document-feedback?${params}`,
-        { credentials: "same-origin" }
-      );
-
-      if (!response.ok) return;
-
-      const data = await response.json();
-
-      if (!Array.isArray(data.feedback)) return;
-
-      let adminPanel = document.getElementById("dfAdminFeedback");
-
-      if (!adminPanel) {
-        adminPanel = document.createElement("section");
-        adminPanel.id = "dfAdminFeedback";
-        adminPanel.className = "df-admin-feedback";
-
-        adminPanel.innerHTML = `
-          <h4>Document Feedback</h4>
-          <div id="dfAdminFeedbackContent"></div>
-        `;
-
-        progressPanel.insertAdjacentElement("afterend", adminPanel);
-      }
-
-      const content = document.getElementById("dfAdminFeedbackContent");
-
-      if (!data.feedback.length) {
-        content.textContent = "No feedback submitted yet.";
-        return;
-      }
-
-      const table = document.createElement("table");
-      const thead = document.createElement("thead");
-      const tbody = document.createElement("tbody");
-
-      thead.innerHTML = `
-        <tr>
-          <th>User</th>
-          <th>Document</th>
-          <th>Rating</th>
-          <th>Feedback</th>
-        </tr>
-      `;
-
-      data.feedback.forEach(item => {
-        const row = document.createElement("tr");
-
-        [
-          item.username || item.email || "",
-          item.name || "",
-          `${Number(item.rating || 0)} / 5`,
-          item.feedback || ""
-        ].forEach(value => {
-          const cell = document.createElement("td");
-          cell.textContent = value;
-          row.appendChild(cell);
-        });
-
-        tbody.appendChild(row);
-      });
-
-      table.append(thead, tbody);
-      content.replaceChildren(table);
-
-    } catch (error) {
-      console.error("Unable to load admin feedback:", error);
-    }
-  }
-
-  loadAdminFeedback();
 });
