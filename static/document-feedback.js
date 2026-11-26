@@ -216,8 +216,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (currentDocument !== name) return;
 
-      selectedRating = Number(data.rating || 0);
-      commentInput.value = data.feedback || "";
+      selectedRating = Number(data.feedback?.rating || 0);
+      commentInput.value = data.feedback?.feedback || "";
 
       renderStars(selectedRating);
 
